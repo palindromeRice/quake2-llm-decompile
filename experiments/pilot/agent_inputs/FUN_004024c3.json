@@ -1,0 +1,33 @@
+{
+  "address": "004024c3",
+  "name": "FUN_004024c3",
+  "signature": "undefined FUN_004024c3()",
+  "calling_convention": "unknown",
+  "disassembly": [
+    "004024c3  PUSH RBP",
+    "004024c4  MOV RBP,RSP",
+    "004024c7  MOVSS dword ptr [RBP + -0x4],XMM0",
+    "004024cc  PXOR XMM1,XMM1",
+    "004024d0  CVTSS2SD XMM1,dword ptr [RBP + -0x4]",
+    "004024d5  MOVSD XMM0,qword ptr [0x004061f0]",
+    "004024dd  MULSD XMM0,XMM1",
+    "004024e1  CVTTSD2SI EAX,XMM0",
+    "004024e5  MOVZX EAX,AX",
+    "004024e8  PXOR XMM1,XMM1",
+    "004024ec  CVTSI2SD XMM1,EAX",
+    "004024f0  MOVSD XMM0,qword ptr [0x004061f8]",
+    "004024f8  MULSD XMM0,XMM1",
+    "004024fc  CVTSD2SS XMM0,XMM0",
+    "00402500  MOVSS dword ptr [RBP + -0x4],XMM0",
+    "00402505  MOVSS XMM0,dword ptr [RBP + -0x4]",
+    "0040250a  POP RBP",
+    "0040250b  RET"
+  ],
+  "referenced_data": {
+    "004061f0": "block=.rodata u64(le)=0x4066c16c16c16c17 f32=3.1249046E-25 f64=182.04444444444445",
+    "004061f8": "block=.rodata u64(le)=0x3f76800000000000 f32=0.0 f64=0.0054931640625"
+  },
+  "callees": [],
+  "callers": [],
+  "pseudocode": "\nfloat FUN_004024c3(float param_1)\n\n{\n  return (float)(DAT_004061f8 * (double)((int)(DAT_004061f0 * (double)param_1) & 0xffff));\n}\n\n"
+}
