@@ -35,10 +35,14 @@ cd ~/tools && tar xzf dl/OpenJDK21U-*.tar.gz && unzip -q dl/ghidra_12.1.4_PUBLIC
 
 # full pilot (~2 min, one agent A call per target)
 cd quake-decompile
-./scripts/run_pilot.sh
+./scripts/run_pilot.sh configs/pilot_O0.json
+./scripts/run_pilot.sh configs/pilot_O2.json
 
-# harness sanity checks (original must pass, mutant must fail)
-python3 -m pytest -q
+# re-test an existing run (no agent A calls), e.g. after changing drivers
+./scripts/retest_run.sh experiments/pilot/runs/<run>
+
+# harness sanity checks (original must pass, mutant must fail); match the last build's config
+PILOT_CONFIG=configs/pilot_O2.json python3 -m pytest -q
 ```
 
 Individual stages: `scripts/build_pilot.py`, `src/extraction/run_ghidra.py`,
@@ -49,12 +53,12 @@ Individual stages: `scripts/build_pilot.py`, `src/extraction/run_ghidra.py`,
 
 | Path | Visible to agent? | Contents |
 |---|---|---|
-| `configs/pilot.json` | no | compiler flags, sources, pilot function names |
+| `configs/pilot_O{0,2}.json` | no | compiler flags, sources, pilot function names |
 | `third_party/Quake-2/` | no | original source (git-ignored, cloned at pinned commit) |
 | `experiments/pilot/c/` | no | link stubs + empty `main` |
 | `build/` | no | binaries, objects, Ghidra logs, `eval/ground_truth.json` (git-ignored) |
-| `experiments/pilot/agent_inputs/` | **yes** | Ghidra output per target, nothing else |
-| `experiments/pilot/runs/<ts>/` | output | prompt, raw response + usage, `recon.c`, difftest JSON |
+| `build/agent_inputs/` (+ copy in each run's `_meta/`) | **yes** | Ghidra output per target, nothing else |
+| `experiments/pilot/runs/<ts>-<config>/` | output | prompt, raw response + usage, `recon.c`, difftest JSON, `_meta/` (config, build info, ground truth) |
 | `tests/difftest/` | no | per-function differential test drivers |
 | `results/` | — | per-run CSV/JSON metrics |
 | `docs/` | — | setup notes, related work, license |
@@ -62,7 +66,7 @@ Individual stages: `scripts/build_pilot.py`, `src/extraction/run_ghidra.py`,
 ## Build configuration (pilot)
 
 - Host: Ubuntu 24.04, x86-64 (spec asked for macOS ARM64; this machine is Linux x86-64, so native x86-64 is used).
-- `gcc 13.3.0`, `-O0 -g -fno-stack-protector -fcf-protection=none -fno-pie`, link `-no-pie -lm`.
+- `gcc 13.3.0`, `-O0` or `-O2`, plus `-g -fno-stack-protector -fcf-protection=none -fno-pie -ffile-prefix-map=third_party/Quake-2/game/=`, link `-no-pie -lm`.
 - Sources compiled **unmodified**: `game/q_shared.c`, `game/g_utils.c`. Stubs only satisfy the linker for non-target functions (`experiments/pilot/c/stubs.c`).
 - `strip --strip-all` produces the evaluation binary. Exact commands and SHA-256 land in `build/build_info.json`.
 
@@ -73,19 +77,27 @@ Individual stages: `scripts/build_pilot.py`, `src/extraction/run_ghidra.py`,
 - `dev` split: edge-case grid (±0, denormals, ±inf, NaN, huge) + 45k random. `heldout` split: 45k random from a different seed. Single-pass B uses no test feedback, so held-out is untouched by design.
 - Passing finite tests is not proof of equivalence. Results say "passed N cases", never "equivalent".
 
-## Pilot results (10 functions, -O0, run 20261012-223613)
+## Pilot results (10 functions)
 
-| Baseline | Compiles | Dev pass | Held-out pass | agent A calls | Cost (list price) |
-|---|---|---|---|---|---|
-| A: Ghidra pseudocode + typedefs | 5/10 | 3/10 | 3/10 | 0 | 0 |
-| B: single-pass agent A | 10/10 | 10/10 | 10/10 | 10 | $0.43 |
+Runs `20261012-224110-pilot_O0` and `20261012-224341-pilot_O2`. Both builds hide the source path in the binary.
+"Pass" = bit-identical on every dev and held-out input. "NaN-relaxed" also counts NaN-vs-NaN with a different sign or payload as equal.
 
-- A failures: 5 compile errors (all are `.rodata` constants that Ghidra prints as undeclared `DAT_xxxx` globals), 2 behaviour mismatches (`vectoyaw`: return value lost; `CrossProduct`: aliasing/order differs).
-- B: 6–23 s per function. Most expensive was `BoxOnPlaneSide` (405 instructions): $0.15.
-- Per-function rows: `results/20261012-223613.csv`. Tests per function: 45k–150k inputs per split.
-- **`BoxOnPlaneSide` counts as contaminated.** Its `assert` strings put `"BoxOnPlaneSide"` and `third_party/Quake-2/game/q_shared.c` in the binary, and from there into the prompt. The output used Quake's own `vec3_t`, `cplane_t`, `emins`, `emaxs` and `signbits`. Without it, B is 9/9 clean.
-- `vectoangles` output uses `yaw`/`pitch`/`roll`. These are natural names for an angle function, so this is a weak contamination signal.
-- n=10, -O0, small leaf functions. No generalisation claimed.
+| Build | Baseline | Compiles | Pass (strict) | Pass (NaN-relaxed) | agent A calls | Cost |
+|---|---|---|---|---|---|---|
+| -O0 | A: Ghidra pseudocode | 5/10 | 3/10 | 4/10 | 0 | 0 |
+| -O0 | B: single-pass agent A | 10/10 | **10/10** | 10/10 | 10 | $0.41 |
+| -O2 | A: Ghidra pseudocode | 4/10 | 4/10 | 4/10 | 0 | 0 |
+| -O2 | B: single-pass agent A | 9/10 | **7/10** | 9/10 | 9 | $0.34 |
+
+- -O2 `COM_FileExtension`: **Ghidra never found the function.** It starts with a `jmp` and has no callers, so Ghidra saw no function start. It is counted as a failure for both baselines; we did not force it using the known address, which would leak ground truth.
+- -O2 B failures, `LerpAngle` and `VectorNormalize`: NaN sign only (`nan` vs `-nan`), from a different SSE operand order. Both pass NaN-relaxed.
+- A failures: mostly `.rodata` constants that Ghidra prints as undeclared `DAT_xxxx` globals. Also `vectoyaw` at -O0 lost its return value.
+- Earlier run `20261012-223613` (-O0, source path visible): A 3/10, B 10/10.
+
+### Contamination evidence
+- `BoxOnPlaneSide`: `assert` puts its name in the binary, so it is in the prompt (`prompt_leak` column). The output reuses Quake's `vec3_t`, `cplane_t` and `signbits`. Contaminated.
+- `vectoangles` at -O2: **no leak in the prompt**, but agent A wrote "follows the classic Quake vectoangles routine". The model recognised the code from its structure alone. This is direct evidence of memorisation; a non-public control set is required before any claim.
+- So any number on Quake code is an upper bound, not a clean decompilation result.
 
 ### Input domains (documented in each driver)
 - `Q_log2`: val >= 0 only. The original loops forever on negatives.

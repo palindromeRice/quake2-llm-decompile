@@ -12,7 +12,7 @@ static void check (float x, float y, float z)
 	memcpy (b, a, sizeof a);
 	float ro = vectoyaw (a + 1), rr = RECON (b + 1);
 	n_cases++;
-	if (fbits (ro) != fbits (rr) || memcmp (a, b, sizeof a)) {
+	if (fdiff (ro, rr) || bufdiff (a, b, 5)) {
 		snprintf (msg, sizeof msg, "in=(%a,%a,%a) orig=%a recon=%a", x, y, z, ro, rr);
 		report_mismatch (msg);
 	}

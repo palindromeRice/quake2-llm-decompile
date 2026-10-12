@@ -34,14 +34,14 @@ def test_mutant_fails(tmp_path):
 import json, subprocess
 import pytest
 
-FUNCS = json.loads((ROOT / "configs/pilot.json").read_text())["pilot_functions"]
+FUNCS = difftest.CFG["pilot_functions"]
 
 
 @pytest.mark.parametrize("name", FUNCS)
 def test_driver_self_consistent(name, tmp_path):
     """Original vs itself must pass on both splits: driver is deterministic."""
     exe = tmp_path / "drv"
-    subprocess.run(["gcc", "-O0", f"-DRECON={name}", f"tests/difftest/{name}.c",
+    subprocess.run(["gcc", *difftest.CFG["cflags"], f"-DRECON={name}", f"tests/difftest/{name}.c",
                     *[f"build/objs/{o}" for o in difftest.ORIG_OBJS], "-no-pie", "-lm", "-o", str(exe)],
                    cwd=ROOT, check=True)
     for split in ("dev", "heldout"):

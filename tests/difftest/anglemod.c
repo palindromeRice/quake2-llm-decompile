@@ -1,7 +1,7 @@
 #include "common.h"
 float anglemod (float a);
 float RECON (float a);
-static void check (float a) { float o = anglemod (a), r = RECON (a); CHECK (fbits (o) != fbits (r), "in=%a orig=%a recon=%a", a, o, r); }
+static void check (float a) { float o = anglemod (a), r = RECON (a); CHECK (fdiff (o, r), "in=%a orig=%a recon=%a", a, o, r); }
 int main (int argc, char **argv)
 {
 	if (argc < 2) return 2;

@@ -27,7 +27,7 @@ typedef long long longlong; typedef unsigned long long ulonglong; typedef unsign
 def main(run_dir, *pairs):
     for pair in pairs:
         orig, fun = pair.split("=")
-        rec = json.loads((ROOT / f"experiments/pilot/agent_inputs/{fun}.json").read_text())
+        rec = json.loads((ROOT / f"build/agent_inputs/{fun}.json").read_text())
         out = Path(run_dir) / fun
         out.mkdir(parents=True, exist_ok=True)
         sub = out / "baseline_a"

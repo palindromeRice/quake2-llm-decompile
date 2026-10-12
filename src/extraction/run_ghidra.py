@@ -3,7 +3,7 @@
 
   build/ghidra/functions.jsonl          all functions Ghidra found
   build/ghidra/headless.log             full Ghidra log
-  experiments/pilot/agent_inputs/*.json one file per pilot target (Ghidra data only)
+  build/agent_inputs/*.json             one file per pilot target (Ghidra data only)
 
 Targets are chosen by address via the evaluation-side ground truth; the agent
 input files contain only what Ghidra recovered from the stripped binary.
@@ -14,12 +14,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 GHIDRA = Path(os.environ.get("GHIDRA_HOME", Path.home() / "tools/ghidra_12.1.4_PUBLIC"))
 OUT = ROOT / "build/ghidra"
-AGENT = ROOT / "experiments/pilot/agent_inputs"
+AGENT = ROOT / "build/agent_inputs"
 
 
 def main(binary="build/pilot.stripped"):
     OUT.mkdir(parents=True, exist_ok=True)
     AGENT.mkdir(parents=True, exist_ok=True)
+    for old in AGENT.glob("*.json"):
+        old.unlink()
     jsonl = OUT / "functions.jsonl"
     cmd = [str(GHIDRA / "support/analyzeHeadless"), str(OUT), "pilot",
            "-import", str(ROOT / binary), "-overwrite", "-deleteProject",

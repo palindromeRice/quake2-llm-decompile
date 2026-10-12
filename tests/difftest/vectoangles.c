@@ -8,7 +8,7 @@ static void check (float x, float y, float z)
 	memcpy (b, a, sizeof a);
 	vectoangles (a + 1, a + 4);
 	RECON (b + 1, b + 4);
-	CHECK (memcmp (a, b, sizeof a), "in=(%a,%a,%a) orig=(%a,%a,%a) recon=(%a,%a,%a)", x, y, z, a[4], a[5], a[6], b[4], b[5], b[6]);
+	CHECK (bufdiff (a, b, 9), "in=(%a,%a,%a) orig=(%a,%a,%a) recon=(%a,%a,%a)", x, y, z, a[4], a[5], a[6], b[4], b[5], b[6]);
 }
 int main (int argc, char **argv)
 {

@@ -1,12 +1,13 @@
 {
-  "_comment": "EVALUATION-SIDE config. Contains original names; never shown to the reconstruction agent.",
+  "_comment": "EVALUATION-SIDE config. Contains original names; never shown to the reconstruction agent. -O0; prefix map hides the source path inside assert strings.",
   "cc": "gcc",
   "cflags": [
     "-O0",
     "-g",
     "-fno-stack-protector",
     "-fcf-protection=none",
-    "-fno-pie"
+    "-fno-pie",
+    "-ffile-prefix-map=third_party/Quake-2/game/="
   ],
   "ldflags": [
     "-no-pie",

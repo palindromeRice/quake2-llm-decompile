@@ -12,7 +12,7 @@ static void check (const float *in)   /* in: 6 floats, v1 then v2 */
 		float *ob = alias == 1 ? b + 1 : alias == 2 ? b + 4 : b + 7;
 		CrossProduct (a + 1, a + 4, oa);
 		RECON (b + 1, b + 4, ob);
-		CHECK (memcmp (a, b, sizeof a), "alias=%d in=(%a,%a,%a)x(%a,%a,%a)", alias, in[0], in[1], in[2], in[3], in[4], in[5]);
+		CHECK (bufdiff (a, b, 11), "alias=%d in=(%a,%a,%a)x(%a,%a,%a)", alias, in[0], in[1], in[2], in[3], in[4], in[5]);
 	}
 }
 int main (int argc, char **argv)

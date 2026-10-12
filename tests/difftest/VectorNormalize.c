@@ -7,7 +7,7 @@ static void check (float x, float y, float z)
 	float a[5] = {1234.5f, x, y, z, -777.25f}, b[5];
 	memcpy (b, a, sizeof a);
 	float o = VectorNormalize (a + 1), r = RECON (b + 1);
-	CHECK (fbits (o) != fbits (r) || memcmp (a, b, sizeof a), "in=(%a,%a,%a) orig=%a recon=%a out_o=(%a,%a,%a) out_r=(%a,%a,%a)", x, y, z, o, r, a[1], a[2], a[3], b[1], b[2], b[3]);
+	CHECK (fdiff (o, r) || bufdiff (a, b, 5), "in=(%a,%a,%a) orig=%a recon=%a out_o=(%a,%a,%a) out_r=(%a,%a,%a)", x, y, z, o, r, a[1], a[2], a[3], b[1], b[2], b[3]);
 }
 int main (int argc, char **argv)
 {

@@ -1,7 +1,7 @@
 #include "common.h"
 float LerpAngle (float a2, float a1, float frac);
 float RECON (float a2, float a1, float frac);
-static void check (float a, float b, float f) { float o = LerpAngle (a, b, f), r = RECON (a, b, f); CHECK (fbits (o) != fbits (r), "in=(%a,%a,%a) orig=%a recon=%a", a, b, f, o, r); }
+static void check (float a, float b, float f) { float o = LerpAngle (a, b, f), r = RECON (a, b, f); CHECK (fdiff (o, r), "in=(%a,%a,%a) orig=%a recon=%a", a, b, f, o, r); }
 int main (int argc, char **argv)
 {
 	if (argc < 2) return 2;

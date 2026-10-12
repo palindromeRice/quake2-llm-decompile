@@ -5,11 +5,11 @@ Usage: difftest.py <candidate.c> <original_name> <FUN_name> [out.json]
 Original objects come from build/objs (same flags as the evaluation binary).
 Records: compile/link errors, crashes/timeouts, per-split mismatch counts.
 """
-import json, subprocess, sys
+import json, os, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-CFG = json.loads((ROOT / "configs/pilot.json").read_text())
+CFG = json.loads((ROOT / os.environ.get("PILOT_CONFIG", "configs/pilot_O0.json")).read_text())
 ORIG_OBJS = ["q_shared.o", "g_utils.o", "stubs.o"]
 
 
@@ -50,6 +50,9 @@ def main(candidate, orig, fun, out=None):
         r = json.loads(so.strip().splitlines()[-1])
         r["status"] = "pass" if r["mismatches"] == 0 else "mismatch"
         r["examples"] = se.strip().splitlines()[:5]
+        # secondary metric: NaN sign/payload differences ignored
+        rc2, so2, _ = sh([str(work / "driver"), split, "relaxed"], timeout=60)
+        r["mismatches_nan_relaxed"] = json.loads(so2.strip().splitlines()[-1])["mismatches"] if rc2 in (0, 1) else None
         res["splits"][split] = r
     return dump(res, out)
 

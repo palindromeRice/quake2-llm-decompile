@@ -24,7 +24,7 @@ def sha256(p):
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
-def main(cfg_path="configs/pilot.json"):
+def main(cfg_path="configs/pilot_O0.json"):
     cfg = json.loads((ROOT / cfg_path).read_text())
     (BUILD / "objs").mkdir(parents=True, exist_ok=True)
     (BUILD / "eval").mkdir(exist_ok=True)
@@ -52,6 +52,7 @@ def main(cfg_path="configs/pilot.json"):
     leaked = [f for f in cfg["pilot_functions"] if f.encode() in blob]
 
     info = {
+        "config": cfg_path,
         "cc_version": subprocess.run([cfg["cc"], "--version"], capture_output=True, text=True).stdout.splitlines()[0],
         "host": platform.platform(), "arch": platform.machine(),
         "cflags": cfg["cflags"], "ldflags": cfg["ldflags"], "commands": cmds,

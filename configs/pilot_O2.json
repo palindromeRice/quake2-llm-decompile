@@ -1,0 +1,50 @@
+{
+  "_comment": "EVALUATION-SIDE config. Contains original names; never shown to the reconstruction agent. -O2; prefix map hides the source path inside assert strings.",
+  "cc": "gcc",
+  "cflags": [
+    "-O2",
+    "-g",
+    "-fno-stack-protector",
+    "-fcf-protection=none",
+    "-fno-pie",
+    "-ffile-prefix-map=third_party/Quake-2/game/="
+  ],
+  "ldflags": [
+    "-no-pie",
+    "-lm"
+  ],
+  "sources": [
+    "third_party/Quake-2/game/q_shared.c",
+    "third_party/Quake-2/game/g_utils.c",
+    "experiments/pilot/c/stubs.c",
+    "experiments/pilot/c/main.c"
+  ],
+  "include_dirs": [
+    "third_party/Quake-2/game"
+  ],
+  "pilot_functions": [
+    "vectoyaw",
+    "vectoangles",
+    "anglemod",
+    "LerpAngle",
+    "Q_log2",
+    "VectorNormalize",
+    "CrossProduct",
+    "BoxOnPlaneSide",
+    "Q_strncasecmp",
+    "COM_FileExtension"
+  ],
+  "reconstruct": [
+    "vectoyaw",
+    "vectoangles",
+    "anglemod",
+    "LerpAngle",
+    "Q_log2",
+    "VectorNormalize",
+    "CrossProduct",
+    "BoxOnPlaneSide",
+    "Q_strncasecmp",
+    "COM_FileExtension"
+  ],
+  "agent_a_model": "agent-a-model"
+}

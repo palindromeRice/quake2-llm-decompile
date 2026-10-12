@@ -8,12 +8,12 @@ prompt, so it cannot read the original source tree.
 Usage: single_pass.py <run_dir> FUN_<addr> [FUN_<addr> ...]
 Writes <run_dir>/<FUN>/{prompt.txt, response.json, recon.c}.
 """
-import json, re, subprocess, sys, tempfile, time
+import json, os, re, subprocess, sys, tempfile, time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-AGENT = ROOT / "experiments/pilot/agent_inputs"
-MODEL = json.loads((ROOT / "configs/pilot.json").read_text())["agent_a_model"]
+AGENT = ROOT / "build/agent_inputs"
+MODEL = json.loads((ROOT / os.environ.get("PILOT_CONFIG", "configs/pilot_O0.json")).read_text())["agent_a_model"]
 
 SYSTEM = ("You are a reverse engineer. You reconstruct readable, compilable C source "
           "from decompiler output. You have no tools; answer from the given material only.")
