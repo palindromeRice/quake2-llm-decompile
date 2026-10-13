@@ -1,0 +1,408 @@
+{
+ "sample": "100 of 934 tested functions, random.Random(0)",
+ "max_mutants": 6,
+ "killed": 269,
+ "mutants": 329,
+ "functions": {
+  "supertank_walk": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "mutant_idle": {
+   "killed": 2,
+   "mutants": 2
+  },
+  "berserk_dead": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "SP_monster_medic": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "actor_walk": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "parasite_run": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "soldier_stand": {
+   "killed": 2,
+   "mutants": 2
+  },
+  "chick_reslash": {
+   "killed": 3,
+   "mutants": 3
+  },
+  "chick_die": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "ThrowClientHead": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "func_timer_use": {
+   "killed": 2,
+   "mutants": 2
+  },
+  "SVCmd_AddIP_f": {
+   "killed": 2,
+   "mutants": 6
+  },
+  "door_use": {
+   "killed": 1,
+   "mutants": 1
+  },
+  "door_secret_move1": {
+   "killed": 1,
+   "mutants": 1
+  },
+  "M_FliesOn": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "turret_driver_die": {
+   "killed": 2,
+   "mutants": 2
+  },
+  "Weapon_Machinegun": {
+   "killed": 0,
+   "mutants": 6
+  },
+  "ClientCommand": {
+   "killed": 0,
+   "mutants": 6
+  },
+  "G_RunEntity": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "hover_attack": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "player_pain": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "SP_target_secret": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "flipper_run_loop": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "turret_driver_think": {
+   "killed": 5,
+   "mutants": 6
+  },
+  "SP_monster_flipper": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "mutant_die": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "medic_die": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "gunner_die": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "SP_info_player_start": {
+   "killed": 0,
+   "mutants": 2
+  },
+  "M_walkmove": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "M_FlyCheck": {
+   "killed": 5,
+   "mutants": 5
+  },
+  "tank_doattack_rocket": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "makron_brainsplorch": {
+   "killed": 2,
+   "mutants": 2
+  },
+  "SelectDeathmatchSpawnPoint": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "button_wait": {
+   "killed": 4,
+   "mutants": 4
+  },
+  "flyer_pain": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "G_SetMovedir": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "SV_CalcGunOffset": {
+   "killed": 3,
+   "mutants": 6
+  },
+  "soldier_attack6_refire": {
+   "killed": 0,
+   "mutants": 4
+  },
+  "SV_FixCheckBottom": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "misc_viper_bomb_prethink": {
+   "killed": 4,
+   "mutants": 6
+  },
+  "infantry_fidget": {
+   "killed": 2,
+   "mutants": 2
+  },
+  "gunner_pain": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "flyer_die": {
+   "killed": 2,
+   "mutants": 2
+  },
+  "use_target_spawner": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "boss2_run": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "SP_func_explosive": {
+   "killed": 4,
+   "mutants": 4
+  },
+  "SP_monster_mutant": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "Cmd_PutAway_f": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "DeathmatchScoreboardMessage": {
+   "killed": 1,
+   "mutants": 6
+  },
+  "G_SetClientFrame": {
+   "killed": 0,
+   "mutants": 6
+  },
+  "body_die": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "Boss2Rocket": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "medic_walk": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "supertank_reattack1": {
+   "killed": 1,
+   "mutants": 1
+  },
+  "G_PickTarget": {
+   "killed": 1,
+   "mutants": 2
+  },
+  "actor_die": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "soldier_fire8": {
+   "killed": 1,
+   "mutants": 1
+  },
+  "soldier_attack1_refire1": {
+   "killed": 5,
+   "mutants": 6
+  },
+  "parasite_scratch": {
+   "killed": 2,
+   "mutants": 2
+  },
+  "hover_run": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "jorg_die": {
+   "killed": 4,
+   "mutants": 4
+  },
+  "gunner_refire_chain": {
+   "killed": 3,
+   "mutants": 3
+  },
+  "fire_hit": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "commander_body_use": {
+   "killed": 3,
+   "mutants": 3
+  },
+  "soldier_run": {
+   "killed": 2,
+   "mutants": 2
+  },
+  "floater_wham": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "SP_misc_viper_bomb": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "AddPointToBounds": {
+   "killed": 3,
+   "mutants": 5
+  },
+  "medic_continue": {
+   "killed": 1,
+   "mutants": 1
+  },
+  "train_wait": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "Q_stricmp": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "flyer_start": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "SP_item_health_small": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "SelectPrevItem": {
+   "killed": 3,
+   "mutants": 5
+  },
+  "rotating_use": {
+   "killed": 2,
+   "mutants": 2
+  },
+  "medic_fire_blaster": {
+   "killed": 5,
+   "mutants": 6
+  },
+  "SP_misc_satellite_dish": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "Think_CalcMoveSpeed": {
+   "killed": 0,
+   "mutants": 1
+  },
+  "floater_pain": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "M_MoveToGoal": {
+   "killed": 5,
+   "mutants": 5
+  },
+  "brain_chest_open": {
+   "killed": 3,
+   "mutants": 3
+  },
+  "SV_Physics_None": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "supertankMachineGun": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "chick_stand": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "door_secret_move5": {
+   "killed": 1,
+   "mutants": 1
+  },
+  "ExitLevel": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "flyer_check_melee": {
+   "killed": 1,
+   "mutants": 1
+  },
+  "SP_viewthing": {
+   "killed": 6,
+   "mutants": 6
+  },
+  "SP_trigger_hurt": {
+   "killed": 3,
+   "mutants": 3
+  },
+  "medic_dodge": {
+   "killed": 1,
+   "mutants": 1
+  },
+  "floater_walk": {
+   "killed": 0,
+   "mutants": 0
+  },
+  "G_FreeEdict": {
+   "killed": 3,
+   "mutants": 3
+  },
+  "SV_StepDirection": {
+   "killed": 4,
+   "mutants": 6
+  },
+  "GetChaseTarget": {
+   "killed": 3,
+   "mutants": 4
+  },
+  "soldier_duck_down": {
+   "killed": 4,
+   "mutants": 4
+  },
+  "SelectNextItem": {
+   "killed": 2,
+   "mutants": 4
+  },
+  "Cmd_Say_f": {
+   "killed": 1,
+   "mutants": 6
+  },
+  "floater_fire_blaster": {
+   "killed": 5,
+   "mutants": 5
+  },
+  "IsFemale": {
+   "killed": 0,
+   "mutants": 3
+  }
+ }
+}
