@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 static uint64_t rng_state;
 static uint32_t rng_u32 (void)   /* xorshift64*: libc-independent, reproducible */

@@ -1,0 +1,359 @@
+{
+  "_comment": "EVALUATION-SIDE config. All testable functions of g_ai.c, g_utils.c, m_move.c, -O0.",
+  "cc": "gcc",
+  "cflags": [
+    "-O0",
+    "-g",
+    "-fno-stack-protector",
+    "-fcf-protection=none",
+    "-fno-pie",
+    "-ffile-prefix-map=third_party/Quake-2/game/="
+  ],
+  "ldflags": [
+    "-no-pie",
+    "-lm"
+  ],
+  "sources": [
+    "third_party/Quake-2/game/g_ai.c",
+    "third_party/Quake-2/game/g_chase.c",
+    "third_party/Quake-2/game/g_cmds.c",
+    "third_party/Quake-2/game/g_combat.c",
+    "third_party/Quake-2/game/g_func.c",
+    "third_party/Quake-2/game/g_items.c",
+    "third_party/Quake-2/game/g_main.c",
+    "third_party/Quake-2/game/g_misc.c",
+    "third_party/Quake-2/game/g_monster.c",
+    "third_party/Quake-2/game/g_phys.c",
+    "third_party/Quake-2/game/g_save.c",
+    "third_party/Quake-2/game/g_spawn.c",
+    "third_party/Quake-2/game/g_svcmds.c",
+    "third_party/Quake-2/game/g_target.c",
+    "third_party/Quake-2/game/g_trigger.c",
+    "third_party/Quake-2/game/g_turret.c",
+    "third_party/Quake-2/game/g_utils.c",
+    "third_party/Quake-2/game/g_weapon.c",
+    "third_party/Quake-2/game/m_actor.c",
+    "third_party/Quake-2/game/m_berserk.c",
+    "third_party/Quake-2/game/m_boss2.c",
+    "third_party/Quake-2/game/m_boss3.c",
+    "third_party/Quake-2/game/m_boss31.c",
+    "third_party/Quake-2/game/m_boss32.c",
+    "third_party/Quake-2/game/m_brain.c",
+    "third_party/Quake-2/game/m_chick.c",
+    "third_party/Quake-2/game/m_flash.c",
+    "third_party/Quake-2/game/m_flipper.c",
+    "third_party/Quake-2/game/m_float.c",
+    "third_party/Quake-2/game/m_flyer.c",
+    "third_party/Quake-2/game/m_gladiator.c",
+    "third_party/Quake-2/game/m_gunner.c",
+    "third_party/Quake-2/game/m_hover.c",
+    "third_party/Quake-2/game/m_infantry.c",
+    "third_party/Quake-2/game/m_insane.c",
+    "third_party/Quake-2/game/m_medic.c",
+    "third_party/Quake-2/game/m_move.c",
+    "third_party/Quake-2/game/m_mutant.c",
+    "third_party/Quake-2/game/m_parasite.c",
+    "third_party/Quake-2/game/m_soldier.c",
+    "third_party/Quake-2/game/m_supertank.c",
+    "third_party/Quake-2/game/m_tank.c",
+    "third_party/Quake-2/game/p_client.c",
+    "third_party/Quake-2/game/p_hud.c",
+    "third_party/Quake-2/game/p_trail.c",
+    "third_party/Quake-2/game/p_view.c",
+    "third_party/Quake-2/game/p_weapon.c",
+    "third_party/Quake-2/game/q_shared.c",
+    "experiments/stateful/c/main.c"
+  ],
+  "include_dirs": [
+    "third_party/Quake-2/game"
+  ],
+  "patches": [
+    {
+      "file": "third_party/Quake-2/game/g_items.c",
+      "pattern": "^static int\\t(jacket|combat|body)_armor_index;",
+      "replace": "int\\t\\1_armor_index;",
+      "count": 3,
+      "why": "GCC rejects static after extern (g_local.h); MSVC accepted it. Variables are only used in g_items.c, so linkage change is behaviour-neutral."
+    }
+  ],
+  "pilot_functions": [
+    "AI_SetSightClient",
+    "ai_move",
+    "ai_stand",
+    "ai_walk",
+    "ai_charge",
+    "ai_turn",
+    "range",
+    "visible",
+    "infront",
+    "HuntTarget",
+    "FoundTarget",
+    "FindTarget",
+    "FacingIdeal",
+    "M_CheckAttack",
+    "ai_run_melee",
+    "ai_run_missile",
+    "ai_run_slide",
+    "ai_checkattack",
+    "ai_run",
+    "G_ProjectSource",
+    "G_Find",
+    "findradius",
+    "G_PickTarget",
+    "Think_Delay",
+    "G_UseTargets",
+    "vtos",
+    "G_SetMovedir",
+    "vectoyaw",
+    "vectoangles",
+    "G_CopyString",
+    "G_InitEdict",
+    "G_Spawn",
+    "G_FreeEdict",
+    "G_TouchTriggers",
+    "G_TouchSolids",
+    "KillBox",
+    "M_CheckBottom",
+    "SV_movestep",
+    "M_ChangeYaw",
+    "SV_StepDirection",
+    "SV_FixCheckBottom",
+    "SV_NewChaseDir",
+    "SV_CloseEnough",
+    "M_MoveToGoal",
+    "M_walkmove"
+  ],
+  "reconstruct": [
+    "AI_SetSightClient",
+    "ai_move",
+    "ai_stand",
+    "ai_walk",
+    "ai_charge",
+    "ai_turn",
+    "range",
+    "visible",
+    "infront",
+    "HuntTarget",
+    "FoundTarget",
+    "FindTarget",
+    "FacingIdeal",
+    "M_CheckAttack",
+    "ai_run_melee",
+    "ai_run_missile",
+    "ai_run_slide",
+    "ai_checkattack",
+    "ai_run",
+    "G_ProjectSource",
+    "G_Find",
+    "findradius",
+    "G_PickTarget",
+    "Think_Delay",
+    "G_UseTargets",
+    "vtos",
+    "G_SetMovedir",
+    "vectoyaw",
+    "vectoangles",
+    "G_CopyString",
+    "G_InitEdict",
+    "G_Spawn",
+    "G_FreeEdict",
+    "G_TouchTriggers",
+    "G_TouchSolids",
+    "KillBox",
+    "M_CheckBottom",
+    "SV_movestep",
+    "M_ChangeYaw",
+    "SV_StepDirection",
+    "SV_FixCheckBottom",
+    "SV_NewChaseDir",
+    "SV_CloseEnough",
+    "M_MoveToGoal",
+    "M_walkmove"
+  ],
+  "stateful": {
+    "AI_SetSightClient": {
+      "sig": "n:",
+      "file": "g_ai.c"
+    },
+    "ai_move": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "ai_stand": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "ai_walk": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "ai_charge": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "ai_turn": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "range": {
+      "sig": "i:ee",
+      "file": "g_ai.c"
+    },
+    "visible": {
+      "sig": "b:ee",
+      "file": "g_ai.c"
+    },
+    "infront": {
+      "sig": "b:ee",
+      "file": "g_ai.c"
+    },
+    "HuntTarget": {
+      "sig": "n:e",
+      "file": "g_ai.c"
+    },
+    "FoundTarget": {
+      "sig": "n:e",
+      "file": "g_ai.c"
+    },
+    "FindTarget": {
+      "sig": "b:e",
+      "file": "g_ai.c"
+    },
+    "FacingIdeal": {
+      "sig": "b:e",
+      "file": "g_ai.c"
+    },
+    "M_CheckAttack": {
+      "sig": "b:e",
+      "file": "g_ai.c"
+    },
+    "ai_run_melee": {
+      "sig": "n:e",
+      "file": "g_ai.c"
+    },
+    "ai_run_missile": {
+      "sig": "n:e",
+      "file": "g_ai.c"
+    },
+    "ai_run_slide": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "ai_checkattack": {
+      "sig": "b:ef",
+      "file": "g_ai.c"
+    },
+    "ai_run": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "G_ProjectSource": {
+      "sig": "n:vvvvv",
+      "file": "g_utils.c"
+    },
+    "G_Find": {
+      "sig": "e:eos",
+      "file": "g_utils.c"
+    },
+    "findradius": {
+      "sig": "e:evf",
+      "file": "g_utils.c"
+    },
+    "G_PickTarget": {
+      "sig": "e:s",
+      "file": "g_utils.c"
+    },
+    "Think_Delay": {
+      "sig": "n:e",
+      "file": "g_utils.c"
+    },
+    "G_UseTargets": {
+      "sig": "n:ee",
+      "file": "g_utils.c"
+    },
+    "vtos": {
+      "sig": "s:v",
+      "file": "g_utils.c"
+    },
+    "G_SetMovedir": {
+      "sig": "n:vv",
+      "file": "g_utils.c"
+    },
+    "vectoyaw": {
+      "sig": "f:v",
+      "file": "g_utils.c"
+    },
+    "vectoangles": {
+      "sig": "n:vv",
+      "file": "g_utils.c"
+    },
+    "G_CopyString": {
+      "sig": "s:s",
+      "file": "g_utils.c"
+    },
+    "G_InitEdict": {
+      "sig": "n:e",
+      "file": "g_utils.c"
+    },
+    "G_Spawn": {
+      "sig": "e:",
+      "file": "g_utils.c"
+    },
+    "G_FreeEdict": {
+      "sig": "n:e",
+      "file": "g_utils.c"
+    },
+    "G_TouchTriggers": {
+      "sig": "n:e",
+      "file": "g_utils.c"
+    },
+    "G_TouchSolids": {
+      "sig": "n:e",
+      "file": "g_utils.c"
+    },
+    "KillBox": {
+      "sig": "b:e",
+      "file": "g_utils.c"
+    },
+    "M_CheckBottom": {
+      "sig": "b:e",
+      "file": "m_move.c"
+    },
+    "SV_movestep": {
+      "sig": "b:evb",
+      "file": "m_move.c"
+    },
+    "M_ChangeYaw": {
+      "sig": "n:e",
+      "file": "m_move.c"
+    },
+    "SV_StepDirection": {
+      "sig": "b:eff",
+      "file": "m_move.c"
+    },
+    "SV_FixCheckBottom": {
+      "sig": "n:e",
+      "file": "m_move.c"
+    },
+    "SV_NewChaseDir": {
+      "sig": "n:eef",
+      "file": "m_move.c"
+    },
+    "SV_CloseEnough": {
+      "sig": "b:eef",
+      "file": "m_move.c"
+    },
+    "M_MoveToGoal": {
+      "sig": "n:ef",
+      "file": "m_move.c"
+    },
+    "M_walkmove": {
+      "sig": "b:eff",
+      "file": "m_move.c"
+    }
+  },
+  "agent_a_model": "agent-a-model",
+  "skipped": {
+    "tv": "unsupported signature: float * (float x, float y, float z)"
+  }
+}

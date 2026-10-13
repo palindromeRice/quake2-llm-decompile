@@ -1,0 +1,46 @@
+{
+  "_comment": "EVALUATION-SIDE config. Contamination control set (fresh code, never public), -O2.",
+  "cc": "gcc",
+  "cflags": [
+    "-O2",
+    "-g",
+    "-fno-stack-protector",
+    "-fcf-protection=none",
+    "-fno-pie",
+    "-ffile-prefix-map=experiments/control/c/="
+  ],
+  "ldflags": [
+    "-no-pie",
+    "-lm"
+  ],
+  "sources": [
+    "experiments/control/c/control.c",
+    "experiments/control/c/main.c"
+  ],
+  "include_dirs": [],
+  "pilot_functions": [
+    "heading_to_sector",
+    "aim_angles",
+    "wrap_snap",
+    "blend_turn",
+    "bit_span",
+    "clamp_length",
+    "accumulate_bounds",
+    "classify_box",
+    "token_match",
+    "split_key"
+  ],
+  "reconstruct": [
+    "heading_to_sector",
+    "aim_angles",
+    "wrap_snap",
+    "blend_turn",
+    "bit_span",
+    "clamp_length",
+    "accumulate_bounds",
+    "classify_box",
+    "token_match",
+    "split_key"
+  ],
+  "agent_a_model": "agent-a-model"
+}

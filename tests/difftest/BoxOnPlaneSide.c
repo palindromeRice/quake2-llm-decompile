@@ -31,6 +31,7 @@ int main (int argc, char **argv)
 		float n[3] = {rng_range (-1, 1), rng_range (-1, 1), rng_range (-1, 1)};
 		if (i % 7 == 0) n[rng_u32 () % 3] = 0;   /* zero components: -0/+0 sign handling */
 		float d = (i % 5 == 0) ? n[0] * c[0] + n[1] * c[1] + n[2] * c[2] : rng_range (-2 * s, 2 * s);
+		if (axial >= 0 && i % 8 == 0) d = (i % 16 == 0) ? mins[axial] : maxs[axial];   /* exact-boundary ties */
 		check (mins, maxs, make_plane (n[0], n[1], n[2], d, axial));
 	}
 	return finish (argv[1]);

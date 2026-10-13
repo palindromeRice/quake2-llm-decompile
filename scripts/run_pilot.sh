@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # End-to-end pilot: build -> Ghidra extract -> Baseline A + B -> difftest -> metrics.
-# Usage: run_pilot.sh [configs/pilot_O0.json]
+# Usage: [JOBS=6] run_pilot.sh [configs/pilot_O0.json]
 # Env: JAVA_HOME (defaults to ~/tools install), GHIDRA_HOME (see run_ghidra.py).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -23,14 +23,16 @@ cp -r build/agent_inputs "$RUN/_meta/"
 # targets: config "reconstruct" list, resolved to addresses (evaluation side)
 mapfile -t PAIRS < <(python3 -c '
 import json, os; c=json.load(open(os.environ["PILOT_CONFIG"])); t=json.load(open("build/eval/ground_truth.json"))
-[print(f"{n}=FUN_{t[n]}") for n in c["reconstruct"] if os.path.exists(f"build/agent_inputs/FUN_{t[n]}.json")]')
+[print(f"{n}=FUN_{t[n]}") for n in c["reconstruct"] if n in t and os.path.exists(f"build/agent_inputs/FUN_{t[n]}.json")]')
 
-python3 src/evaluation/baseline_a.py "$RUN" "${PAIRS[@]}" >/dev/null
-for p in "${PAIRS[@]}"; do
-  name="${p%%=*}"; fun="${p##*=}"
-  python3 src/reconstruction/single_pass.py "$RUN" "$fun"
+# Baseline A and B per target, JOBS at a time (default 6)
+export RUN
+printf '%s\n' "${PAIRS[@]}" | xargs -P "${JOBS:-6}" -I{} sh -c '
+  name="${1%%=*}"; fun="${1##*=}"
+  python3 src/evaluation/baseline_a.py "$RUN" "$1" >/dev/null 2>&1 || echo "$fun: baseline A harness error"
+  python3 src/reconstruction/single_pass.py "$RUN" "$fun" || echo "$fun: reconstruction call failed"
   if [ -f "$RUN/$fun/recon.c" ]; then
-    python3 src/evaluation/difftest.py "$RUN/$fun/recon.c" "$name" "$fun" "$RUN/$fun/difftest_baseline_b.json" >/dev/null
-  fi
-done
+    python3 src/evaluation/difftest.py "$RUN/$fun/recon.c" "$name" "$fun" "$RUN/$fun/difftest_baseline_b.json" >/dev/null 2>&1 \
+      || [ -f "$RUN/$fun/difftest_baseline_b.json" ] || echo "$fun: difftest harness error"
+  fi' _ {}
 python3 src/metrics/collect.py "$RUN"

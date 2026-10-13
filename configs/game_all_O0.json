@@ -1,0 +1,5966 @@
+{
+  "_comment": "EVALUATION-SIDE config. All functions of 48 game files, -O0.",
+  "cc": "gcc",
+  "cflags": [
+    "-O0",
+    "-g",
+    "-fno-stack-protector",
+    "-fcf-protection=none",
+    "-fno-pie",
+    "-ffile-prefix-map=third_party/Quake-2/game/="
+  ],
+  "ldflags": [
+    "-no-pie",
+    "-lm"
+  ],
+  "sources": [
+    "third_party/Quake-2/game/g_ai.c",
+    "third_party/Quake-2/game/g_chase.c",
+    "third_party/Quake-2/game/g_cmds.c",
+    "third_party/Quake-2/game/g_combat.c",
+    "third_party/Quake-2/game/g_func.c",
+    "third_party/Quake-2/game/g_items.c",
+    "third_party/Quake-2/game/g_main.c",
+    "third_party/Quake-2/game/g_misc.c",
+    "third_party/Quake-2/game/g_monster.c",
+    "third_party/Quake-2/game/g_phys.c",
+    "third_party/Quake-2/game/g_save.c",
+    "third_party/Quake-2/game/g_spawn.c",
+    "third_party/Quake-2/game/g_svcmds.c",
+    "third_party/Quake-2/game/g_target.c",
+    "third_party/Quake-2/game/g_trigger.c",
+    "third_party/Quake-2/game/g_turret.c",
+    "third_party/Quake-2/game/g_utils.c",
+    "third_party/Quake-2/game/g_weapon.c",
+    "third_party/Quake-2/game/m_actor.c",
+    "third_party/Quake-2/game/m_berserk.c",
+    "third_party/Quake-2/game/m_boss2.c",
+    "third_party/Quake-2/game/m_boss3.c",
+    "third_party/Quake-2/game/m_boss31.c",
+    "third_party/Quake-2/game/m_boss32.c",
+    "third_party/Quake-2/game/m_brain.c",
+    "third_party/Quake-2/game/m_chick.c",
+    "third_party/Quake-2/game/m_flash.c",
+    "third_party/Quake-2/game/m_flipper.c",
+    "third_party/Quake-2/game/m_float.c",
+    "third_party/Quake-2/game/m_flyer.c",
+    "third_party/Quake-2/game/m_gladiator.c",
+    "third_party/Quake-2/game/m_gunner.c",
+    "third_party/Quake-2/game/m_hover.c",
+    "third_party/Quake-2/game/m_infantry.c",
+    "third_party/Quake-2/game/m_insane.c",
+    "third_party/Quake-2/game/m_medic.c",
+    "third_party/Quake-2/game/m_move.c",
+    "third_party/Quake-2/game/m_mutant.c",
+    "third_party/Quake-2/game/m_parasite.c",
+    "third_party/Quake-2/game/m_soldier.c",
+    "third_party/Quake-2/game/m_supertank.c",
+    "third_party/Quake-2/game/m_tank.c",
+    "third_party/Quake-2/game/p_client.c",
+    "third_party/Quake-2/game/p_hud.c",
+    "third_party/Quake-2/game/p_trail.c",
+    "third_party/Quake-2/game/p_view.c",
+    "third_party/Quake-2/game/p_weapon.c",
+    "third_party/Quake-2/game/q_shared.c",
+    "experiments/stateful/c/main.c"
+  ],
+  "include_dirs": [
+    "third_party/Quake-2/game"
+  ],
+  "patches": [
+    {
+      "file": "third_party/Quake-2/game/g_items.c",
+      "pattern": "^static int\\t(jacket|combat|body)_armor_index;",
+      "replace": "int\\t\\1_armor_index;",
+      "count": 3,
+      "why": "GCC rejects static after extern (g_local.h); MSVC accepted it. Variables are only used in g_items.c, so linkage change is behaviour-neutral."
+    }
+  ],
+  "pilot_functions": [
+    "AI_SetSightClient",
+    "ai_move",
+    "ai_stand",
+    "ai_walk",
+    "ai_charge",
+    "ai_turn",
+    "range",
+    "visible",
+    "infront",
+    "HuntTarget",
+    "FoundTarget",
+    "FindTarget",
+    "FacingIdeal",
+    "M_CheckAttack",
+    "ai_run_melee",
+    "ai_run_missile",
+    "ai_run_slide",
+    "ai_checkattack",
+    "ai_run",
+    "UpdateChaseCam",
+    "ChaseNext",
+    "ChasePrev",
+    "GetChaseTarget",
+    "ClientTeam",
+    "OnSameTeam",
+    "SelectNextItem",
+    "SelectPrevItem",
+    "ValidateSelectedItem",
+    "Cmd_Give_f",
+    "Cmd_God_f",
+    "Cmd_Notarget_f",
+    "Cmd_Noclip_f",
+    "Cmd_Use_f",
+    "Cmd_Drop_f",
+    "Cmd_Inven_f",
+    "Cmd_InvUse_f",
+    "Cmd_WeapPrev_f",
+    "Cmd_WeapNext_f",
+    "Cmd_WeapLast_f",
+    "Cmd_InvDrop_f",
+    "Cmd_Kill_f",
+    "Cmd_PutAway_f",
+    "Cmd_Players_f",
+    "Cmd_Wave_f",
+    "Cmd_Say_f",
+    "Cmd_PlayerList_f",
+    "ClientCommand",
+    "CanDamage",
+    "Killed",
+    "SpawnDamage",
+    "CheckPowerArmor",
+    "CheckArmor",
+    "M_ReactToDamage",
+    "CheckTeamDamage",
+    "T_Damage",
+    "T_RadiusDamage",
+    "Move_Done",
+    "Move_Final",
+    "Move_Begin",
+    "AngleMove_Done",
+    "AngleMove_Final",
+    "AngleMove_Begin",
+    "Think_AccelMove",
+    "plat_hit_top",
+    "plat_hit_bottom",
+    "plat_go_down",
+    "plat_go_up",
+    "plat_blocked",
+    "Use_Plat",
+    "plat_spawn_inside_trigger",
+    "SP_func_plat",
+    "rotating_blocked",
+    "rotating_use",
+    "SP_func_rotating",
+    "button_done",
+    "button_return",
+    "button_wait",
+    "button_fire",
+    "button_use",
+    "button_killed",
+    "SP_func_button",
+    "door_use_areaportals",
+    "door_hit_top",
+    "door_hit_bottom",
+    "door_go_down",
+    "door_go_up",
+    "door_use",
+    "Think_CalcMoveSpeed",
+    "Think_SpawnDoorTrigger",
+    "door_blocked",
+    "door_killed",
+    "SP_func_door",
+    "SP_func_door_rotating",
+    "SP_func_water",
+    "train_blocked",
+    "train_wait",
+    "train_next",
+    "train_resume",
+    "func_train_find",
+    "train_use",
+    "SP_func_train",
+    "trigger_elevator_use",
+    "trigger_elevator_init",
+    "SP_trigger_elevator",
+    "func_timer_think",
+    "func_timer_use",
+    "SP_func_timer",
+    "func_conveyor_use",
+    "SP_func_conveyor",
+    "door_secret_use",
+    "door_secret_move1",
+    "door_secret_move2",
+    "door_secret_move3",
+    "door_secret_move4",
+    "door_secret_move5",
+    "door_secret_move6",
+    "door_secret_done",
+    "door_secret_blocked",
+    "door_secret_die",
+    "SP_func_door_secret",
+    "use_killbox",
+    "SP_func_killbox",
+    "DoRespawn",
+    "SetRespawn",
+    "Pickup_Powerup",
+    "Pickup_Adrenaline",
+    "Pickup_AncientHead",
+    "Pickup_Bandolier",
+    "Pickup_Pack",
+    "Pickup_Key",
+    "Pickup_Ammo",
+    "MegaHealth_think",
+    "Pickup_Health",
+    "ArmorIndex",
+    "Pickup_Armor",
+    "PowerArmorType",
+    "Pickup_PowerArmor",
+    "drop_make_touchable",
+    "Use_Item",
+    "droptofloor",
+    "SP_item_health",
+    "SP_item_health_small",
+    "SP_item_health_large",
+    "SP_item_health_mega",
+    "InitItems",
+    "SetItemNames",
+    "ShutdownGame",
+    "ClientEndServerFrames",
+    "CreateTargetChangeLevel",
+    "EndDMLevel",
+    "CheckDMRules",
+    "ExitLevel",
+    "G_RunFrame",
+    "Use_Areaportal",
+    "SP_func_areaportal",
+    "VelocityForDamage",
+    "ClipGibVelocity",
+    "gib_think",
+    "gib_die",
+    "ThrowGib",
+    "ThrowHead",
+    "ThrowClientHead",
+    "debris_die",
+    "ThrowDebris",
+    "BecomeExplosion1",
+    "BecomeExplosion2",
+    "SP_path_corner",
+    "SP_point_combat",
+    "TH_viewthing",
+    "SP_viewthing",
+    "SP_info_null",
+    "SP_info_notnull",
+    "light_use",
+    "SP_light",
+    "func_wall_use",
+    "SP_func_wall",
+    "func_object_release",
+    "func_object_use",
+    "SP_func_object",
+    "func_explosive_explode",
+    "func_explosive_use",
+    "func_explosive_spawn",
+    "SP_func_explosive",
+    "barrel_explode",
+    "barrel_delay",
+    "SP_misc_explobox",
+    "misc_blackhole_use",
+    "misc_blackhole_think",
+    "SP_misc_blackhole",
+    "misc_eastertank_think",
+    "SP_misc_eastertank",
+    "misc_easterchick_think",
+    "SP_misc_easterchick",
+    "misc_easterchick2_think",
+    "SP_misc_easterchick2",
+    "commander_body_think",
+    "commander_body_use",
+    "commander_body_drop",
+    "SP_monster_commander_body",
+    "misc_banner_think",
+    "SP_misc_banner",
+    "misc_deadsoldier_die",
+    "SP_misc_deadsoldier",
+    "misc_viper_use",
+    "SP_misc_viper",
+    "SP_misc_bigviper",
+    "misc_viper_bomb_prethink",
+    "misc_viper_bomb_use",
+    "SP_misc_viper_bomb",
+    "misc_strogg_ship_use",
+    "SP_misc_strogg_ship",
+    "misc_satellite_dish_think",
+    "misc_satellite_dish_use",
+    "SP_misc_satellite_dish",
+    "SP_light_mine1",
+    "SP_light_mine2",
+    "SP_misc_gib_arm",
+    "SP_misc_gib_leg",
+    "SP_misc_gib_head",
+    "SP_target_character",
+    "target_string_use",
+    "SP_target_string",
+    "func_clock_reset",
+    "func_clock_format_countdown",
+    "func_clock_think",
+    "func_clock_use",
+    "SP_func_clock",
+    "SP_misc_teleporter",
+    "SP_misc_teleporter_dest",
+    "monster_fire_bullet",
+    "monster_fire_shotgun",
+    "monster_fire_blaster",
+    "monster_fire_grenade",
+    "monster_fire_rocket",
+    "monster_fire_railgun",
+    "monster_fire_bfg",
+    "M_FliesOff",
+    "M_FliesOn",
+    "M_FlyCheck",
+    "AttackFinished",
+    "M_CheckGround",
+    "M_CatagorizePosition",
+    "M_WorldEffects",
+    "M_droptofloor",
+    "M_SetEffects",
+    "M_MoveFrame",
+    "monster_think",
+    "monster_use",
+    "monster_triggered_spawn",
+    "monster_triggered_spawn_use",
+    "monster_triggered_start",
+    "monster_death_use",
+    "monster_start",
+    "monster_start_go",
+    "walkmonster_start_go",
+    "walkmonster_start",
+    "flymonster_start_go",
+    "flymonster_start",
+    "swimmonster_start_go",
+    "swimmonster_start",
+    "SV_TestEntityPosition",
+    "SV_CheckVelocity",
+    "SV_RunThink",
+    "ClipVelocity",
+    "SV_FlyMove",
+    "SV_AddGravity",
+    "SV_Push",
+    "SV_Physics_Pusher",
+    "SV_Physics_None",
+    "SV_Physics_Noclip",
+    "SV_Physics_Toss",
+    "SV_AddRotationalFriction",
+    "SV_Physics_Step",
+    "G_RunEntity",
+    "InitGame",
+    "WriteGame",
+    "ReadGame",
+    "WriteLevel",
+    "ReadLevel",
+    "ED_CallSpawn",
+    "ED_NewString",
+    "ED_ParseField",
+    "ED_ParseEdict",
+    "G_FindTeams",
+    "SpawnEntities",
+    "SP_worldspawn",
+    "Svcmd_Test_f",
+    "SV_FilterPacket",
+    "SVCmd_AddIP_f",
+    "SVCmd_RemoveIP_f",
+    "SVCmd_ListIP_f",
+    "SVCmd_WriteIP_f",
+    "ServerCommand",
+    "Use_Target_Tent",
+    "SP_target_temp_entity",
+    "Use_Target_Speaker",
+    "SP_target_speaker",
+    "Use_Target_Help",
+    "SP_target_help",
+    "use_target_secret",
+    "SP_target_secret",
+    "use_target_goal",
+    "SP_target_goal",
+    "target_explosion_explode",
+    "use_target_explosion",
+    "SP_target_explosion",
+    "use_target_changelevel",
+    "SP_target_changelevel",
+    "use_target_splash",
+    "SP_target_splash",
+    "use_target_spawner",
+    "SP_target_spawner",
+    "use_target_blaster",
+    "SP_target_blaster",
+    "trigger_crosslevel_trigger_use",
+    "SP_target_crosslevel_trigger",
+    "target_crosslevel_target_think",
+    "SP_target_crosslevel_target",
+    "target_laser_think",
+    "target_laser_on",
+    "target_laser_off",
+    "target_laser_use",
+    "target_laser_start",
+    "SP_target_laser",
+    "target_lightramp_think",
+    "target_lightramp_use",
+    "SP_target_lightramp",
+    "target_earthquake_think",
+    "target_earthquake_use",
+    "SP_target_earthquake",
+    "InitTrigger",
+    "multi_wait",
+    "multi_trigger",
+    "Use_Multi",
+    "trigger_enable",
+    "SP_trigger_multiple",
+    "SP_trigger_once",
+    "trigger_relay_use",
+    "SP_trigger_relay",
+    "trigger_key_use",
+    "SP_trigger_key",
+    "trigger_counter_use",
+    "SP_trigger_counter",
+    "SP_trigger_always",
+    "SP_trigger_push",
+    "hurt_use",
+    "SP_trigger_hurt",
+    "SP_trigger_gravity",
+    "SP_trigger_monsterjump",
+    "AnglesNormalize",
+    "SnapToEights",
+    "turret_blocked",
+    "turret_breach_fire",
+    "turret_breach_think",
+    "turret_breach_finish_init",
+    "SP_turret_breach",
+    "SP_turret_base",
+    "turret_driver_die",
+    "turret_driver_think",
+    "turret_driver_link",
+    "SP_turret_driver",
+    "G_ProjectSource",
+    "G_Find",
+    "findradius",
+    "G_PickTarget",
+    "Think_Delay",
+    "G_UseTargets",
+    "vtos",
+    "G_SetMovedir",
+    "vectoyaw",
+    "vectoangles",
+    "G_CopyString",
+    "G_InitEdict",
+    "G_Spawn",
+    "G_FreeEdict",
+    "G_TouchTriggers",
+    "G_TouchSolids",
+    "KillBox",
+    "check_dodge",
+    "fire_hit",
+    "fire_lead",
+    "fire_bullet",
+    "fire_shotgun",
+    "fire_blaster",
+    "Grenade_Explode",
+    "fire_grenade",
+    "fire_grenade2",
+    "fire_rocket",
+    "fire_rail",
+    "bfg_explode",
+    "bfg_think",
+    "fire_bfg",
+    "actor_stand",
+    "actor_walk",
+    "actor_run",
+    "actor_pain",
+    "actorMachineGun",
+    "actor_dead",
+    "actor_die",
+    "actor_fire",
+    "actor_attack",
+    "actor_use",
+    "SP_misc_actor",
+    "SP_target_actor",
+    "berserk_sight",
+    "berserk_search",
+    "berserk_stand",
+    "berserk_fidget",
+    "berserk_walk",
+    "berserk_run",
+    "berserk_attack_spike",
+    "berserk_swing",
+    "berserk_attack_club",
+    "berserk_strike",
+    "berserk_melee",
+    "berserk_pain",
+    "berserk_dead",
+    "berserk_die",
+    "SP_monster_berserk",
+    "boss2_search",
+    "Boss2Rocket",
+    "boss2_firebullet_right",
+    "boss2_firebullet_left",
+    "Boss2MachineGun",
+    "boss2_stand",
+    "boss2_run",
+    "boss2_walk",
+    "boss2_attack",
+    "boss2_attack_mg",
+    "boss2_reattack_mg",
+    "boss2_pain",
+    "boss2_dead",
+    "boss2_die",
+    "Boss2_CheckAttack",
+    "SP_monster_boss2",
+    "Use_Boss3",
+    "Think_Boss3Stand",
+    "SP_monster_boss3_stand",
+    "jorg_search",
+    "jorg_idle",
+    "jorg_death_hit",
+    "jorg_step_left",
+    "jorg_step_right",
+    "jorg_stand",
+    "jorg_walk",
+    "jorg_run",
+    "jorg_reattack1",
+    "jorg_attack1",
+    "jorg_pain",
+    "jorgBFG",
+    "jorg_firebullet_right",
+    "jorg_firebullet_left",
+    "jorg_firebullet",
+    "jorg_attack",
+    "jorg_dead",
+    "jorg_die",
+    "Jorg_CheckAttack",
+    "SP_monster_jorg",
+    "makron_taunt",
+    "makron_stand",
+    "makron_hit",
+    "makron_popup",
+    "makron_step_left",
+    "makron_step_right",
+    "makron_brainsplorch",
+    "makron_prerailgun",
+    "makron_walk",
+    "makron_run",
+    "makronBFG",
+    "MakronSaveloc",
+    "MakronRailgun",
+    "MakronHyperblaster",
+    "makron_pain",
+    "makron_sight",
+    "makron_attack",
+    "makron_torso_think",
+    "makron_torso",
+    "makron_dead",
+    "makron_die",
+    "Makron_CheckAttack",
+    "MakronPrecache",
+    "SP_monster_makron",
+    "MakronSpawn",
+    "MakronToss",
+    "brain_sight",
+    "brain_search",
+    "brain_stand",
+    "brain_idle",
+    "brain_walk2_cycle",
+    "brain_walk",
+    "brain_duck_down",
+    "brain_duck_hold",
+    "brain_duck_up",
+    "brain_dodge",
+    "brain_swing_right",
+    "brain_hit_right",
+    "brain_swing_left",
+    "brain_hit_left",
+    "brain_chest_open",
+    "brain_tentacle_attack",
+    "brain_chest_closed",
+    "brain_melee",
+    "brain_run",
+    "brain_pain",
+    "brain_dead",
+    "brain_die",
+    "SP_monster_brain",
+    "ChickMoan",
+    "chick_fidget",
+    "chick_stand",
+    "chick_walk",
+    "chick_run",
+    "chick_pain",
+    "chick_dead",
+    "chick_die",
+    "chick_duck_down",
+    "chick_duck_hold",
+    "chick_duck_up",
+    "chick_dodge",
+    "ChickSlash",
+    "ChickRocket",
+    "Chick_PreAttack1",
+    "ChickReload",
+    "chick_rerocket",
+    "chick_attack1",
+    "chick_reslash",
+    "chick_slash",
+    "chick_melee",
+    "chick_attack",
+    "chick_sight",
+    "SP_monster_chick",
+    "flipper_stand",
+    "flipper_run_loop",
+    "flipper_run",
+    "flipper_walk",
+    "flipper_start_run",
+    "flipper_bite",
+    "flipper_preattack",
+    "flipper_melee",
+    "flipper_pain",
+    "flipper_dead",
+    "flipper_sight",
+    "flipper_die",
+    "SP_monster_flipper",
+    "floater_sight",
+    "floater_idle",
+    "floater_fire_blaster",
+    "floater_stand",
+    "floater_run",
+    "floater_walk",
+    "floater_wham",
+    "floater_zap",
+    "floater_attack",
+    "floater_melee",
+    "floater_pain",
+    "floater_dead",
+    "floater_die",
+    "SP_monster_floater",
+    "flyer_sight",
+    "flyer_idle",
+    "flyer_pop_blades",
+    "flyer_run",
+    "flyer_walk",
+    "flyer_stand",
+    "flyer_stop",
+    "flyer_start",
+    "flyer_fire",
+    "flyer_fireleft",
+    "flyer_fireright",
+    "flyer_slash_left",
+    "flyer_slash_right",
+    "flyer_loop_melee",
+    "flyer_attack",
+    "flyer_setstart",
+    "flyer_nextmove",
+    "flyer_melee",
+    "flyer_check_melee",
+    "flyer_pain",
+    "flyer_die",
+    "SP_monster_flyer",
+    "gladiator_idle",
+    "gladiator_sight",
+    "gladiator_search",
+    "gladiator_cleaver_swing",
+    "gladiator_stand",
+    "gladiator_walk",
+    "gladiator_run",
+    "GaldiatorMelee",
+    "gladiator_melee",
+    "GladiatorGun",
+    "gladiator_attack",
+    "gladiator_pain",
+    "gladiator_dead",
+    "gladiator_die",
+    "SP_monster_gladiator",
+    "gunner_idlesound",
+    "gunner_sight",
+    "gunner_search",
+    "gunner_fidget",
+    "gunner_stand",
+    "gunner_walk",
+    "gunner_run",
+    "gunner_runandshoot",
+    "gunner_pain",
+    "gunner_dead",
+    "gunner_die",
+    "gunner_duck_down",
+    "gunner_duck_hold",
+    "gunner_duck_up",
+    "gunner_dodge",
+    "gunner_opengun",
+    "GunnerFire",
+    "GunnerGrenade",
+    "gunner_attack",
+    "gunner_fire_chain",
+    "gunner_refire_chain",
+    "SP_monster_gunner",
+    "hover_sight",
+    "hover_search",
+    "hover_reattack",
+    "hover_fire_blaster",
+    "hover_stand",
+    "hover_run",
+    "hover_walk",
+    "hover_start_attack",
+    "hover_attack",
+    "hover_pain",
+    "hover_deadthink",
+    "hover_dead",
+    "hover_die",
+    "SP_monster_hover",
+    "infantry_stand",
+    "infantry_fidget",
+    "infantry_walk",
+    "infantry_run",
+    "infantry_pain",
+    "InfantryMachineGun",
+    "infantry_sight",
+    "infantry_dead",
+    "infantry_die",
+    "infantry_duck_down",
+    "infantry_duck_hold",
+    "infantry_duck_up",
+    "infantry_dodge",
+    "infantry_cock_gun",
+    "infantry_fire",
+    "infantry_swing",
+    "infantry_smack",
+    "infantry_attack",
+    "SP_monster_infantry",
+    "insane_fist",
+    "insane_shake",
+    "insane_moan",
+    "insane_scream",
+    "insane_cross",
+    "insane_walk",
+    "insane_run",
+    "insane_pain",
+    "insane_onground",
+    "insane_checkdown",
+    "insane_checkup",
+    "insane_stand",
+    "insane_dead",
+    "insane_die",
+    "SP_misc_insane",
+    "medic_FindDeadMonster",
+    "medic_idle",
+    "medic_search",
+    "medic_sight",
+    "medic_stand",
+    "medic_walk",
+    "medic_run",
+    "medic_pain",
+    "medic_fire_blaster",
+    "medic_dead",
+    "medic_die",
+    "medic_duck_down",
+    "medic_duck_hold",
+    "medic_duck_up",
+    "medic_dodge",
+    "medic_continue",
+    "medic_hook_launch",
+    "medic_cable_attack",
+    "medic_hook_retract",
+    "medic_attack",
+    "medic_checkattack",
+    "SP_monster_medic",
+    "M_CheckBottom",
+    "SV_movestep",
+    "M_ChangeYaw",
+    "SV_StepDirection",
+    "SV_FixCheckBottom",
+    "SV_NewChaseDir",
+    "SV_CloseEnough",
+    "M_MoveToGoal",
+    "M_walkmove",
+    "mutant_step",
+    "mutant_sight",
+    "mutant_search",
+    "mutant_swing",
+    "mutant_stand",
+    "mutant_idle_loop",
+    "mutant_idle",
+    "mutant_walk_loop",
+    "mutant_walk",
+    "mutant_run",
+    "mutant_hit_left",
+    "mutant_hit_right",
+    "mutant_check_refire",
+    "mutant_melee",
+    "mutant_jump_takeoff",
+    "mutant_check_landing",
+    "mutant_jump",
+    "mutant_check_melee",
+    "mutant_check_jump",
+    "mutant_checkattack",
+    "mutant_pain",
+    "mutant_dead",
+    "mutant_die",
+    "SP_monster_mutant",
+    "parasite_launch",
+    "parasite_reel_in",
+    "parasite_sight",
+    "parasite_tap",
+    "parasite_scratch",
+    "parasite_search",
+    "parasite_end_fidget",
+    "parasite_do_fidget",
+    "parasite_refidget",
+    "parasite_idle",
+    "parasite_stand",
+    "parasite_start_run",
+    "parasite_run",
+    "parasite_start_walk",
+    "parasite_walk",
+    "parasite_pain",
+    "parasite_drain_attack_ok",
+    "parasite_drain_attack",
+    "parasite_attack",
+    "parasite_dead",
+    "parasite_die",
+    "SP_monster_parasite",
+    "soldier_idle",
+    "soldier_cock",
+    "soldier_stand",
+    "soldier_walk1_random",
+    "soldier_walk",
+    "soldier_run",
+    "soldier_pain",
+    "soldier_fire",
+    "soldier_fire1",
+    "soldier_attack1_refire1",
+    "soldier_attack1_refire2",
+    "soldier_fire2",
+    "soldier_attack2_refire1",
+    "soldier_attack2_refire2",
+    "soldier_duck_down",
+    "soldier_duck_up",
+    "soldier_fire3",
+    "soldier_attack3_refire",
+    "soldier_fire4",
+    "soldier_fire5",
+    "soldier_attack5_refire",
+    "soldier_fire8",
+    "soldier_attack6_refire",
+    "soldier_attack",
+    "soldier_sight",
+    "soldier_duck_hold",
+    "soldier_dodge",
+    "soldier_fire6",
+    "soldier_fire7",
+    "soldier_dead",
+    "soldier_die",
+    "SP_monster_soldier_x",
+    "SP_monster_soldier_light",
+    "SP_monster_soldier",
+    "SP_monster_soldier_ss",
+    "TreadSound",
+    "supertank_search",
+    "supertank_stand",
+    "supertank_forward",
+    "supertank_walk",
+    "supertank_run",
+    "supertank_reattack1",
+    "supertank_pain",
+    "supertankRocket",
+    "supertankMachineGun",
+    "supertank_attack",
+    "supertank_dead",
+    "BossExplode",
+    "supertank_die",
+    "SP_monster_supertank",
+    "tank_sight",
+    "tank_footstep",
+    "tank_thud",
+    "tank_windup",
+    "tank_idle",
+    "tank_stand",
+    "tank_walk",
+    "tank_run",
+    "tank_pain",
+    "TankBlaster",
+    "TankStrike",
+    "TankRocket",
+    "TankMachineGun",
+    "tank_reattack_blaster",
+    "tank_poststrike",
+    "tank_refire_rocket",
+    "tank_doattack_rocket",
+    "tank_attack",
+    "tank_dead",
+    "tank_die",
+    "SP_monster_tank",
+    "SP_FixCoopSpots",
+    "SP_CreateCoopSpots",
+    "SP_info_player_start",
+    "SP_info_player_deathmatch",
+    "SP_info_player_coop",
+    "SP_info_player_intermission",
+    "player_pain",
+    "IsFemale",
+    "IsNeutral",
+    "ClientObituary",
+    "TossClientWeapon",
+    "LookAtKiller",
+    "player_die",
+    "SaveClientData",
+    "FetchClientEntData",
+    "PlayersRangeFromSpot",
+    "SelectRandomDeathmatchSpawnPoint",
+    "SelectFarthestDeathmatchSpawnPoint",
+    "SelectDeathmatchSpawnPoint",
+    "SelectCoopSpawnPoint",
+    "SelectSpawnPoint",
+    "InitBodyQue",
+    "body_die",
+    "CopyToBodyQue",
+    "respawn",
+    "spectator_respawn",
+    "PutClientInServer",
+    "ClientBeginDeathmatch",
+    "ClientBegin",
+    "ClientUserinfoChanged",
+    "ClientConnect",
+    "ClientDisconnect",
+    "ClientBeginServerFrame",
+    "MoveClientToIntermission",
+    "BeginIntermission",
+    "DeathmatchScoreboardMessage",
+    "DeathmatchScoreboard",
+    "Cmd_Score_f",
+    "HelpComputer",
+    "Cmd_Help_f",
+    "G_SetStats",
+    "G_CheckChaseStats",
+    "G_SetSpectatorStats",
+    "PlayerTrail_Init",
+    "PlayerTrail_Add",
+    "PlayerTrail_New",
+    "PlayerTrail_PickFirst",
+    "PlayerTrail_PickNext",
+    "PlayerTrail_LastSpot",
+    "SV_CalcRoll",
+    "P_DamageFeedback",
+    "SV_CalcViewOffset",
+    "SV_CalcGunOffset",
+    "SV_CalcBlend",
+    "P_FallingDamage",
+    "P_WorldEffects",
+    "G_SetClientEffects",
+    "G_SetClientEvent",
+    "G_SetClientSound",
+    "G_SetClientFrame",
+    "ClientEndServerFrame",
+    "PlayerNoise",
+    "Pickup_Weapon",
+    "ChangeWeapon",
+    "NoAmmoWeaponChange",
+    "Think_Weapon",
+    "weapon_grenade_fire",
+    "Weapon_Grenade",
+    "weapon_grenadelauncher_fire",
+    "Weapon_GrenadeLauncher",
+    "Weapon_RocketLauncher_Fire",
+    "Weapon_RocketLauncher",
+    "Blaster_Fire",
+    "Weapon_Blaster_Fire",
+    "Weapon_Blaster",
+    "Weapon_HyperBlaster_Fire",
+    "Weapon_HyperBlaster",
+    "Machinegun_Fire",
+    "Weapon_Machinegun",
+    "Chaingun_Fire",
+    "Weapon_Chaingun",
+    "weapon_shotgun_fire",
+    "Weapon_Shotgun",
+    "weapon_supershotgun_fire",
+    "Weapon_SuperShotgun",
+    "weapon_railgun_fire",
+    "Weapon_Railgun",
+    "weapon_bfg_fire",
+    "Weapon_BFG",
+    "RotatePointAroundVector",
+    "AngleVectors",
+    "ProjectPointOnPlane",
+    "PerpendicularVector",
+    "Q_fabs",
+    "LerpAngle",
+    "anglemod",
+    "ClearBounds",
+    "AddPointToBounds",
+    "VectorCompare",
+    "VectorMA",
+    "_VectorSubtract",
+    "_VectorAdd",
+    "_VectorCopy",
+    "CrossProduct",
+    "VectorInverse",
+    "Q_log2",
+    "COM_SkipPath",
+    "COM_StripExtension",
+    "COM_FileExtension",
+    "COM_FileBase",
+    "COM_FilePath",
+    "COM_DefaultExtension",
+    "LongSwap",
+    "LongNoSwap",
+    "FloatSwap",
+    "FloatNoSwap",
+    "Swap_Init",
+    "Q_stricmp",
+    "Q_strncasecmp",
+    "Q_strcasecmp",
+    "Info_ValueForKey",
+    "Info_RemoveKey",
+    "Info_Validate",
+    "Info_SetValueForKey",
+    "PlayerSort",
+    "plat_CalcAcceleratedMove",
+    "plat_Accelerate",
+    "Touch_Plat_Center",
+    "rotating_touch",
+    "button_touch",
+    "Touch_DoorTrigger",
+    "door_touch",
+    "GetItemByIndex",
+    "FindItemByClassname",
+    "FindItem",
+    "Drop_General",
+    "Use_Quad",
+    "Use_Breather",
+    "Use_Envirosuit",
+    "Use_Invulnerability",
+    "Use_Silencer",
+    "Add_Ammo",
+    "Drop_Ammo",
+    "Use_PowerArmor",
+    "Drop_PowerArmor",
+    "Touch_Item",
+    "drop_temp_touch",
+    "Drop_Item",
+    "PrecacheItem",
+    "SpawnItem",
+    "GetGameAPI",
+    "Sys_Error",
+    "Com_Printf",
+    "gib_touch",
+    "path_corner_touch",
+    "point_combat_touch",
+    "func_object_touch",
+    "barrel_touch",
+    "misc_viper_bomb_touch",
+    "teleporter_touch",
+    "SV_Impact",
+    "SV_PushEntity",
+    "WriteField1",
+    "WriteField2",
+    "ReadField",
+    "WriteClient",
+    "ReadClient",
+    "WriteEdict",
+    "WriteLevelLocals",
+    "ReadEdict",
+    "ReadLevelLocals",
+    "StringToFilter",
+    "Touch_Multi",
+    "trigger_push_touch",
+    "hurt_touch",
+    "trigger_gravity_touch",
+    "trigger_monsterjump_touch",
+    "tv",
+    "blaster_touch",
+    "Grenade_Touch",
+    "rocket_touch",
+    "bfg_touch",
+    "target_actor_touch",
+    "mutant_jump_touch",
+    "InitClientPersistant",
+    "InitClientResp",
+    "PM_trace",
+    "CheckBlock",
+    "PrintPmove",
+    "ClientThink",
+    "SV_AddBlend",
+    "P_ProjectSource",
+    "Use_Weapon",
+    "Drop_Weapon",
+    "R_ConcatRotations",
+    "R_ConcatTransforms",
+    "BoxOnPlaneSide2",
+    "BoxOnPlaneSide",
+    "VectorNormalize",
+    "VectorNormalize2",
+    "_DotProduct",
+    "VectorLength",
+    "VectorScale",
+    "ShortSwap",
+    "ShortNoSwap",
+    "va",
+    "COM_Parse",
+    "Com_PageInMemory",
+    "Com_sprintf"
+  ],
+  "reconstruct": [
+    "AI_SetSightClient",
+    "ai_move",
+    "ai_stand",
+    "ai_walk",
+    "ai_charge",
+    "ai_turn",
+    "range",
+    "visible",
+    "infront",
+    "HuntTarget",
+    "FoundTarget",
+    "FindTarget",
+    "FacingIdeal",
+    "M_CheckAttack",
+    "ai_run_melee",
+    "ai_run_missile",
+    "ai_run_slide",
+    "ai_checkattack",
+    "ai_run",
+    "UpdateChaseCam",
+    "ChaseNext",
+    "ChasePrev",
+    "GetChaseTarget",
+    "ClientTeam",
+    "OnSameTeam",
+    "SelectNextItem",
+    "SelectPrevItem",
+    "ValidateSelectedItem",
+    "Cmd_Give_f",
+    "Cmd_God_f",
+    "Cmd_Notarget_f",
+    "Cmd_Noclip_f",
+    "Cmd_Use_f",
+    "Cmd_Drop_f",
+    "Cmd_Inven_f",
+    "Cmd_InvUse_f",
+    "Cmd_WeapPrev_f",
+    "Cmd_WeapNext_f",
+    "Cmd_WeapLast_f",
+    "Cmd_InvDrop_f",
+    "Cmd_Kill_f",
+    "Cmd_PutAway_f",
+    "Cmd_Players_f",
+    "Cmd_Wave_f",
+    "Cmd_Say_f",
+    "Cmd_PlayerList_f",
+    "ClientCommand",
+    "CanDamage",
+    "Killed",
+    "SpawnDamage",
+    "CheckPowerArmor",
+    "CheckArmor",
+    "M_ReactToDamage",
+    "CheckTeamDamage",
+    "T_Damage",
+    "T_RadiusDamage",
+    "Move_Done",
+    "Move_Final",
+    "Move_Begin",
+    "AngleMove_Done",
+    "AngleMove_Final",
+    "AngleMove_Begin",
+    "Think_AccelMove",
+    "plat_hit_top",
+    "plat_hit_bottom",
+    "plat_go_down",
+    "plat_go_up",
+    "plat_blocked",
+    "Use_Plat",
+    "plat_spawn_inside_trigger",
+    "SP_func_plat",
+    "rotating_blocked",
+    "rotating_use",
+    "SP_func_rotating",
+    "button_done",
+    "button_return",
+    "button_wait",
+    "button_fire",
+    "button_use",
+    "button_killed",
+    "SP_func_button",
+    "door_use_areaportals",
+    "door_hit_top",
+    "door_hit_bottom",
+    "door_go_down",
+    "door_go_up",
+    "door_use",
+    "Think_CalcMoveSpeed",
+    "Think_SpawnDoorTrigger",
+    "door_blocked",
+    "door_killed",
+    "SP_func_door",
+    "SP_func_door_rotating",
+    "SP_func_water",
+    "train_blocked",
+    "train_wait",
+    "train_next",
+    "train_resume",
+    "func_train_find",
+    "train_use",
+    "SP_func_train",
+    "trigger_elevator_use",
+    "trigger_elevator_init",
+    "SP_trigger_elevator",
+    "func_timer_think",
+    "func_timer_use",
+    "SP_func_timer",
+    "func_conveyor_use",
+    "SP_func_conveyor",
+    "door_secret_use",
+    "door_secret_move1",
+    "door_secret_move2",
+    "door_secret_move3",
+    "door_secret_move4",
+    "door_secret_move5",
+    "door_secret_move6",
+    "door_secret_done",
+    "door_secret_blocked",
+    "door_secret_die",
+    "SP_func_door_secret",
+    "use_killbox",
+    "SP_func_killbox",
+    "DoRespawn",
+    "SetRespawn",
+    "Pickup_Powerup",
+    "Pickup_Adrenaline",
+    "Pickup_AncientHead",
+    "Pickup_Bandolier",
+    "Pickup_Pack",
+    "Pickup_Key",
+    "Pickup_Ammo",
+    "MegaHealth_think",
+    "Pickup_Health",
+    "ArmorIndex",
+    "Pickup_Armor",
+    "PowerArmorType",
+    "Pickup_PowerArmor",
+    "drop_make_touchable",
+    "Use_Item",
+    "droptofloor",
+    "SP_item_health",
+    "SP_item_health_small",
+    "SP_item_health_large",
+    "SP_item_health_mega",
+    "InitItems",
+    "SetItemNames",
+    "ShutdownGame",
+    "ClientEndServerFrames",
+    "CreateTargetChangeLevel",
+    "EndDMLevel",
+    "CheckDMRules",
+    "ExitLevel",
+    "G_RunFrame",
+    "Use_Areaportal",
+    "SP_func_areaportal",
+    "VelocityForDamage",
+    "ClipGibVelocity",
+    "gib_think",
+    "gib_die",
+    "ThrowGib",
+    "ThrowHead",
+    "ThrowClientHead",
+    "debris_die",
+    "ThrowDebris",
+    "BecomeExplosion1",
+    "BecomeExplosion2",
+    "SP_path_corner",
+    "SP_point_combat",
+    "TH_viewthing",
+    "SP_viewthing",
+    "SP_info_null",
+    "SP_info_notnull",
+    "light_use",
+    "SP_light",
+    "func_wall_use",
+    "SP_func_wall",
+    "func_object_release",
+    "func_object_use",
+    "SP_func_object",
+    "func_explosive_explode",
+    "func_explosive_use",
+    "func_explosive_spawn",
+    "SP_func_explosive",
+    "barrel_explode",
+    "barrel_delay",
+    "SP_misc_explobox",
+    "misc_blackhole_use",
+    "misc_blackhole_think",
+    "SP_misc_blackhole",
+    "misc_eastertank_think",
+    "SP_misc_eastertank",
+    "misc_easterchick_think",
+    "SP_misc_easterchick",
+    "misc_easterchick2_think",
+    "SP_misc_easterchick2",
+    "commander_body_think",
+    "commander_body_use",
+    "commander_body_drop",
+    "SP_monster_commander_body",
+    "misc_banner_think",
+    "SP_misc_banner",
+    "misc_deadsoldier_die",
+    "SP_misc_deadsoldier",
+    "misc_viper_use",
+    "SP_misc_viper",
+    "SP_misc_bigviper",
+    "misc_viper_bomb_prethink",
+    "misc_viper_bomb_use",
+    "SP_misc_viper_bomb",
+    "misc_strogg_ship_use",
+    "SP_misc_strogg_ship",
+    "misc_satellite_dish_think",
+    "misc_satellite_dish_use",
+    "SP_misc_satellite_dish",
+    "SP_light_mine1",
+    "SP_light_mine2",
+    "SP_misc_gib_arm",
+    "SP_misc_gib_leg",
+    "SP_misc_gib_head",
+    "SP_target_character",
+    "target_string_use",
+    "SP_target_string",
+    "func_clock_reset",
+    "func_clock_format_countdown",
+    "func_clock_think",
+    "func_clock_use",
+    "SP_func_clock",
+    "SP_misc_teleporter",
+    "SP_misc_teleporter_dest",
+    "monster_fire_bullet",
+    "monster_fire_shotgun",
+    "monster_fire_blaster",
+    "monster_fire_grenade",
+    "monster_fire_rocket",
+    "monster_fire_railgun",
+    "monster_fire_bfg",
+    "M_FliesOff",
+    "M_FliesOn",
+    "M_FlyCheck",
+    "AttackFinished",
+    "M_CheckGround",
+    "M_CatagorizePosition",
+    "M_WorldEffects",
+    "M_droptofloor",
+    "M_SetEffects",
+    "M_MoveFrame",
+    "monster_think",
+    "monster_use",
+    "monster_triggered_spawn",
+    "monster_triggered_spawn_use",
+    "monster_triggered_start",
+    "monster_death_use",
+    "monster_start",
+    "monster_start_go",
+    "walkmonster_start_go",
+    "walkmonster_start",
+    "flymonster_start_go",
+    "flymonster_start",
+    "swimmonster_start_go",
+    "swimmonster_start",
+    "SV_TestEntityPosition",
+    "SV_CheckVelocity",
+    "SV_RunThink",
+    "ClipVelocity",
+    "SV_FlyMove",
+    "SV_AddGravity",
+    "SV_Push",
+    "SV_Physics_Pusher",
+    "SV_Physics_None",
+    "SV_Physics_Noclip",
+    "SV_Physics_Toss",
+    "SV_AddRotationalFriction",
+    "SV_Physics_Step",
+    "G_RunEntity",
+    "InitGame",
+    "WriteGame",
+    "ReadGame",
+    "WriteLevel",
+    "ReadLevel",
+    "ED_CallSpawn",
+    "ED_NewString",
+    "ED_ParseField",
+    "ED_ParseEdict",
+    "G_FindTeams",
+    "SpawnEntities",
+    "SP_worldspawn",
+    "Svcmd_Test_f",
+    "SV_FilterPacket",
+    "SVCmd_AddIP_f",
+    "SVCmd_RemoveIP_f",
+    "SVCmd_ListIP_f",
+    "SVCmd_WriteIP_f",
+    "ServerCommand",
+    "Use_Target_Tent",
+    "SP_target_temp_entity",
+    "Use_Target_Speaker",
+    "SP_target_speaker",
+    "Use_Target_Help",
+    "SP_target_help",
+    "use_target_secret",
+    "SP_target_secret",
+    "use_target_goal",
+    "SP_target_goal",
+    "target_explosion_explode",
+    "use_target_explosion",
+    "SP_target_explosion",
+    "use_target_changelevel",
+    "SP_target_changelevel",
+    "use_target_splash",
+    "SP_target_splash",
+    "use_target_spawner",
+    "SP_target_spawner",
+    "use_target_blaster",
+    "SP_target_blaster",
+    "trigger_crosslevel_trigger_use",
+    "SP_target_crosslevel_trigger",
+    "target_crosslevel_target_think",
+    "SP_target_crosslevel_target",
+    "target_laser_think",
+    "target_laser_on",
+    "target_laser_off",
+    "target_laser_use",
+    "target_laser_start",
+    "SP_target_laser",
+    "target_lightramp_think",
+    "target_lightramp_use",
+    "SP_target_lightramp",
+    "target_earthquake_think",
+    "target_earthquake_use",
+    "SP_target_earthquake",
+    "InitTrigger",
+    "multi_wait",
+    "multi_trigger",
+    "Use_Multi",
+    "trigger_enable",
+    "SP_trigger_multiple",
+    "SP_trigger_once",
+    "trigger_relay_use",
+    "SP_trigger_relay",
+    "trigger_key_use",
+    "SP_trigger_key",
+    "trigger_counter_use",
+    "SP_trigger_counter",
+    "SP_trigger_always",
+    "SP_trigger_push",
+    "hurt_use",
+    "SP_trigger_hurt",
+    "SP_trigger_gravity",
+    "SP_trigger_monsterjump",
+    "AnglesNormalize",
+    "SnapToEights",
+    "turret_blocked",
+    "turret_breach_fire",
+    "turret_breach_think",
+    "turret_breach_finish_init",
+    "SP_turret_breach",
+    "SP_turret_base",
+    "turret_driver_die",
+    "turret_driver_think",
+    "turret_driver_link",
+    "SP_turret_driver",
+    "G_ProjectSource",
+    "G_Find",
+    "findradius",
+    "G_PickTarget",
+    "Think_Delay",
+    "G_UseTargets",
+    "vtos",
+    "G_SetMovedir",
+    "vectoyaw",
+    "vectoangles",
+    "G_CopyString",
+    "G_InitEdict",
+    "G_Spawn",
+    "G_FreeEdict",
+    "G_TouchTriggers",
+    "G_TouchSolids",
+    "KillBox",
+    "check_dodge",
+    "fire_hit",
+    "fire_lead",
+    "fire_bullet",
+    "fire_shotgun",
+    "fire_blaster",
+    "Grenade_Explode",
+    "fire_grenade",
+    "fire_grenade2",
+    "fire_rocket",
+    "fire_rail",
+    "bfg_explode",
+    "bfg_think",
+    "fire_bfg",
+    "actor_stand",
+    "actor_walk",
+    "actor_run",
+    "actor_pain",
+    "actorMachineGun",
+    "actor_dead",
+    "actor_die",
+    "actor_fire",
+    "actor_attack",
+    "actor_use",
+    "SP_misc_actor",
+    "SP_target_actor",
+    "berserk_sight",
+    "berserk_search",
+    "berserk_stand",
+    "berserk_fidget",
+    "berserk_walk",
+    "berserk_run",
+    "berserk_attack_spike",
+    "berserk_swing",
+    "berserk_attack_club",
+    "berserk_strike",
+    "berserk_melee",
+    "berserk_pain",
+    "berserk_dead",
+    "berserk_die",
+    "SP_monster_berserk",
+    "boss2_search",
+    "Boss2Rocket",
+    "boss2_firebullet_right",
+    "boss2_firebullet_left",
+    "Boss2MachineGun",
+    "boss2_stand",
+    "boss2_run",
+    "boss2_walk",
+    "boss2_attack",
+    "boss2_attack_mg",
+    "boss2_reattack_mg",
+    "boss2_pain",
+    "boss2_dead",
+    "boss2_die",
+    "Boss2_CheckAttack",
+    "SP_monster_boss2",
+    "Use_Boss3",
+    "Think_Boss3Stand",
+    "SP_monster_boss3_stand",
+    "jorg_search",
+    "jorg_idle",
+    "jorg_death_hit",
+    "jorg_step_left",
+    "jorg_step_right",
+    "jorg_stand",
+    "jorg_walk",
+    "jorg_run",
+    "jorg_reattack1",
+    "jorg_attack1",
+    "jorg_pain",
+    "jorgBFG",
+    "jorg_firebullet_right",
+    "jorg_firebullet_left",
+    "jorg_firebullet",
+    "jorg_attack",
+    "jorg_dead",
+    "jorg_die",
+    "Jorg_CheckAttack",
+    "SP_monster_jorg",
+    "makron_taunt",
+    "makron_stand",
+    "makron_hit",
+    "makron_popup",
+    "makron_step_left",
+    "makron_step_right",
+    "makron_brainsplorch",
+    "makron_prerailgun",
+    "makron_walk",
+    "makron_run",
+    "makronBFG",
+    "MakronSaveloc",
+    "MakronRailgun",
+    "MakronHyperblaster",
+    "makron_pain",
+    "makron_sight",
+    "makron_attack",
+    "makron_torso_think",
+    "makron_torso",
+    "makron_dead",
+    "makron_die",
+    "Makron_CheckAttack",
+    "MakronPrecache",
+    "SP_monster_makron",
+    "MakronSpawn",
+    "MakronToss",
+    "brain_sight",
+    "brain_search",
+    "brain_stand",
+    "brain_idle",
+    "brain_walk2_cycle",
+    "brain_walk",
+    "brain_duck_down",
+    "brain_duck_hold",
+    "brain_duck_up",
+    "brain_dodge",
+    "brain_swing_right",
+    "brain_hit_right",
+    "brain_swing_left",
+    "brain_hit_left",
+    "brain_chest_open",
+    "brain_tentacle_attack",
+    "brain_chest_closed",
+    "brain_melee",
+    "brain_run",
+    "brain_pain",
+    "brain_dead",
+    "brain_die",
+    "SP_monster_brain",
+    "ChickMoan",
+    "chick_fidget",
+    "chick_stand",
+    "chick_walk",
+    "chick_run",
+    "chick_pain",
+    "chick_dead",
+    "chick_die",
+    "chick_duck_down",
+    "chick_duck_hold",
+    "chick_duck_up",
+    "chick_dodge",
+    "ChickSlash",
+    "ChickRocket",
+    "Chick_PreAttack1",
+    "ChickReload",
+    "chick_rerocket",
+    "chick_attack1",
+    "chick_reslash",
+    "chick_slash",
+    "chick_melee",
+    "chick_attack",
+    "chick_sight",
+    "SP_monster_chick",
+    "flipper_stand",
+    "flipper_run_loop",
+    "flipper_run",
+    "flipper_walk",
+    "flipper_start_run",
+    "flipper_bite",
+    "flipper_preattack",
+    "flipper_melee",
+    "flipper_pain",
+    "flipper_dead",
+    "flipper_sight",
+    "flipper_die",
+    "SP_monster_flipper",
+    "floater_sight",
+    "floater_idle",
+    "floater_fire_blaster",
+    "floater_stand",
+    "floater_run",
+    "floater_walk",
+    "floater_wham",
+    "floater_zap",
+    "floater_attack",
+    "floater_melee",
+    "floater_pain",
+    "floater_dead",
+    "floater_die",
+    "SP_monster_floater",
+    "flyer_sight",
+    "flyer_idle",
+    "flyer_pop_blades",
+    "flyer_run",
+    "flyer_walk",
+    "flyer_stand",
+    "flyer_stop",
+    "flyer_start",
+    "flyer_fire",
+    "flyer_fireleft",
+    "flyer_fireright",
+    "flyer_slash_left",
+    "flyer_slash_right",
+    "flyer_loop_melee",
+    "flyer_attack",
+    "flyer_setstart",
+    "flyer_nextmove",
+    "flyer_melee",
+    "flyer_check_melee",
+    "flyer_pain",
+    "flyer_die",
+    "SP_monster_flyer",
+    "gladiator_idle",
+    "gladiator_sight",
+    "gladiator_search",
+    "gladiator_cleaver_swing",
+    "gladiator_stand",
+    "gladiator_walk",
+    "gladiator_run",
+    "GaldiatorMelee",
+    "gladiator_melee",
+    "GladiatorGun",
+    "gladiator_attack",
+    "gladiator_pain",
+    "gladiator_dead",
+    "gladiator_die",
+    "SP_monster_gladiator",
+    "gunner_idlesound",
+    "gunner_sight",
+    "gunner_search",
+    "gunner_fidget",
+    "gunner_stand",
+    "gunner_walk",
+    "gunner_run",
+    "gunner_runandshoot",
+    "gunner_pain",
+    "gunner_dead",
+    "gunner_die",
+    "gunner_duck_down",
+    "gunner_duck_hold",
+    "gunner_duck_up",
+    "gunner_dodge",
+    "gunner_opengun",
+    "GunnerFire",
+    "GunnerGrenade",
+    "gunner_attack",
+    "gunner_fire_chain",
+    "gunner_refire_chain",
+    "SP_monster_gunner",
+    "hover_sight",
+    "hover_search",
+    "hover_reattack",
+    "hover_fire_blaster",
+    "hover_stand",
+    "hover_run",
+    "hover_walk",
+    "hover_start_attack",
+    "hover_attack",
+    "hover_pain",
+    "hover_deadthink",
+    "hover_dead",
+    "hover_die",
+    "SP_monster_hover",
+    "infantry_stand",
+    "infantry_fidget",
+    "infantry_walk",
+    "infantry_run",
+    "infantry_pain",
+    "InfantryMachineGun",
+    "infantry_sight",
+    "infantry_dead",
+    "infantry_die",
+    "infantry_duck_down",
+    "infantry_duck_hold",
+    "infantry_duck_up",
+    "infantry_dodge",
+    "infantry_cock_gun",
+    "infantry_fire",
+    "infantry_swing",
+    "infantry_smack",
+    "infantry_attack",
+    "SP_monster_infantry",
+    "insane_fist",
+    "insane_shake",
+    "insane_moan",
+    "insane_scream",
+    "insane_cross",
+    "insane_walk",
+    "insane_run",
+    "insane_pain",
+    "insane_onground",
+    "insane_checkdown",
+    "insane_checkup",
+    "insane_stand",
+    "insane_dead",
+    "insane_die",
+    "SP_misc_insane",
+    "medic_FindDeadMonster",
+    "medic_idle",
+    "medic_search",
+    "medic_sight",
+    "medic_stand",
+    "medic_walk",
+    "medic_run",
+    "medic_pain",
+    "medic_fire_blaster",
+    "medic_dead",
+    "medic_die",
+    "medic_duck_down",
+    "medic_duck_hold",
+    "medic_duck_up",
+    "medic_dodge",
+    "medic_continue",
+    "medic_hook_launch",
+    "medic_cable_attack",
+    "medic_hook_retract",
+    "medic_attack",
+    "medic_checkattack",
+    "SP_monster_medic",
+    "M_CheckBottom",
+    "SV_movestep",
+    "M_ChangeYaw",
+    "SV_StepDirection",
+    "SV_FixCheckBottom",
+    "SV_NewChaseDir",
+    "SV_CloseEnough",
+    "M_MoveToGoal",
+    "M_walkmove",
+    "mutant_step",
+    "mutant_sight",
+    "mutant_search",
+    "mutant_swing",
+    "mutant_stand",
+    "mutant_idle_loop",
+    "mutant_idle",
+    "mutant_walk_loop",
+    "mutant_walk",
+    "mutant_run",
+    "mutant_hit_left",
+    "mutant_hit_right",
+    "mutant_check_refire",
+    "mutant_melee",
+    "mutant_jump_takeoff",
+    "mutant_check_landing",
+    "mutant_jump",
+    "mutant_check_melee",
+    "mutant_check_jump",
+    "mutant_checkattack",
+    "mutant_pain",
+    "mutant_dead",
+    "mutant_die",
+    "SP_monster_mutant",
+    "parasite_launch",
+    "parasite_reel_in",
+    "parasite_sight",
+    "parasite_tap",
+    "parasite_scratch",
+    "parasite_search",
+    "parasite_end_fidget",
+    "parasite_do_fidget",
+    "parasite_refidget",
+    "parasite_idle",
+    "parasite_stand",
+    "parasite_start_run",
+    "parasite_run",
+    "parasite_start_walk",
+    "parasite_walk",
+    "parasite_pain",
+    "parasite_drain_attack_ok",
+    "parasite_drain_attack",
+    "parasite_attack",
+    "parasite_dead",
+    "parasite_die",
+    "SP_monster_parasite",
+    "soldier_idle",
+    "soldier_cock",
+    "soldier_stand",
+    "soldier_walk1_random",
+    "soldier_walk",
+    "soldier_run",
+    "soldier_pain",
+    "soldier_fire",
+    "soldier_fire1",
+    "soldier_attack1_refire1",
+    "soldier_attack1_refire2",
+    "soldier_fire2",
+    "soldier_attack2_refire1",
+    "soldier_attack2_refire2",
+    "soldier_duck_down",
+    "soldier_duck_up",
+    "soldier_fire3",
+    "soldier_attack3_refire",
+    "soldier_fire4",
+    "soldier_fire5",
+    "soldier_attack5_refire",
+    "soldier_fire8",
+    "soldier_attack6_refire",
+    "soldier_attack",
+    "soldier_sight",
+    "soldier_duck_hold",
+    "soldier_dodge",
+    "soldier_fire6",
+    "soldier_fire7",
+    "soldier_dead",
+    "soldier_die",
+    "SP_monster_soldier_x",
+    "SP_monster_soldier_light",
+    "SP_monster_soldier",
+    "SP_monster_soldier_ss",
+    "TreadSound",
+    "supertank_search",
+    "supertank_stand",
+    "supertank_forward",
+    "supertank_walk",
+    "supertank_run",
+    "supertank_reattack1",
+    "supertank_pain",
+    "supertankRocket",
+    "supertankMachineGun",
+    "supertank_attack",
+    "supertank_dead",
+    "BossExplode",
+    "supertank_die",
+    "SP_monster_supertank",
+    "tank_sight",
+    "tank_footstep",
+    "tank_thud",
+    "tank_windup",
+    "tank_idle",
+    "tank_stand",
+    "tank_walk",
+    "tank_run",
+    "tank_pain",
+    "TankBlaster",
+    "TankStrike",
+    "TankRocket",
+    "TankMachineGun",
+    "tank_reattack_blaster",
+    "tank_poststrike",
+    "tank_refire_rocket",
+    "tank_doattack_rocket",
+    "tank_attack",
+    "tank_dead",
+    "tank_die",
+    "SP_monster_tank",
+    "SP_FixCoopSpots",
+    "SP_CreateCoopSpots",
+    "SP_info_player_start",
+    "SP_info_player_deathmatch",
+    "SP_info_player_coop",
+    "SP_info_player_intermission",
+    "player_pain",
+    "IsFemale",
+    "IsNeutral",
+    "ClientObituary",
+    "TossClientWeapon",
+    "LookAtKiller",
+    "player_die",
+    "SaveClientData",
+    "FetchClientEntData",
+    "PlayersRangeFromSpot",
+    "SelectRandomDeathmatchSpawnPoint",
+    "SelectFarthestDeathmatchSpawnPoint",
+    "SelectDeathmatchSpawnPoint",
+    "SelectCoopSpawnPoint",
+    "SelectSpawnPoint",
+    "InitBodyQue",
+    "body_die",
+    "CopyToBodyQue",
+    "respawn",
+    "spectator_respawn",
+    "PutClientInServer",
+    "ClientBeginDeathmatch",
+    "ClientBegin",
+    "ClientUserinfoChanged",
+    "ClientConnect",
+    "ClientDisconnect",
+    "ClientBeginServerFrame",
+    "MoveClientToIntermission",
+    "BeginIntermission",
+    "DeathmatchScoreboardMessage",
+    "DeathmatchScoreboard",
+    "Cmd_Score_f",
+    "HelpComputer",
+    "Cmd_Help_f",
+    "G_SetStats",
+    "G_CheckChaseStats",
+    "G_SetSpectatorStats",
+    "PlayerTrail_Init",
+    "PlayerTrail_Add",
+    "PlayerTrail_New",
+    "PlayerTrail_PickFirst",
+    "PlayerTrail_PickNext",
+    "PlayerTrail_LastSpot",
+    "SV_CalcRoll",
+    "P_DamageFeedback",
+    "SV_CalcViewOffset",
+    "SV_CalcGunOffset",
+    "SV_CalcBlend",
+    "P_FallingDamage",
+    "P_WorldEffects",
+    "G_SetClientEffects",
+    "G_SetClientEvent",
+    "G_SetClientSound",
+    "G_SetClientFrame",
+    "ClientEndServerFrame",
+    "PlayerNoise",
+    "Pickup_Weapon",
+    "ChangeWeapon",
+    "NoAmmoWeaponChange",
+    "Think_Weapon",
+    "weapon_grenade_fire",
+    "Weapon_Grenade",
+    "weapon_grenadelauncher_fire",
+    "Weapon_GrenadeLauncher",
+    "Weapon_RocketLauncher_Fire",
+    "Weapon_RocketLauncher",
+    "Blaster_Fire",
+    "Weapon_Blaster_Fire",
+    "Weapon_Blaster",
+    "Weapon_HyperBlaster_Fire",
+    "Weapon_HyperBlaster",
+    "Machinegun_Fire",
+    "Weapon_Machinegun",
+    "Chaingun_Fire",
+    "Weapon_Chaingun",
+    "weapon_shotgun_fire",
+    "Weapon_Shotgun",
+    "weapon_supershotgun_fire",
+    "Weapon_SuperShotgun",
+    "weapon_railgun_fire",
+    "Weapon_Railgun",
+    "weapon_bfg_fire",
+    "Weapon_BFG",
+    "RotatePointAroundVector",
+    "AngleVectors",
+    "ProjectPointOnPlane",
+    "PerpendicularVector",
+    "Q_fabs",
+    "LerpAngle",
+    "anglemod",
+    "ClearBounds",
+    "AddPointToBounds",
+    "VectorCompare",
+    "VectorMA",
+    "_VectorSubtract",
+    "_VectorAdd",
+    "_VectorCopy",
+    "CrossProduct",
+    "VectorInverse",
+    "Q_log2",
+    "COM_SkipPath",
+    "COM_StripExtension",
+    "COM_FileExtension",
+    "COM_FileBase",
+    "COM_FilePath",
+    "COM_DefaultExtension",
+    "LongSwap",
+    "LongNoSwap",
+    "FloatSwap",
+    "FloatNoSwap",
+    "Swap_Init",
+    "Q_stricmp",
+    "Q_strncasecmp",
+    "Q_strcasecmp",
+    "Info_ValueForKey",
+    "Info_RemoveKey",
+    "Info_Validate",
+    "Info_SetValueForKey",
+    "PlayerSort",
+    "plat_CalcAcceleratedMove",
+    "plat_Accelerate",
+    "Touch_Plat_Center",
+    "rotating_touch",
+    "button_touch",
+    "Touch_DoorTrigger",
+    "door_touch",
+    "GetItemByIndex",
+    "FindItemByClassname",
+    "FindItem",
+    "Drop_General",
+    "Use_Quad",
+    "Use_Breather",
+    "Use_Envirosuit",
+    "Use_Invulnerability",
+    "Use_Silencer",
+    "Add_Ammo",
+    "Drop_Ammo",
+    "Use_PowerArmor",
+    "Drop_PowerArmor",
+    "Touch_Item",
+    "drop_temp_touch",
+    "Drop_Item",
+    "PrecacheItem",
+    "SpawnItem",
+    "GetGameAPI",
+    "Sys_Error",
+    "Com_Printf",
+    "gib_touch",
+    "path_corner_touch",
+    "point_combat_touch",
+    "func_object_touch",
+    "barrel_touch",
+    "misc_viper_bomb_touch",
+    "teleporter_touch",
+    "SV_Impact",
+    "SV_PushEntity",
+    "WriteField1",
+    "WriteField2",
+    "ReadField",
+    "WriteClient",
+    "ReadClient",
+    "WriteEdict",
+    "WriteLevelLocals",
+    "ReadEdict",
+    "ReadLevelLocals",
+    "StringToFilter",
+    "Touch_Multi",
+    "trigger_push_touch",
+    "hurt_touch",
+    "trigger_gravity_touch",
+    "trigger_monsterjump_touch",
+    "tv",
+    "blaster_touch",
+    "Grenade_Touch",
+    "rocket_touch",
+    "bfg_touch",
+    "target_actor_touch",
+    "mutant_jump_touch",
+    "InitClientPersistant",
+    "InitClientResp",
+    "PM_trace",
+    "CheckBlock",
+    "PrintPmove",
+    "ClientThink",
+    "SV_AddBlend",
+    "P_ProjectSource",
+    "Use_Weapon",
+    "Drop_Weapon",
+    "R_ConcatRotations",
+    "R_ConcatTransforms",
+    "BoxOnPlaneSide2",
+    "BoxOnPlaneSide",
+    "VectorNormalize",
+    "VectorNormalize2",
+    "_DotProduct",
+    "VectorLength",
+    "VectorScale",
+    "ShortSwap",
+    "ShortNoSwap",
+    "va",
+    "COM_Parse",
+    "Com_PageInMemory",
+    "Com_sprintf"
+  ],
+  "stateful": {
+    "AI_SetSightClient": {
+      "sig": "n:",
+      "file": "g_ai.c"
+    },
+    "ai_move": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "ai_stand": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "ai_walk": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "ai_charge": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "ai_turn": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "range": {
+      "sig": "i:ee",
+      "file": "g_ai.c"
+    },
+    "visible": {
+      "sig": "b:ee",
+      "file": "g_ai.c"
+    },
+    "infront": {
+      "sig": "b:ee",
+      "file": "g_ai.c"
+    },
+    "HuntTarget": {
+      "sig": "n:e",
+      "file": "g_ai.c"
+    },
+    "FoundTarget": {
+      "sig": "n:e",
+      "file": "g_ai.c"
+    },
+    "FindTarget": {
+      "sig": "b:e",
+      "file": "g_ai.c"
+    },
+    "FacingIdeal": {
+      "sig": "b:e",
+      "file": "g_ai.c"
+    },
+    "M_CheckAttack": {
+      "sig": "b:e",
+      "file": "g_ai.c"
+    },
+    "ai_run_melee": {
+      "sig": "n:e",
+      "file": "g_ai.c"
+    },
+    "ai_run_missile": {
+      "sig": "n:e",
+      "file": "g_ai.c"
+    },
+    "ai_run_slide": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "ai_checkattack": {
+      "sig": "b:ef",
+      "file": "g_ai.c"
+    },
+    "ai_run": {
+      "sig": "n:ef",
+      "file": "g_ai.c"
+    },
+    "UpdateChaseCam": {
+      "sig": "n:e",
+      "file": "g_chase.c"
+    },
+    "ChaseNext": {
+      "sig": "n:e",
+      "file": "g_chase.c"
+    },
+    "ChasePrev": {
+      "sig": "n:e",
+      "file": "g_chase.c"
+    },
+    "GetChaseTarget": {
+      "sig": "n:e",
+      "file": "g_chase.c"
+    },
+    "ClientTeam": {
+      "sig": "s:e",
+      "file": "g_cmds.c"
+    },
+    "OnSameTeam": {
+      "sig": "b:ee",
+      "file": "g_cmds.c"
+    },
+    "SelectNextItem": {
+      "sig": "n:ei",
+      "file": "g_cmds.c"
+    },
+    "SelectPrevItem": {
+      "sig": "n:ei",
+      "file": "g_cmds.c"
+    },
+    "ValidateSelectedItem": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_Give_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_God_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_Notarget_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_Noclip_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_Use_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_Drop_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_Inven_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_InvUse_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_WeapPrev_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_WeapNext_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_WeapLast_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_InvDrop_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_Kill_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_PutAway_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_Players_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_Wave_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "Cmd_Say_f": {
+      "sig": "n:ebb",
+      "file": "g_cmds.c"
+    },
+    "Cmd_PlayerList_f": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "ClientCommand": {
+      "sig": "n:e",
+      "file": "g_cmds.c"
+    },
+    "CanDamage": {
+      "sig": "b:ee",
+      "file": "g_combat.c"
+    },
+    "Killed": {
+      "sig": "n:eeeiv",
+      "file": "g_combat.c"
+    },
+    "SpawnDamage": {
+      "sig": "n:ivvi",
+      "file": "g_combat.c"
+    },
+    "CheckPowerArmor": {
+      "sig": "i:evvii",
+      "file": "g_combat.c"
+    },
+    "CheckArmor": {
+      "sig": "i:evviii",
+      "file": "g_combat.c"
+    },
+    "M_ReactToDamage": {
+      "sig": "n:ee",
+      "file": "g_combat.c"
+    },
+    "CheckTeamDamage": {
+      "sig": "b:ee",
+      "file": "g_combat.c"
+    },
+    "T_Damage": {
+      "sig": "n:eeevvviiii",
+      "file": "g_combat.c"
+    },
+    "T_RadiusDamage": {
+      "sig": "n:eefefi",
+      "file": "g_combat.c"
+    },
+    "Move_Done": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "Move_Final": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "Move_Begin": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "AngleMove_Done": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "AngleMove_Final": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "AngleMove_Begin": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "Think_AccelMove": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "plat_hit_top": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "plat_hit_bottom": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "plat_go_down": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "plat_go_up": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "plat_blocked": {
+      "sig": "n:ee",
+      "file": "g_func.c"
+    },
+    "Use_Plat": {
+      "sig": "n:eee",
+      "file": "g_func.c"
+    },
+    "plat_spawn_inside_trigger": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "SP_func_plat": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "rotating_blocked": {
+      "sig": "n:ee",
+      "file": "g_func.c"
+    },
+    "rotating_use": {
+      "sig": "n:eee",
+      "file": "g_func.c"
+    },
+    "SP_func_rotating": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "button_done": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "button_return": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "button_wait": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "button_fire": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "button_use": {
+      "sig": "n:eee",
+      "file": "g_func.c"
+    },
+    "button_killed": {
+      "sig": "n:eeeiv",
+      "file": "g_func.c"
+    },
+    "SP_func_button": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_use_areaportals": {
+      "sig": "n:eb",
+      "file": "g_func.c"
+    },
+    "door_hit_top": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_hit_bottom": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_go_down": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_go_up": {
+      "sig": "n:ee",
+      "file": "g_func.c"
+    },
+    "door_use": {
+      "sig": "n:eee",
+      "file": "g_func.c"
+    },
+    "Think_CalcMoveSpeed": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "Think_SpawnDoorTrigger": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_blocked": {
+      "sig": "n:ee",
+      "file": "g_func.c"
+    },
+    "door_killed": {
+      "sig": "n:eeeiv",
+      "file": "g_func.c"
+    },
+    "SP_func_door": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "SP_func_door_rotating": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "SP_func_water": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "train_blocked": {
+      "sig": "n:ee",
+      "file": "g_func.c"
+    },
+    "train_wait": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "train_next": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "train_resume": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "func_train_find": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "train_use": {
+      "sig": "n:eee",
+      "file": "g_func.c"
+    },
+    "SP_func_train": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "trigger_elevator_use": {
+      "sig": "n:eee",
+      "file": "g_func.c"
+    },
+    "trigger_elevator_init": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "SP_trigger_elevator": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "func_timer_think": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "func_timer_use": {
+      "sig": "n:eee",
+      "file": "g_func.c"
+    },
+    "SP_func_timer": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "func_conveyor_use": {
+      "sig": "n:eee",
+      "file": "g_func.c"
+    },
+    "SP_func_conveyor": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_secret_use": {
+      "sig": "n:eee",
+      "file": "g_func.c"
+    },
+    "door_secret_move1": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_secret_move2": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_secret_move3": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_secret_move4": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_secret_move5": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_secret_move6": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_secret_done": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "door_secret_blocked": {
+      "sig": "n:ee",
+      "file": "g_func.c"
+    },
+    "door_secret_die": {
+      "sig": "n:eeeiv",
+      "file": "g_func.c"
+    },
+    "SP_func_door_secret": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "use_killbox": {
+      "sig": "n:eee",
+      "file": "g_func.c"
+    },
+    "SP_func_killbox": {
+      "sig": "n:e",
+      "file": "g_func.c"
+    },
+    "DoRespawn": {
+      "sig": "n:e",
+      "file": "g_items.c"
+    },
+    "SetRespawn": {
+      "sig": "n:ef",
+      "file": "g_items.c"
+    },
+    "Pickup_Powerup": {
+      "sig": "b:ee",
+      "file": "g_items.c"
+    },
+    "Pickup_Adrenaline": {
+      "sig": "b:ee",
+      "file": "g_items.c"
+    },
+    "Pickup_AncientHead": {
+      "sig": "b:ee",
+      "file": "g_items.c"
+    },
+    "Pickup_Bandolier": {
+      "sig": "b:ee",
+      "file": "g_items.c"
+    },
+    "Pickup_Pack": {
+      "sig": "b:ee",
+      "file": "g_items.c"
+    },
+    "Pickup_Key": {
+      "sig": "b:ee",
+      "file": "g_items.c"
+    },
+    "Pickup_Ammo": {
+      "sig": "b:ee",
+      "file": "g_items.c"
+    },
+    "MegaHealth_think": {
+      "sig": "n:e",
+      "file": "g_items.c"
+    },
+    "Pickup_Health": {
+      "sig": "b:ee",
+      "file": "g_items.c"
+    },
+    "ArmorIndex": {
+      "sig": "i:e",
+      "file": "g_items.c"
+    },
+    "Pickup_Armor": {
+      "sig": "b:ee",
+      "file": "g_items.c"
+    },
+    "PowerArmorType": {
+      "sig": "i:e",
+      "file": "g_items.c"
+    },
+    "Pickup_PowerArmor": {
+      "sig": "b:ee",
+      "file": "g_items.c"
+    },
+    "drop_make_touchable": {
+      "sig": "n:e",
+      "file": "g_items.c"
+    },
+    "Use_Item": {
+      "sig": "n:eee",
+      "file": "g_items.c"
+    },
+    "droptofloor": {
+      "sig": "n:e",
+      "file": "g_items.c"
+    },
+    "SP_item_health": {
+      "sig": "n:e",
+      "file": "g_items.c"
+    },
+    "SP_item_health_small": {
+      "sig": "n:e",
+      "file": "g_items.c"
+    },
+    "SP_item_health_large": {
+      "sig": "n:e",
+      "file": "g_items.c"
+    },
+    "SP_item_health_mega": {
+      "sig": "n:e",
+      "file": "g_items.c"
+    },
+    "InitItems": {
+      "sig": "n:",
+      "file": "g_items.c"
+    },
+    "SetItemNames": {
+      "sig": "n:",
+      "file": "g_items.c"
+    },
+    "ShutdownGame": {
+      "sig": "n:",
+      "file": "g_main.c"
+    },
+    "ClientEndServerFrames": {
+      "sig": "n:",
+      "file": "g_main.c"
+    },
+    "CreateTargetChangeLevel": {
+      "sig": "e:s",
+      "file": "g_main.c"
+    },
+    "EndDMLevel": {
+      "sig": "n:",
+      "file": "g_main.c"
+    },
+    "CheckDMRules": {
+      "sig": "n:",
+      "file": "g_main.c"
+    },
+    "ExitLevel": {
+      "sig": "n:",
+      "file": "g_main.c"
+    },
+    "G_RunFrame": {
+      "sig": "n:",
+      "file": "g_main.c"
+    },
+    "Use_Areaportal": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_func_areaportal": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "VelocityForDamage": {
+      "sig": "n:iv",
+      "file": "g_misc.c"
+    },
+    "ClipGibVelocity": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "gib_think": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "gib_die": {
+      "sig": "n:eeeiv",
+      "file": "g_misc.c"
+    },
+    "ThrowGib": {
+      "sig": "n:esii",
+      "file": "g_misc.c"
+    },
+    "ThrowHead": {
+      "sig": "n:esii",
+      "file": "g_misc.c"
+    },
+    "ThrowClientHead": {
+      "sig": "n:ei",
+      "file": "g_misc.c"
+    },
+    "debris_die": {
+      "sig": "n:eeeiv",
+      "file": "g_misc.c"
+    },
+    "ThrowDebris": {
+      "sig": "n:esfv",
+      "file": "g_misc.c"
+    },
+    "BecomeExplosion1": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "BecomeExplosion2": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_path_corner": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_point_combat": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "TH_viewthing": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_viewthing": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_info_null": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_info_notnull": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "light_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_light": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "func_wall_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_func_wall": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "func_object_release": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "func_object_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_func_object": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "func_explosive_explode": {
+      "sig": "n:eeeiv",
+      "file": "g_misc.c"
+    },
+    "func_explosive_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "func_explosive_spawn": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_func_explosive": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "barrel_explode": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "barrel_delay": {
+      "sig": "n:eeeiv",
+      "file": "g_misc.c"
+    },
+    "SP_misc_explobox": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_blackhole_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "misc_blackhole_think": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_blackhole": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_eastertank_think": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_eastertank": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_easterchick_think": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_easterchick": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_easterchick2_think": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_easterchick2": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "commander_body_think": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "commander_body_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "commander_body_drop": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_monster_commander_body": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_banner_think": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_banner": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_deadsoldier_die": {
+      "sig": "n:eeeiv",
+      "file": "g_misc.c"
+    },
+    "SP_misc_deadsoldier": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_viper_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_misc_viper": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_bigviper": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_viper_bomb_prethink": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_viper_bomb_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_misc_viper_bomb": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_strogg_ship_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_misc_strogg_ship": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_satellite_dish_think": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "misc_satellite_dish_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_misc_satellite_dish": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_light_mine1": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_light_mine2": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_gib_arm": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_gib_leg": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_gib_head": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_target_character": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "target_string_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_target_string": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "func_clock_reset": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "func_clock_format_countdown": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "func_clock_think": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "func_clock_use": {
+      "sig": "n:eee",
+      "file": "g_misc.c"
+    },
+    "SP_func_clock": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_teleporter": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "SP_misc_teleporter_dest": {
+      "sig": "n:e",
+      "file": "g_misc.c"
+    },
+    "monster_fire_bullet": {
+      "sig": "n:evviiiii",
+      "file": "g_monster.c"
+    },
+    "monster_fire_shotgun": {
+      "sig": "n:evviiiiii",
+      "file": "g_monster.c"
+    },
+    "monster_fire_blaster": {
+      "sig": "n:evviiii",
+      "file": "g_monster.c"
+    },
+    "monster_fire_grenade": {
+      "sig": "n:evviii",
+      "file": "g_monster.c"
+    },
+    "monster_fire_rocket": {
+      "sig": "n:evviii",
+      "file": "g_monster.c"
+    },
+    "monster_fire_railgun": {
+      "sig": "n:evviii",
+      "file": "g_monster.c"
+    },
+    "monster_fire_bfg": {
+      "sig": "n:evviiifi",
+      "file": "g_monster.c"
+    },
+    "M_FliesOff": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "M_FliesOn": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "M_FlyCheck": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "AttackFinished": {
+      "sig": "n:ef",
+      "file": "g_monster.c"
+    },
+    "M_CheckGround": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "M_CatagorizePosition": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "M_WorldEffects": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "M_droptofloor": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "M_SetEffects": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "M_MoveFrame": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "monster_think": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "monster_use": {
+      "sig": "n:eee",
+      "file": "g_monster.c"
+    },
+    "monster_triggered_spawn": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "monster_triggered_spawn_use": {
+      "sig": "n:eee",
+      "file": "g_monster.c"
+    },
+    "monster_triggered_start": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "monster_death_use": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "monster_start": {
+      "sig": "b:e",
+      "file": "g_monster.c"
+    },
+    "monster_start_go": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "walkmonster_start_go": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "walkmonster_start": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "flymonster_start_go": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "flymonster_start": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "swimmonster_start_go": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "swimmonster_start": {
+      "sig": "n:e",
+      "file": "g_monster.c"
+    },
+    "SV_TestEntityPosition": {
+      "sig": "e:e",
+      "file": "g_phys.c"
+    },
+    "SV_CheckVelocity": {
+      "sig": "n:e",
+      "file": "g_phys.c"
+    },
+    "SV_RunThink": {
+      "sig": "b:e",
+      "file": "g_phys.c"
+    },
+    "ClipVelocity": {
+      "sig": "i:vvvf",
+      "file": "g_phys.c"
+    },
+    "SV_FlyMove": {
+      "sig": "i:efi",
+      "file": "g_phys.c"
+    },
+    "SV_AddGravity": {
+      "sig": "n:e",
+      "file": "g_phys.c"
+    },
+    "SV_Push": {
+      "sig": "b:evv",
+      "file": "g_phys.c"
+    },
+    "SV_Physics_Pusher": {
+      "sig": "n:e",
+      "file": "g_phys.c"
+    },
+    "SV_Physics_None": {
+      "sig": "n:e",
+      "file": "g_phys.c"
+    },
+    "SV_Physics_Noclip": {
+      "sig": "n:e",
+      "file": "g_phys.c"
+    },
+    "SV_Physics_Toss": {
+      "sig": "n:e",
+      "file": "g_phys.c"
+    },
+    "SV_AddRotationalFriction": {
+      "sig": "n:e",
+      "file": "g_phys.c"
+    },
+    "SV_Physics_Step": {
+      "sig": "n:e",
+      "file": "g_phys.c"
+    },
+    "G_RunEntity": {
+      "sig": "n:e",
+      "file": "g_phys.c"
+    },
+    "InitGame": {
+      "sig": "n:",
+      "file": "g_save.c"
+    },
+    "WriteGame": {
+      "sig": "n:sb",
+      "file": "g_save.c"
+    },
+    "ReadGame": {
+      "sig": "n:s",
+      "file": "g_save.c"
+    },
+    "WriteLevel": {
+      "sig": "n:s",
+      "file": "g_save.c"
+    },
+    "ReadLevel": {
+      "sig": "n:s",
+      "file": "g_save.c"
+    },
+    "ED_CallSpawn": {
+      "sig": "n:e",
+      "file": "g_spawn.c"
+    },
+    "ED_NewString": {
+      "sig": "s:s",
+      "file": "g_spawn.c"
+    },
+    "ED_ParseField": {
+      "sig": "n:sse",
+      "file": "g_spawn.c"
+    },
+    "ED_ParseEdict": {
+      "sig": "s:se",
+      "file": "g_spawn.c"
+    },
+    "G_FindTeams": {
+      "sig": "n:",
+      "file": "g_spawn.c"
+    },
+    "SpawnEntities": {
+      "sig": "n:sss",
+      "file": "g_spawn.c"
+    },
+    "SP_worldspawn": {
+      "sig": "n:e",
+      "file": "g_spawn.c"
+    },
+    "Svcmd_Test_f": {
+      "sig": "n:",
+      "file": "g_svcmds.c"
+    },
+    "SV_FilterPacket": {
+      "sig": "b:s",
+      "file": "g_svcmds.c"
+    },
+    "SVCmd_AddIP_f": {
+      "sig": "n:",
+      "file": "g_svcmds.c"
+    },
+    "SVCmd_RemoveIP_f": {
+      "sig": "n:",
+      "file": "g_svcmds.c"
+    },
+    "SVCmd_ListIP_f": {
+      "sig": "n:",
+      "file": "g_svcmds.c"
+    },
+    "SVCmd_WriteIP_f": {
+      "sig": "n:",
+      "file": "g_svcmds.c"
+    },
+    "ServerCommand": {
+      "sig": "n:",
+      "file": "g_svcmds.c"
+    },
+    "Use_Target_Tent": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_temp_entity": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "Use_Target_Speaker": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_speaker": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "Use_Target_Help": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_help": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "use_target_secret": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_secret": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "use_target_goal": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_goal": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "target_explosion_explode": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "use_target_explosion": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_explosion": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "use_target_changelevel": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_changelevel": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "use_target_splash": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_splash": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "use_target_spawner": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_spawner": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "use_target_blaster": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_blaster": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "trigger_crosslevel_trigger_use": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_crosslevel_trigger": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "target_crosslevel_target_think": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "SP_target_crosslevel_target": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "target_laser_think": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "target_laser_on": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "target_laser_off": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "target_laser_use": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "target_laser_start": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "SP_target_laser": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "target_lightramp_think": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "target_lightramp_use": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_lightramp": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "target_earthquake_think": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "target_earthquake_use": {
+      "sig": "n:eee",
+      "file": "g_target.c"
+    },
+    "SP_target_earthquake": {
+      "sig": "n:e",
+      "file": "g_target.c"
+    },
+    "InitTrigger": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "multi_wait": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "multi_trigger": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "Use_Multi": {
+      "sig": "n:eee",
+      "file": "g_trigger.c"
+    },
+    "trigger_enable": {
+      "sig": "n:eee",
+      "file": "g_trigger.c"
+    },
+    "SP_trigger_multiple": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "SP_trigger_once": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "trigger_relay_use": {
+      "sig": "n:eee",
+      "file": "g_trigger.c"
+    },
+    "SP_trigger_relay": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "trigger_key_use": {
+      "sig": "n:eee",
+      "file": "g_trigger.c"
+    },
+    "SP_trigger_key": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "trigger_counter_use": {
+      "sig": "n:eee",
+      "file": "g_trigger.c"
+    },
+    "SP_trigger_counter": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "SP_trigger_always": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "SP_trigger_push": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "hurt_use": {
+      "sig": "n:eee",
+      "file": "g_trigger.c"
+    },
+    "SP_trigger_hurt": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "SP_trigger_gravity": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "SP_trigger_monsterjump": {
+      "sig": "n:e",
+      "file": "g_trigger.c"
+    },
+    "AnglesNormalize": {
+      "sig": "n:v",
+      "file": "g_turret.c"
+    },
+    "SnapToEights": {
+      "sig": "f:f",
+      "file": "g_turret.c"
+    },
+    "turret_blocked": {
+      "sig": "n:ee",
+      "file": "g_turret.c"
+    },
+    "turret_breach_fire": {
+      "sig": "n:e",
+      "file": "g_turret.c"
+    },
+    "turret_breach_think": {
+      "sig": "n:e",
+      "file": "g_turret.c"
+    },
+    "turret_breach_finish_init": {
+      "sig": "n:e",
+      "file": "g_turret.c"
+    },
+    "SP_turret_breach": {
+      "sig": "n:e",
+      "file": "g_turret.c"
+    },
+    "SP_turret_base": {
+      "sig": "n:e",
+      "file": "g_turret.c"
+    },
+    "turret_driver_die": {
+      "sig": "n:eeeiv",
+      "file": "g_turret.c"
+    },
+    "turret_driver_think": {
+      "sig": "n:e",
+      "file": "g_turret.c"
+    },
+    "turret_driver_link": {
+      "sig": "n:e",
+      "file": "g_turret.c"
+    },
+    "SP_turret_driver": {
+      "sig": "n:e",
+      "file": "g_turret.c"
+    },
+    "G_ProjectSource": {
+      "sig": "n:vvvvv",
+      "file": "g_utils.c"
+    },
+    "G_Find": {
+      "sig": "e:eos",
+      "file": "g_utils.c"
+    },
+    "findradius": {
+      "sig": "e:evf",
+      "file": "g_utils.c"
+    },
+    "G_PickTarget": {
+      "sig": "e:s",
+      "file": "g_utils.c"
+    },
+    "Think_Delay": {
+      "sig": "n:e",
+      "file": "g_utils.c"
+    },
+    "G_UseTargets": {
+      "sig": "n:ee",
+      "file": "g_utils.c"
+    },
+    "vtos": {
+      "sig": "s:v",
+      "file": "g_utils.c"
+    },
+    "G_SetMovedir": {
+      "sig": "n:vv",
+      "file": "g_utils.c"
+    },
+    "vectoyaw": {
+      "sig": "f:v",
+      "file": "g_utils.c"
+    },
+    "vectoangles": {
+      "sig": "n:vv",
+      "file": "g_utils.c"
+    },
+    "G_CopyString": {
+      "sig": "s:s",
+      "file": "g_utils.c"
+    },
+    "G_InitEdict": {
+      "sig": "n:e",
+      "file": "g_utils.c"
+    },
+    "G_Spawn": {
+      "sig": "e:",
+      "file": "g_utils.c"
+    },
+    "G_FreeEdict": {
+      "sig": "n:e",
+      "file": "g_utils.c"
+    },
+    "G_TouchTriggers": {
+      "sig": "n:e",
+      "file": "g_utils.c"
+    },
+    "G_TouchSolids": {
+      "sig": "n:e",
+      "file": "g_utils.c"
+    },
+    "KillBox": {
+      "sig": "b:e",
+      "file": "g_utils.c"
+    },
+    "check_dodge": {
+      "sig": "n:evvi",
+      "file": "g_weapon.c"
+    },
+    "fire_hit": {
+      "sig": "b:evii",
+      "file": "g_weapon.c"
+    },
+    "fire_lead": {
+      "sig": "n:evviiiiii",
+      "file": "g_weapon.c"
+    },
+    "fire_bullet": {
+      "sig": "n:evviiiii",
+      "file": "g_weapon.c"
+    },
+    "fire_shotgun": {
+      "sig": "n:evviiiiii",
+      "file": "g_weapon.c"
+    },
+    "fire_blaster": {
+      "sig": "n:evviiib",
+      "file": "g_weapon.c"
+    },
+    "Grenade_Explode": {
+      "sig": "n:e",
+      "file": "g_weapon.c"
+    },
+    "fire_grenade": {
+      "sig": "n:evviiff",
+      "file": "g_weapon.c"
+    },
+    "fire_grenade2": {
+      "sig": "n:evviiffb",
+      "file": "g_weapon.c"
+    },
+    "fire_rocket": {
+      "sig": "n:evviifi",
+      "file": "g_weapon.c"
+    },
+    "fire_rail": {
+      "sig": "n:evvii",
+      "file": "g_weapon.c"
+    },
+    "bfg_explode": {
+      "sig": "n:e",
+      "file": "g_weapon.c"
+    },
+    "bfg_think": {
+      "sig": "n:e",
+      "file": "g_weapon.c"
+    },
+    "fire_bfg": {
+      "sig": "n:evviif",
+      "file": "g_weapon.c"
+    },
+    "actor_stand": {
+      "sig": "n:e",
+      "file": "m_actor.c"
+    },
+    "actor_walk": {
+      "sig": "n:e",
+      "file": "m_actor.c"
+    },
+    "actor_run": {
+      "sig": "n:e",
+      "file": "m_actor.c"
+    },
+    "actor_pain": {
+      "sig": "n:eefi",
+      "file": "m_actor.c"
+    },
+    "actorMachineGun": {
+      "sig": "n:e",
+      "file": "m_actor.c"
+    },
+    "actor_dead": {
+      "sig": "n:e",
+      "file": "m_actor.c"
+    },
+    "actor_die": {
+      "sig": "n:eeeiv",
+      "file": "m_actor.c"
+    },
+    "actor_fire": {
+      "sig": "n:e",
+      "file": "m_actor.c"
+    },
+    "actor_attack": {
+      "sig": "n:e",
+      "file": "m_actor.c"
+    },
+    "actor_use": {
+      "sig": "n:eee",
+      "file": "m_actor.c"
+    },
+    "SP_misc_actor": {
+      "sig": "n:e",
+      "file": "m_actor.c"
+    },
+    "SP_target_actor": {
+      "sig": "n:e",
+      "file": "m_actor.c"
+    },
+    "berserk_sight": {
+      "sig": "n:ee",
+      "file": "m_berserk.c"
+    },
+    "berserk_search": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_stand": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_fidget": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_walk": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_run": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_attack_spike": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_swing": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_attack_club": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_strike": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_melee": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_pain": {
+      "sig": "n:eefi",
+      "file": "m_berserk.c"
+    },
+    "berserk_dead": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "berserk_die": {
+      "sig": "n:eeeiv",
+      "file": "m_berserk.c"
+    },
+    "SP_monster_berserk": {
+      "sig": "n:e",
+      "file": "m_berserk.c"
+    },
+    "boss2_search": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "Boss2Rocket": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "boss2_firebullet_right": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "boss2_firebullet_left": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "Boss2MachineGun": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "boss2_stand": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "boss2_run": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "boss2_walk": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "boss2_attack": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "boss2_attack_mg": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "boss2_reattack_mg": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "boss2_pain": {
+      "sig": "n:eefi",
+      "file": "m_boss2.c"
+    },
+    "boss2_dead": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "boss2_die": {
+      "sig": "n:eeeiv",
+      "file": "m_boss2.c"
+    },
+    "Boss2_CheckAttack": {
+      "sig": "b:e",
+      "file": "m_boss2.c"
+    },
+    "SP_monster_boss2": {
+      "sig": "n:e",
+      "file": "m_boss2.c"
+    },
+    "Use_Boss3": {
+      "sig": "n:eee",
+      "file": "m_boss3.c"
+    },
+    "Think_Boss3Stand": {
+      "sig": "n:e",
+      "file": "m_boss3.c"
+    },
+    "SP_monster_boss3_stand": {
+      "sig": "n:e",
+      "file": "m_boss3.c"
+    },
+    "jorg_search": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_idle": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_death_hit": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_step_left": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_step_right": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_stand": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_walk": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_run": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_reattack1": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_attack1": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_pain": {
+      "sig": "n:eefi",
+      "file": "m_boss31.c"
+    },
+    "jorgBFG": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_firebullet_right": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_firebullet_left": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_firebullet": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_attack": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_dead": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "jorg_die": {
+      "sig": "n:eeeiv",
+      "file": "m_boss31.c"
+    },
+    "Jorg_CheckAttack": {
+      "sig": "b:e",
+      "file": "m_boss31.c"
+    },
+    "SP_monster_jorg": {
+      "sig": "n:e",
+      "file": "m_boss31.c"
+    },
+    "makron_taunt": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_stand": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_hit": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_popup": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_step_left": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_step_right": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_brainsplorch": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_prerailgun": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_walk": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_run": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makronBFG": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "MakronSaveloc": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "MakronRailgun": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "MakronHyperblaster": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_pain": {
+      "sig": "n:eefi",
+      "file": "m_boss32.c"
+    },
+    "makron_sight": {
+      "sig": "n:ee",
+      "file": "m_boss32.c"
+    },
+    "makron_attack": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_torso_think": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_torso": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_dead": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "makron_die": {
+      "sig": "n:eeeiv",
+      "file": "m_boss32.c"
+    },
+    "Makron_CheckAttack": {
+      "sig": "b:e",
+      "file": "m_boss32.c"
+    },
+    "MakronPrecache": {
+      "sig": "n:",
+      "file": "m_boss32.c"
+    },
+    "SP_monster_makron": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "MakronSpawn": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "MakronToss": {
+      "sig": "n:e",
+      "file": "m_boss32.c"
+    },
+    "brain_sight": {
+      "sig": "n:ee",
+      "file": "m_brain.c"
+    },
+    "brain_search": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_stand": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_idle": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_walk2_cycle": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_walk": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_duck_down": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_duck_hold": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_duck_up": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_dodge": {
+      "sig": "n:eef",
+      "file": "m_brain.c"
+    },
+    "brain_swing_right": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_hit_right": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_swing_left": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_hit_left": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_chest_open": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_tentacle_attack": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_chest_closed": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_melee": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_run": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_pain": {
+      "sig": "n:eefi",
+      "file": "m_brain.c"
+    },
+    "brain_dead": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "brain_die": {
+      "sig": "n:eeeiv",
+      "file": "m_brain.c"
+    },
+    "SP_monster_brain": {
+      "sig": "n:e",
+      "file": "m_brain.c"
+    },
+    "ChickMoan": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_fidget": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_stand": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_walk": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_run": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_pain": {
+      "sig": "n:eefi",
+      "file": "m_chick.c"
+    },
+    "chick_dead": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_die": {
+      "sig": "n:eeeiv",
+      "file": "m_chick.c"
+    },
+    "chick_duck_down": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_duck_hold": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_duck_up": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_dodge": {
+      "sig": "n:eef",
+      "file": "m_chick.c"
+    },
+    "ChickSlash": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "ChickRocket": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "Chick_PreAttack1": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "ChickReload": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_rerocket": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_attack1": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_reslash": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_slash": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_melee": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_attack": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "chick_sight": {
+      "sig": "n:ee",
+      "file": "m_chick.c"
+    },
+    "SP_monster_chick": {
+      "sig": "n:e",
+      "file": "m_chick.c"
+    },
+    "flipper_stand": {
+      "sig": "n:e",
+      "file": "m_flipper.c"
+    },
+    "flipper_run_loop": {
+      "sig": "n:e",
+      "file": "m_flipper.c"
+    },
+    "flipper_run": {
+      "sig": "n:e",
+      "file": "m_flipper.c"
+    },
+    "flipper_walk": {
+      "sig": "n:e",
+      "file": "m_flipper.c"
+    },
+    "flipper_start_run": {
+      "sig": "n:e",
+      "file": "m_flipper.c"
+    },
+    "flipper_bite": {
+      "sig": "n:e",
+      "file": "m_flipper.c"
+    },
+    "flipper_preattack": {
+      "sig": "n:e",
+      "file": "m_flipper.c"
+    },
+    "flipper_melee": {
+      "sig": "n:e",
+      "file": "m_flipper.c"
+    },
+    "flipper_pain": {
+      "sig": "n:eefi",
+      "file": "m_flipper.c"
+    },
+    "flipper_dead": {
+      "sig": "n:e",
+      "file": "m_flipper.c"
+    },
+    "flipper_sight": {
+      "sig": "n:ee",
+      "file": "m_flipper.c"
+    },
+    "flipper_die": {
+      "sig": "n:eeeiv",
+      "file": "m_flipper.c"
+    },
+    "SP_monster_flipper": {
+      "sig": "n:e",
+      "file": "m_flipper.c"
+    },
+    "floater_sight": {
+      "sig": "n:ee",
+      "file": "m_float.c"
+    },
+    "floater_idle": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "floater_fire_blaster": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "floater_stand": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "floater_run": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "floater_walk": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "floater_wham": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "floater_zap": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "floater_attack": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "floater_melee": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "floater_pain": {
+      "sig": "n:eefi",
+      "file": "m_float.c"
+    },
+    "floater_dead": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "floater_die": {
+      "sig": "n:eeeiv",
+      "file": "m_float.c"
+    },
+    "SP_monster_floater": {
+      "sig": "n:e",
+      "file": "m_float.c"
+    },
+    "flyer_sight": {
+      "sig": "n:ee",
+      "file": "m_flyer.c"
+    },
+    "flyer_idle": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_pop_blades": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_run": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_walk": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_stand": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_stop": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_start": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_fire": {
+      "sig": "n:ei",
+      "file": "m_flyer.c"
+    },
+    "flyer_fireleft": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_fireright": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_slash_left": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_slash_right": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_loop_melee": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_attack": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_setstart": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_nextmove": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_melee": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_check_melee": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "flyer_pain": {
+      "sig": "n:eefi",
+      "file": "m_flyer.c"
+    },
+    "flyer_die": {
+      "sig": "n:eeeiv",
+      "file": "m_flyer.c"
+    },
+    "SP_monster_flyer": {
+      "sig": "n:e",
+      "file": "m_flyer.c"
+    },
+    "gladiator_idle": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_sight": {
+      "sig": "n:ee",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_search": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_cleaver_swing": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_stand": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_walk": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_run": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "GaldiatorMelee": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_melee": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "GladiatorGun": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_attack": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_pain": {
+      "sig": "n:eefi",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_dead": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "gladiator_die": {
+      "sig": "n:eeeiv",
+      "file": "m_gladiator.c"
+    },
+    "SP_monster_gladiator": {
+      "sig": "n:e",
+      "file": "m_gladiator.c"
+    },
+    "gunner_idlesound": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_sight": {
+      "sig": "n:ee",
+      "file": "m_gunner.c"
+    },
+    "gunner_search": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_fidget": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_stand": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_walk": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_run": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_runandshoot": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_pain": {
+      "sig": "n:eefi",
+      "file": "m_gunner.c"
+    },
+    "gunner_dead": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_die": {
+      "sig": "n:eeeiv",
+      "file": "m_gunner.c"
+    },
+    "gunner_duck_down": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_duck_hold": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_duck_up": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_dodge": {
+      "sig": "n:eef",
+      "file": "m_gunner.c"
+    },
+    "gunner_opengun": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "GunnerFire": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "GunnerGrenade": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_attack": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_fire_chain": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "gunner_refire_chain": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "SP_monster_gunner": {
+      "sig": "n:e",
+      "file": "m_gunner.c"
+    },
+    "hover_sight": {
+      "sig": "n:ee",
+      "file": "m_hover.c"
+    },
+    "hover_search": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "hover_reattack": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "hover_fire_blaster": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "hover_stand": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "hover_run": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "hover_walk": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "hover_start_attack": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "hover_attack": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "hover_pain": {
+      "sig": "n:eefi",
+      "file": "m_hover.c"
+    },
+    "hover_deadthink": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "hover_dead": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "hover_die": {
+      "sig": "n:eeeiv",
+      "file": "m_hover.c"
+    },
+    "SP_monster_hover": {
+      "sig": "n:e",
+      "file": "m_hover.c"
+    },
+    "infantry_stand": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_fidget": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_walk": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_run": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_pain": {
+      "sig": "n:eefi",
+      "file": "m_infantry.c"
+    },
+    "InfantryMachineGun": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_sight": {
+      "sig": "n:ee",
+      "file": "m_infantry.c"
+    },
+    "infantry_dead": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_die": {
+      "sig": "n:eeeiv",
+      "file": "m_infantry.c"
+    },
+    "infantry_duck_down": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_duck_hold": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_duck_up": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_dodge": {
+      "sig": "n:eef",
+      "file": "m_infantry.c"
+    },
+    "infantry_cock_gun": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_fire": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_swing": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_smack": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "infantry_attack": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "SP_monster_infantry": {
+      "sig": "n:e",
+      "file": "m_infantry.c"
+    },
+    "insane_fist": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_shake": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_moan": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_scream": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_cross": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_walk": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_run": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_pain": {
+      "sig": "n:eefi",
+      "file": "m_insane.c"
+    },
+    "insane_onground": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_checkdown": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_checkup": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_stand": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_dead": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "insane_die": {
+      "sig": "n:eeeiv",
+      "file": "m_insane.c"
+    },
+    "SP_misc_insane": {
+      "sig": "n:e",
+      "file": "m_insane.c"
+    },
+    "medic_FindDeadMonster": {
+      "sig": "e:e",
+      "file": "m_medic.c"
+    },
+    "medic_idle": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_search": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_sight": {
+      "sig": "n:ee",
+      "file": "m_medic.c"
+    },
+    "medic_stand": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_walk": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_run": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_pain": {
+      "sig": "n:eefi",
+      "file": "m_medic.c"
+    },
+    "medic_fire_blaster": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_dead": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_die": {
+      "sig": "n:eeeiv",
+      "file": "m_medic.c"
+    },
+    "medic_duck_down": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_duck_hold": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_duck_up": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_dodge": {
+      "sig": "n:eef",
+      "file": "m_medic.c"
+    },
+    "medic_continue": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_hook_launch": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_cable_attack": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_hook_retract": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_attack": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "medic_checkattack": {
+      "sig": "b:e",
+      "file": "m_medic.c"
+    },
+    "SP_monster_medic": {
+      "sig": "n:e",
+      "file": "m_medic.c"
+    },
+    "M_CheckBottom": {
+      "sig": "b:e",
+      "file": "m_move.c"
+    },
+    "SV_movestep": {
+      "sig": "b:evb",
+      "file": "m_move.c"
+    },
+    "M_ChangeYaw": {
+      "sig": "n:e",
+      "file": "m_move.c"
+    },
+    "SV_StepDirection": {
+      "sig": "b:eff",
+      "file": "m_move.c"
+    },
+    "SV_FixCheckBottom": {
+      "sig": "n:e",
+      "file": "m_move.c"
+    },
+    "SV_NewChaseDir": {
+      "sig": "n:eef",
+      "file": "m_move.c"
+    },
+    "SV_CloseEnough": {
+      "sig": "b:eef",
+      "file": "m_move.c"
+    },
+    "M_MoveToGoal": {
+      "sig": "n:ef",
+      "file": "m_move.c"
+    },
+    "M_walkmove": {
+      "sig": "b:eff",
+      "file": "m_move.c"
+    },
+    "mutant_step": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_sight": {
+      "sig": "n:ee",
+      "file": "m_mutant.c"
+    },
+    "mutant_search": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_swing": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_stand": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_idle_loop": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_idle": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_walk_loop": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_walk": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_run": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_hit_left": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_hit_right": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_check_refire": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_melee": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_jump_takeoff": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_check_landing": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_jump": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_check_melee": {
+      "sig": "b:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_check_jump": {
+      "sig": "b:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_checkattack": {
+      "sig": "b:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_pain": {
+      "sig": "n:eefi",
+      "file": "m_mutant.c"
+    },
+    "mutant_dead": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "mutant_die": {
+      "sig": "n:eeeiv",
+      "file": "m_mutant.c"
+    },
+    "SP_monster_mutant": {
+      "sig": "n:e",
+      "file": "m_mutant.c"
+    },
+    "parasite_launch": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_reel_in": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_sight": {
+      "sig": "n:ee",
+      "file": "m_parasite.c"
+    },
+    "parasite_tap": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_scratch": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_search": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_end_fidget": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_do_fidget": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_refidget": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_idle": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_stand": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_start_run": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_run": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_start_walk": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_walk": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_pain": {
+      "sig": "n:eefi",
+      "file": "m_parasite.c"
+    },
+    "parasite_drain_attack_ok": {
+      "sig": "b:vv",
+      "file": "m_parasite.c"
+    },
+    "parasite_drain_attack": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_attack": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_dead": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "parasite_die": {
+      "sig": "n:eeeiv",
+      "file": "m_parasite.c"
+    },
+    "SP_monster_parasite": {
+      "sig": "n:e",
+      "file": "m_parasite.c"
+    },
+    "soldier_idle": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_cock": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_stand": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_walk1_random": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_walk": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_run": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_pain": {
+      "sig": "n:eefi",
+      "file": "m_soldier.c"
+    },
+    "soldier_fire": {
+      "sig": "n:ei",
+      "file": "m_soldier.c"
+    },
+    "soldier_fire1": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_attack1_refire1": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_attack1_refire2": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_fire2": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_attack2_refire1": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_attack2_refire2": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_duck_down": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_duck_up": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_fire3": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_attack3_refire": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_fire4": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_fire5": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_attack5_refire": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_fire8": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_attack6_refire": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_attack": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_sight": {
+      "sig": "n:ee",
+      "file": "m_soldier.c"
+    },
+    "soldier_duck_hold": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_dodge": {
+      "sig": "n:eef",
+      "file": "m_soldier.c"
+    },
+    "soldier_fire6": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_fire7": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_dead": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "soldier_die": {
+      "sig": "n:eeeiv",
+      "file": "m_soldier.c"
+    },
+    "SP_monster_soldier_x": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "SP_monster_soldier_light": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "SP_monster_soldier": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "SP_monster_soldier_ss": {
+      "sig": "n:e",
+      "file": "m_soldier.c"
+    },
+    "TreadSound": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertank_search": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertank_stand": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertank_forward": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertank_walk": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertank_run": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertank_reattack1": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertank_pain": {
+      "sig": "n:eefi",
+      "file": "m_supertank.c"
+    },
+    "supertankRocket": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertankMachineGun": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertank_attack": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertank_dead": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "BossExplode": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "supertank_die": {
+      "sig": "n:eeeiv",
+      "file": "m_supertank.c"
+    },
+    "SP_monster_supertank": {
+      "sig": "n:e",
+      "file": "m_supertank.c"
+    },
+    "tank_sight": {
+      "sig": "n:ee",
+      "file": "m_tank.c"
+    },
+    "tank_footstep": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_thud": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_windup": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_idle": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_stand": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_walk": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_run": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_pain": {
+      "sig": "n:eefi",
+      "file": "m_tank.c"
+    },
+    "TankBlaster": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "TankStrike": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "TankRocket": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "TankMachineGun": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_reattack_blaster": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_poststrike": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_refire_rocket": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_doattack_rocket": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_attack": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_dead": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "tank_die": {
+      "sig": "n:eeeiv",
+      "file": "m_tank.c"
+    },
+    "SP_monster_tank": {
+      "sig": "n:e",
+      "file": "m_tank.c"
+    },
+    "SP_FixCoopSpots": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "SP_CreateCoopSpots": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "SP_info_player_start": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "SP_info_player_deathmatch": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "SP_info_player_coop": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "SP_info_player_intermission": {
+      "sig": "n:",
+      "file": "p_client.c"
+    },
+    "player_pain": {
+      "sig": "n:eefi",
+      "file": "p_client.c"
+    },
+    "IsFemale": {
+      "sig": "b:e",
+      "file": "p_client.c"
+    },
+    "IsNeutral": {
+      "sig": "b:e",
+      "file": "p_client.c"
+    },
+    "ClientObituary": {
+      "sig": "n:eee",
+      "file": "p_client.c"
+    },
+    "TossClientWeapon": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "LookAtKiller": {
+      "sig": "n:eee",
+      "file": "p_client.c"
+    },
+    "player_die": {
+      "sig": "n:eeeiv",
+      "file": "p_client.c"
+    },
+    "SaveClientData": {
+      "sig": "n:",
+      "file": "p_client.c"
+    },
+    "FetchClientEntData": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "PlayersRangeFromSpot": {
+      "sig": "f:e",
+      "file": "p_client.c"
+    },
+    "SelectRandomDeathmatchSpawnPoint": {
+      "sig": "e:",
+      "file": "p_client.c"
+    },
+    "SelectFarthestDeathmatchSpawnPoint": {
+      "sig": "e:",
+      "file": "p_client.c"
+    },
+    "SelectDeathmatchSpawnPoint": {
+      "sig": "e:",
+      "file": "p_client.c"
+    },
+    "SelectCoopSpawnPoint": {
+      "sig": "e:e",
+      "file": "p_client.c"
+    },
+    "SelectSpawnPoint": {
+      "sig": "n:evv",
+      "file": "p_client.c"
+    },
+    "InitBodyQue": {
+      "sig": "n:",
+      "file": "p_client.c"
+    },
+    "body_die": {
+      "sig": "n:eeeiv",
+      "file": "p_client.c"
+    },
+    "CopyToBodyQue": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "respawn": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "spectator_respawn": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "PutClientInServer": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "ClientBeginDeathmatch": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "ClientBegin": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "ClientUserinfoChanged": {
+      "sig": "n:es",
+      "file": "p_client.c"
+    },
+    "ClientConnect": {
+      "sig": "b:es",
+      "file": "p_client.c"
+    },
+    "ClientDisconnect": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "ClientBeginServerFrame": {
+      "sig": "n:e",
+      "file": "p_client.c"
+    },
+    "MoveClientToIntermission": {
+      "sig": "n:e",
+      "file": "p_hud.c"
+    },
+    "BeginIntermission": {
+      "sig": "n:e",
+      "file": "p_hud.c"
+    },
+    "DeathmatchScoreboardMessage": {
+      "sig": "n:ee",
+      "file": "p_hud.c"
+    },
+    "DeathmatchScoreboard": {
+      "sig": "n:e",
+      "file": "p_hud.c"
+    },
+    "Cmd_Score_f": {
+      "sig": "n:e",
+      "file": "p_hud.c"
+    },
+    "HelpComputer": {
+      "sig": "n:e",
+      "file": "p_hud.c"
+    },
+    "Cmd_Help_f": {
+      "sig": "n:e",
+      "file": "p_hud.c"
+    },
+    "G_SetStats": {
+      "sig": "n:e",
+      "file": "p_hud.c"
+    },
+    "G_CheckChaseStats": {
+      "sig": "n:e",
+      "file": "p_hud.c"
+    },
+    "G_SetSpectatorStats": {
+      "sig": "n:e",
+      "file": "p_hud.c"
+    },
+    "PlayerTrail_Init": {
+      "sig": "n:",
+      "file": "p_trail.c"
+    },
+    "PlayerTrail_Add": {
+      "sig": "n:v",
+      "file": "p_trail.c"
+    },
+    "PlayerTrail_New": {
+      "sig": "n:v",
+      "file": "p_trail.c"
+    },
+    "PlayerTrail_PickFirst": {
+      "sig": "e:e",
+      "file": "p_trail.c"
+    },
+    "PlayerTrail_PickNext": {
+      "sig": "e:e",
+      "file": "p_trail.c"
+    },
+    "PlayerTrail_LastSpot": {
+      "sig": "e:",
+      "file": "p_trail.c"
+    },
+    "SV_CalcRoll": {
+      "sig": "f:vv",
+      "file": "p_view.c"
+    },
+    "P_DamageFeedback": {
+      "sig": "n:e",
+      "file": "p_view.c"
+    },
+    "SV_CalcViewOffset": {
+      "sig": "n:e",
+      "file": "p_view.c"
+    },
+    "SV_CalcGunOffset": {
+      "sig": "n:e",
+      "file": "p_view.c"
+    },
+    "SV_CalcBlend": {
+      "sig": "n:e",
+      "file": "p_view.c"
+    },
+    "P_FallingDamage": {
+      "sig": "n:e",
+      "file": "p_view.c"
+    },
+    "P_WorldEffects": {
+      "sig": "n:",
+      "file": "p_view.c"
+    },
+    "G_SetClientEffects": {
+      "sig": "n:e",
+      "file": "p_view.c"
+    },
+    "G_SetClientEvent": {
+      "sig": "n:e",
+      "file": "p_view.c"
+    },
+    "G_SetClientSound": {
+      "sig": "n:e",
+      "file": "p_view.c"
+    },
+    "G_SetClientFrame": {
+      "sig": "n:e",
+      "file": "p_view.c"
+    },
+    "ClientEndServerFrame": {
+      "sig": "n:e",
+      "file": "p_view.c"
+    },
+    "PlayerNoise": {
+      "sig": "n:evi",
+      "file": "p_weapon.c"
+    },
+    "Pickup_Weapon": {
+      "sig": "b:ee",
+      "file": "p_weapon.c"
+    },
+    "ChangeWeapon": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "NoAmmoWeaponChange": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Think_Weapon": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "weapon_grenade_fire": {
+      "sig": "n:eb",
+      "file": "p_weapon.c"
+    },
+    "Weapon_Grenade": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "weapon_grenadelauncher_fire": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_GrenadeLauncher": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_RocketLauncher_Fire": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_RocketLauncher": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Blaster_Fire": {
+      "sig": "n:evibi",
+      "file": "p_weapon.c"
+    },
+    "Weapon_Blaster_Fire": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_Blaster": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_HyperBlaster_Fire": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_HyperBlaster": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Machinegun_Fire": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_Machinegun": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Chaingun_Fire": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_Chaingun": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "weapon_shotgun_fire": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_Shotgun": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "weapon_supershotgun_fire": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_SuperShotgun": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "weapon_railgun_fire": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_Railgun": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "weapon_bfg_fire": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "Weapon_BFG": {
+      "sig": "n:e",
+      "file": "p_weapon.c"
+    },
+    "RotatePointAroundVector": {
+      "sig": "n:vvvf",
+      "file": "q_shared.c"
+    },
+    "AngleVectors": {
+      "sig": "n:vvvv",
+      "file": "q_shared.c"
+    },
+    "ProjectPointOnPlane": {
+      "sig": "n:vvv",
+      "file": "q_shared.c"
+    },
+    "PerpendicularVector": {
+      "sig": "n:vv",
+      "file": "q_shared.c"
+    },
+    "Q_fabs": {
+      "sig": "f:f",
+      "file": "q_shared.c"
+    },
+    "LerpAngle": {
+      "sig": "f:fff",
+      "file": "q_shared.c"
+    },
+    "anglemod": {
+      "sig": "f:f",
+      "file": "q_shared.c"
+    },
+    "ClearBounds": {
+      "sig": "n:vv",
+      "file": "q_shared.c"
+    },
+    "AddPointToBounds": {
+      "sig": "n:vvv",
+      "file": "q_shared.c"
+    },
+    "VectorCompare": {
+      "sig": "i:vv",
+      "file": "q_shared.c"
+    },
+    "VectorMA": {
+      "sig": "n:vfvv",
+      "file": "q_shared.c"
+    },
+    "_VectorSubtract": {
+      "sig": "n:vvv",
+      "file": "q_shared.c"
+    },
+    "_VectorAdd": {
+      "sig": "n:vvv",
+      "file": "q_shared.c"
+    },
+    "_VectorCopy": {
+      "sig": "n:vv",
+      "file": "q_shared.c"
+    },
+    "CrossProduct": {
+      "sig": "n:vvv",
+      "file": "q_shared.c"
+    },
+    "VectorInverse": {
+      "sig": "n:v",
+      "file": "q_shared.c"
+    },
+    "Q_log2": {
+      "sig": "i:i",
+      "file": "q_shared.c"
+    },
+    "COM_SkipPath": {
+      "sig": "s:s",
+      "file": "q_shared.c"
+    },
+    "COM_StripExtension": {
+      "sig": "n:ss",
+      "file": "q_shared.c"
+    },
+    "COM_FileExtension": {
+      "sig": "s:s",
+      "file": "q_shared.c"
+    },
+    "COM_FileBase": {
+      "sig": "n:ss",
+      "file": "q_shared.c"
+    },
+    "COM_FilePath": {
+      "sig": "n:ss",
+      "file": "q_shared.c"
+    },
+    "COM_DefaultExtension": {
+      "sig": "n:ss",
+      "file": "q_shared.c"
+    },
+    "LongSwap": {
+      "sig": "i:i",
+      "file": "q_shared.c"
+    },
+    "LongNoSwap": {
+      "sig": "i:i",
+      "file": "q_shared.c"
+    },
+    "FloatSwap": {
+      "sig": "f:f",
+      "file": "q_shared.c"
+    },
+    "FloatNoSwap": {
+      "sig": "f:f",
+      "file": "q_shared.c"
+    },
+    "Swap_Init": {
+      "sig": "n:",
+      "file": "q_shared.c"
+    },
+    "Q_stricmp": {
+      "sig": "i:ss",
+      "file": "q_shared.c"
+    },
+    "Q_strncasecmp": {
+      "sig": "i:ssi",
+      "file": "q_shared.c"
+    },
+    "Q_strcasecmp": {
+      "sig": "i:ss",
+      "file": "q_shared.c"
+    },
+    "Info_ValueForKey": {
+      "sig": "s:ss",
+      "file": "q_shared.c"
+    },
+    "Info_RemoveKey": {
+      "sig": "n:ss",
+      "file": "q_shared.c"
+    },
+    "Info_Validate": {
+      "sig": "b:s",
+      "file": "q_shared.c"
+    },
+    "Info_SetValueForKey": {
+      "sig": "n:sss",
+      "file": "q_shared.c"
+    }
+  },
+  "agent_a_model": "agent-a-model",
+  "compile_only": {
+    "PlayerSort": "unsupported signature: int (void const *a, void const *b)",
+    "plat_CalcAcceleratedMove": "unsupported signature: void (moveinfo_t *moveinfo)",
+    "plat_Accelerate": "unsupported signature: void (moveinfo_t *moveinfo)",
+    "Touch_Plat_Center": "unsupported signature: void (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "rotating_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "button_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "Touch_DoorTrigger": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "door_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "GetItemByIndex": "unsupported signature: gitem_t * (int index)",
+    "FindItemByClassname": "unsupported signature: gitem_t * (char *classname)",
+    "FindItem": "unsupported signature: gitem_t * (char *pickup_name)",
+    "Drop_General": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "Use_Quad": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "Use_Breather": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "Use_Envirosuit": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "Use_Invulnerability": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "Use_Silencer": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "Add_Ammo": "unsupported signature: qboolean (edict_t *ent, gitem_t *item, int count)",
+    "Drop_Ammo": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "Use_PowerArmor": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "Drop_PowerArmor": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "Touch_Item": "unsupported signature: void (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "drop_temp_touch": "unsupported signature: void (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "Drop_Item": "unsupported signature: edict_t * (edict_t *ent, gitem_t *item)",
+    "PrecacheItem": "unsupported signature: void (gitem_t *it)",
+    "SpawnItem": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "GetGameAPI": "unsupported signature: game_export_t * (game_import_t *import)",
+    "Sys_Error": "unsupported signature: void (char *error, ...)",
+    "Com_Printf": "unsupported signature: void (char *msg, ...)",
+    "gib_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "path_corner_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "point_combat_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "func_object_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "barrel_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "misc_viper_bomb_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "teleporter_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "SV_Impact": "unsupported signature: void (edict_t *e1, trace_t *trace)",
+    "SV_PushEntity": "unsupported signature: trace_t (edict_t *ent, vec3_t push)",
+    "WriteField1": "unsupported signature: void (FILE *f, field_t *field, byte *base)",
+    "WriteField2": "unsupported signature: void (FILE *f, field_t *field, byte *base)",
+    "ReadField": "unsupported signature: void (FILE *f, field_t *field, byte *base)",
+    "WriteClient": "unsupported signature: void (FILE *f, gclient_t *client)",
+    "ReadClient": "unsupported signature: void (FILE *f, gclient_t *client)",
+    "WriteEdict": "unsupported signature: void (FILE *f, edict_t *ent)",
+    "WriteLevelLocals": "unsupported signature: void (FILE *f)",
+    "ReadEdict": "unsupported signature: void (FILE *f, edict_t *ent)",
+    "ReadLevelLocals": "unsupported signature: void (FILE *f)",
+    "StringToFilter": "unsupported signature: qboolean (char *s, ipfilter_t *f)",
+    "Touch_Multi": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "trigger_push_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "hurt_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "trigger_gravity_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "trigger_monsterjump_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "tv": "unsupported signature: float * (float x, float y, float z)",
+    "blaster_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "Grenade_Touch": "unsupported signature: void (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "rocket_touch": "unsupported signature: void (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "bfg_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "target_actor_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "mutant_jump_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
+    "InitClientPersistant": "unsupported signature: void (gclient_t *client)",
+    "InitClientResp": "unsupported signature: void (gclient_t *client)",
+    "PM_trace": "unsupported signature: trace_t (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)",
+    "CheckBlock": "unsupported signature: unsigned (void *b, int c)",
+    "PrintPmove": "unsupported signature: void (pmove_t *pm)",
+    "ClientThink": "unsupported signature: void (edict_t *ent, usercmd_t *ucmd)",
+    "SV_AddBlend": "unsupported signature: void (float r, float g, float b, float a, float *v_blend)",
+    "P_ProjectSource": "unsupported signature: void (gclient_t *client, vec3_t point, vec3_t distance, vec3_t forward, vec3_t right, vec3_t result)",
+    "Use_Weapon": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "Drop_Weapon": "unsupported signature: void (edict_t *ent, gitem_t *item)",
+    "R_ConcatRotations": "unsupported signature: void (float in1[3][3], float in2[3][3], float out[3][3])",
+    "R_ConcatTransforms": "unsupported signature: void (float in1[3][4], float in2[3][4], float out[3][4])",
+    "BoxOnPlaneSide2": "unsupported signature: int (vec3_t emins, vec3_t emaxs, struct cplane_s *p)",
+    "BoxOnPlaneSide": "unsupported signature: int (vec3_t emins, vec3_t emaxs, struct cplane_s *p)",
+    "VectorNormalize": "unsupported signature: vec_t (vec3_t v)",
+    "VectorNormalize2": "unsupported signature: vec_t (vec3_t v, vec3_t out)",
+    "_DotProduct": "unsupported signature: vec_t (vec3_t v1, vec3_t v2)",
+    "VectorLength": "unsupported signature: vec_t (vec3_t v)",
+    "VectorScale": "unsupported signature: void (vec3_t in, vec_t scale, vec3_t out)",
+    "ShortSwap": "unsupported signature: short (short l)",
+    "ShortNoSwap": "unsupported signature: short (short l)",
+    "va": "unsupported signature: char * (char *format, ...)",
+    "COM_Parse": "unsupported signature: char * (char **data_p)",
+    "Com_PageInMemory": "unsupported signature: void (byte *buffer, int size)",
+    "Com_sprintf": "unsupported signature: void (char *dest, int size, char *fmt, ...)"
+  },
+  "skipped": {}
+}

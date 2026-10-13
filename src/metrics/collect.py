@@ -2,6 +2,8 @@
 """Aggregate one run directory into results/<run>.csv and results/<run>.json.
 
 Usage: collect.py <run_dir>
+Rows per target: A_ghidra, B_<agent>_single (or B_pending), C_<agent>_repair if repaired.
+"agent_a_calls" counts model calls of any agent (name kept for older results).
 Failure category per row: compile_error | link_error | crash | timeout |
 behavior_mismatch | heldout_only_mismatch | no_code | pass.
 """
@@ -18,6 +20,8 @@ def category(dt):
         return "no_code"
     if not dt["compiled"]:
         return "compile_error"
+    if dt.get("untested"):
+        return "compiled_untested"
     if not dt["linked"]:
         return "link_error"
     st = {k: v["status"] for k, v in dt["splits"].items()}
@@ -38,13 +42,22 @@ def main(run_dir):
     rows = []
     for addr, orig in sorted(truth.items()):
         fdir = run / f"FUN_{addr}"
-        for base, dt_file in (("A_ghidra", "difftest_baseline_a.json"), ("B_agent_a_single", "difftest_baseline_b.json")):
-            f = fdir / dt_file
-            dt = "missing" if not fdir.exists() else json.loads(f.read_text()) if f.exists() else None
-            if dt == "missing":
-                rows.append({"function_addr": fdir.name, "original_name": orig, "baseline": base,
-                             "category": "extraction_missed"})
-                continue
+        if not fdir.exists():
+            rows.append({"function_addr": fdir.name, "original_name": orig, "baseline": "A_ghidra",
+                         "category": "extraction_missed"})
+            continue
+        agent_of = lambda f: json.loads(f.read_text()).get("agent", "agent_a") if f.exists() else None
+        # A: Ghidra. B: first model attempt (labelled by the agent that answered; B_pending =
+        # call never succeeded). C: one repair round, only for targets that were repaired.
+        b_agent = agent_of(fdir / "response.json")
+        variants = [("A_ghidra", fdir / "difftest_baseline_a.json", None, None),
+                    (f"B_{b_agent}_single" if b_agent else "B_pending", fdir / "difftest_baseline_b.json",
+                     fdir / "response.json", fdir / "recon.c")]
+        if (fdir / "repair1/response.json").exists():
+            variants.append((f"C_{agent_of(fdir / 'repair1/response.json')}_repair", fdir / "repair1/difftest.json",
+                             fdir / "repair1/response.json", fdir / "repair1/recon.c"))
+        for base, f, resp, recon in variants:
+            dt = json.loads(f.read_text()) if f.exists() else None
             row = {"function_addr": fdir.name, "original_name": orig, "baseline": base,
                    "category": category(dt),
                    "compiled": bool(dt and dt["compiled"]),
@@ -56,19 +69,18 @@ def main(run_dir):
                    "heldout_cases": dt["splits"].get("heldout", {}).get("cases") if dt else None,
                    "agent_a_calls": 0, "input_tokens": 0, "cache_creation_tokens": 0,
                    "output_tokens": 0, "cost_usd": 0.0, "wall_seconds": None,
-                   "original_name_in_recon": None, "prompt_leak": None}
-            resp = fdir / "response.json"
-            if base.startswith("B") and resp.exists():
+                   "original_name_in_recon": None, "prompt_leak": None, "isolation_violation": None}
+            if resp and resp.exists():
                 r = json.loads(resp.read_text())
                 u = r.get("usage", {})
                 row.update(agent_a_calls=1, input_tokens=u.get("input_tokens", 0),
                            cache_creation_tokens=u.get("cache_creation_input_tokens", 0),
                            output_tokens=u.get("output_tokens", 0),
-                           cost_usd=r.get("total_cost_usd", 0.0), wall_seconds=r.get("wall_seconds"))
+                           cost_usd=r.get("total_cost_usd") or 0.0, wall_seconds=r.get("wall_seconds"),
+                           isolation_violation=bool(r.get("isolation_violation")))
                 # validity flag: original name or project name reached the prompt via the binary
                 prompt = (fdir / "prompt.txt").read_text()
                 row["prompt_leak"] = bool(re.search(rf"\b{re.escape(orig)}\b|quake", prompt, re.I))
-                recon = fdir / "recon.c"
                 # contamination signal: original identifier appearing in output
                 row["original_name_in_recon"] = bool(recon.exists() and re.search(
                     rf"\b{re.escape(orig)}\b", recon.read_text(), re.I))
