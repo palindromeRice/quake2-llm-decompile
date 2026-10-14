@@ -255,7 +255,7 @@ Run `20261013-095717-game_all_O2`, prompt v2.1 (states `-O2`). 1,015 functions a
 - **Original build: all three maps were played, then the run aborted at shutdown** with glibc "double free or corruption", right after the game module shut down. Shorter runs of the same build exit normally. The cause is not investigated: it could be in id's game code, the engine, or the test setup. One run each is not evidence that the AI build is more stable.
 - The input is scripted with no navigation, so the player often walks into walls. This shows stability over time, not coverage of every monster or weapon.
 
-**macOS (Apple Silicon).** Not run on a Mac yet. Cross-checked here by building the tree for arm64 macOS with the clang inside zig (`docs/mac.md`):
+**macOS (Apple Silicon).** One-command installer that builds a clickable app: `docs/mac.md`. Not run on a Mac yet. Cross-checked here by building the tree for arm64 macOS with the clang inside zig (`docs/mac.md`):
 - It builds and links as an arm64 Mach-O library, and all 1,762 name aliases resolve to the right address.
 - The only undefined symbols are standard macOS C library functions.
 - Fixed on the way: clang names function-local statics differently from gcc; two glibc-internal functions (`__isoc99_sscanf` in the entity parser, `__assert_fail`) now have a fallback; and 1997-style C that newer compilers reject stays a warning.
