@@ -2,3 +2,6 @@ build/
 third_party/Quake-2/
 __pycache__/
 *.pyc
+
+# test-run videos: id game graphics (copyrighted) and large; kept local
+media/
