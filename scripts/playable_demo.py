@@ -81,6 +81,8 @@ def main():
     (RUN / "baseq2/fight.cfg").write_text(fight_cfg())
     env = {**os.environ, "HOME": str(HOME), "SDL_VIDEODRIVER": "offscreen", "SDL_AUDIODRIVER": "dummy",
            "LD_LIBRARY_PATH": str(T / "sdl2/lib")}
+    if (T / "q2run/dbg/segv.so").exists():   # optional crash reporter: prints the faulting function
+        env["LD_PRELOAD"] = str(T / "q2run/dbg/segv.so")
     log = RUN.parent / f"{name}.log"
     with open(log, "w") as fh:
         rc = subprocess.run(["./quake2", "-datadir", str(RUN), "+set", "vid_renderer", "soft", "+set", "s_initsound", "0",

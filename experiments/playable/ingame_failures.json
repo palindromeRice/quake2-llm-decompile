@@ -1,0 +1,3 @@
+{
+ "Use_Weapon": "untested by harness; in game: uses a 120-byte item record (real size 136), wrong ammo index, segfault on 'use chaingun'"
+}

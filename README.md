@@ -235,6 +235,32 @@ Run `20261013-095717-game_all_O2`, prompt v2.1 (states `-O2`). 1,015 functions a
 - This is a demonstration, not an equivalence test, because frame timing varies between runs. Setup and caveats: `docs/playable_demo.md`.
 - Game data and videos are not in the repo, because they are copyrighted.
 
+**Portable source tree (`scripts/make_ai_source.py`).** The jump-patch build only works on x86 Linux. The source tree is plain C that any compiler can build:
+- `ai/FUN_<addr>.c` holds the AI code unchanged. An assembler alias gives each function its real name, and the replaced original body is renamed `<name>__orig`.
+- The addresses the AI code uses for data become aliases in the original file that defines the object, so file-local and function-local statics work too.
+- With `--include-untested`, the 84 compile-only functions are included as well: **1,014 of 1,019 functions run AI code**. Four keep the original (not in the binary or no code), and one is excluded after failing in game (below).
+- Built and played on Linux: the fight, the save/load test and the soak test all pass.
+
+**Failures found only by playing** (harness tests passed or could not run):
+- **Hardcoded addresses.** `WriteField1`, `ReadLevel` and `Use_Invulnerability` contain raw evaluation-binary addresses as integers (for example `InitGame`'s address, which the save format uses as a base). Loading a save crashed. The generator now rewrites integer literals that equal a symbol address into references to that symbol; these 3 functions are the only hits.
+- **`Use_Weapon`** (compile-only, untested): it assumes a 120-byte item record (the real one is 136 bytes) and segfaults on `use chaingun`. It keeps the original code; the list is in `experiments/playable/ingame_failures.json`.
+
+**Save/load and level change (`scripts/saveload_test.py`).** Play, save, load, save again, change level demo1 → demo2 → demo1, save. Original and AI builds both pass.
+- The two saves are not byte-identical, even with the original: loading runs a few server frames and the engine adds the client address to the saved userinfo. Both builds differ in the same places (about 4,400 bytes of the level save, 15 bytes of the game save).
+- Saves store function pointers relative to `InitGame`, so a save from one build cannot be loaded by another. The check is within one build.
+
+**Soak test (`scripts/soak_test.py`).** All three demo maps back to back, 5 minutes each, in one engine process: running, turning, jumping, firing, cycling all weapons and saving every few seconds.
+- Run once per build, original and AI side by side, 5.5 real minutes per map (16.5 minutes in all).
+- **AI build: passed.** All three maps were played, 360 screenshots and saves were written, and the engine exited normally with no console errors.
+- **Original build: all three maps were played, then the run aborted at shutdown** with glibc "double free or corruption", right after the game module shut down. Shorter runs of the same build exit normally. The cause is not investigated: it could be in id's game code, the engine, or the test setup. One run each is not evidence that the AI build is more stable.
+- The input is scripted with no navigation, so the player often walks into walls. This shows stability over time, not coverage of every monster or weapon.
+
+**macOS (Apple Silicon).** Not run on a Mac yet. Cross-checked here by building the tree for arm64 macOS with the clang inside zig (`docs/mac.md`):
+- It builds and links as an arm64 Mach-O library, and all 1,762 name aliases resolve to the right address.
+- The only undefined symbols are standard macOS C library functions.
+- Fixed on the way: clang names function-local statics differently from gcc; two glibc-internal functions (`__isoc99_sscanf` in the entity parser, `__assert_fail`) now have a fallback; and 1997-style C that newer compilers reject stays a warning.
+- Apple arm64 passes variadic arguments differently, so a non-variadic declaration of a print function would break there. `scripts/varargs_scan.py` found none in the AI code.
+
 ### Contamination evidence
 - `BoxOnPlaneSide`: `assert` puts its name in the binary, so it is in the prompt (`prompt_leak` column). The output reuses Quake's `vec3_t`, `cplane_t` and `signbits`. Contaminated.
 - `vectoangles` at -O2: **no leak in the prompt**, but agent A wrote "follows the classic Quake vectoangles routine". The model recognised the code from its structure alone. This is direct evidence of memorisation; a non-public control set is required before any claim.
