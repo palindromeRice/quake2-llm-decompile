@@ -13,7 +13,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "third_party/Quake-2/game"
-RET = {"void": "n", "int": "i", "qboolean": "b", "float": "f", "edict_t *": "e", "char *": "s"}
+RET = {"void": "n", "int": "i", "qboolean": "b", "float": "f", "vec_t": "f", "edict_t *": "e", "char *": "s",
+       "short": "h", "gitem_t *": "G"}
 DEF = re.compile(r"^(static\s+)?([A-Za-z_][\w \t]*?\*?)\s*\b(\w+)\s*\(([^;{}()]*)\)\s*\n\{", re.M)
 
 
@@ -27,8 +28,10 @@ def param_code(p):
     t, star, name = m.group(2), m.group(3), m.group(4)
     if t == "int" and name == "fieldofs":
         return "o"
-    return {("edict_t", "*"): "e", ("float", ""): "f", ("int", ""): "i", ("qboolean", ""): "b",
-            ("vec3_t", ""): "v", ("char", "*"): "s"}.get((t, star))
+    return {("edict_t", "*"): "e", ("float", ""): "f", ("vec_t", ""): "f", ("int", ""): "i", ("qboolean", ""): "b",
+            ("vec3_t", ""): "v", ("float", "*"): "v", ("char", "*"): "s", ("short", ""): "h",
+            ("gitem_t", "*"): "g", ("cplane_t", "*"): "p", ("csurface_t", "*"): "u", ("gclient_t", "*"): "l",
+            ("usercmd_t", "*"): "U", ("moveinfo_t", "*"): "m"}.get((t, star))
 
 
 def definitions(path):

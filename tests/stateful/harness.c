@@ -325,6 +325,47 @@ static int arg_o (void)   /* field offset of a string field (G_Find style) */
 	static const int ofs[] = {FOFS (classname), FOFS (targetname), FOFS (target), FOFS (model), FOFS (team), FOFS (killtarget)};
 	return ofs[ru () % 6];
 }
+/* harness v2 argument kinds: items, touch plane/surface, client records, user commands, move info */
+static gitem_t *arg_g (void) { return ru () % 8 ? &itemlist[ri (1, game.num_items - 1)] : NULL; }
+static cplane_t arg_planes[8];
+static cplane_t *arg_p (int pos)
+{
+	if (ru () % 4 == 0) return NULL;
+	cplane_t *p = &arg_planes[pos];
+	for (int k = 0; k < 3; k++) p->normal[k] = ru () % 2 ? rf (-1, 1) : (float)ri (-1, 1);
+	p->dist = rf (-512, 512);
+	p->type = ri (0, 5);
+	p->signbits = ri (0, 7);
+	return p;
+}
+static csurface_t arg_surfs[8];
+static csurface_t *arg_u (int pos)
+{
+	if (ru () % 4 == 0) return NULL;
+	csurface_t *u = &arg_surfs[pos];
+	memset (u, 0, sizeof *u);
+	strcpy (u->name, ru () % 2 ? "sky1" : "e1u1/floor1_3");
+	u->flags = ru () % 3 ? 0 : (ru () % 2 ? SURF_SKY : (int)(ru () & 0xff));
+	u->value = ri (0, 10);
+	return u;
+}
+static gclient_t *arg_l (void) { return &game.clients[ri (0, game.maxclients - 1)]; }
+static usercmd_t arg_cmds[8];
+static usercmd_t *arg_U (int pos)
+{
+	usercmd_t *c = &arg_cmds[pos];
+	c->msec = ri (0, 100);
+	c->buttons = ri (0, 255);
+	for (int k = 0; k < 3; k++) c->angles[k] = (short)ri (-32768, 32767);
+	c->forwardmove = ri (-400, 400);
+	c->sidemove = ri (-400, 400);
+	c->upmove = ri (-400, 400);
+	c->impulse = ru () % 4 ? 0 : ri (0, 255);
+	c->lightlevel = ri (0, 255);
+	return c;
+}
+static moveinfo_t *arg_m (void) { return &g_edicts[ru () % globals.num_edicts].moveinfo; }
+
 static void inject_pair (edict_t *self, edict_t *other)
 {
 	if (self && other && self != other && ru () % 4 == 0) {   /* exact separations: 80, 500, 1000 units */
@@ -336,6 +377,22 @@ static void inject_pair (edict_t *self, edict_t *other)
 static long fbits_l (float f) { uint32_t u; memcpy (&u, &f, 4); return u; }
 
 #include SIG_H   /* generated per target: arg variables, fn_t, GEN_ARGS(), CALL(f) */
+
+static void canon_words (void *p, size_t n)
+{
+	for (size_t i = 0; i + 8 <= n; i += 8) {
+		uint64_t w;
+		memcpy (&w, (char *)p + i, 8);
+		if (w == (uint64_t)(uintptr_t)recon_sym) { w = (uint64_t)(uintptr_t)orig_sym; memcpy ((char *)p + i, &w, 8); }
+	}
+}
+static void canon_self (void)
+{
+	canon_words (g_edicts, game.maxentities * sizeof (edict_t));
+	canon_words (game.clients, game.maxclients * sizeof (gclient_t));
+	canon_words (&level, sizeof level);
+	canon_words (&game, sizeof game);
+}
 
 static void on_fatal (int sig) { _exit (100 + sig); }   /* no core dump, no crash reporter */
 
@@ -357,9 +414,13 @@ static void child (uint64_t seed, int use_recon, int fd)
 	h.num_edicts = globals.num_edicts;
 	h.loglen = loglen;
 	normalize_strings ();
+	if (use_recon)   /* a pointer to the function under test (e.g. self->think = itself) names the */
+		canon_self ();   /* candidate's copy here; count it as the original's address */
+	gclient_t *clients = game.clients;
+	game.clients = NULL;   /* heap address; the client array itself is compared below */
 	write_all (fd, &h, sizeof h);
 	write_all (fd, g_edicts, game.maxentities * sizeof (edict_t));
-	write_all (fd, game.clients, game.maxclients * sizeof (gclient_t));
+	write_all (fd, clients, game.maxclients * sizeof (gclient_t));
 	write_all (fd, &level, sizeof level);
 	write_all (fd, &game, sizeof game);
 	write_all (fd, vecs, sizeof vecs);

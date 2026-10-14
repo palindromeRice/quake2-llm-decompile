@@ -84,7 +84,7 @@ def main():
     minutes = {m: round((b - a) / 60, 1) for m, a, b in zip(seen, marks, marks[1:])}
     text = log.read_text(errors="replace") + (con.read_text(errors="replace") if con.exists() else "")
     reached = [m for m in MAPS if re.search(rf"^Map: {m}", text, re.M)]
-    errors = sorted({l.strip() for l in text.splitlines() if re.search(r"error|segmentation|signal \d+", l, re.I)
+    errors = sorted({l.strip() for l in text.splitlines() if re.search(r"error|segmentation|signal \d+|undefined symbol", l, re.I)
                      and "Error during initialization" not in l})
     shots = HOME / ".local/share/YamagiQ2/baseq2/scrnshot"
     n = len(list(shots.glob("*.tga")))

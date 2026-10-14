@@ -6,6 +6,11 @@ stripped game binaries? Testbed is the GPL Quake II source (id Software, 3.19).
 Status: **pilot proof of concept** — one function end to end, two baselines.
 Nothing here is a general result yet.
 
+**Two builds of the same code.** *Plain build* (`-O0`): the compiler translates the code as written,
+so the machine code follows the source line by line. *Optimized build* (`-O2`): the compiler
+rearranges, merges and removes code to run faster, as shipped games do; much harder to decompile.
+`-O0`/`-O2` stay in file and run names.
+
 ## Pipeline
 
 ```
@@ -145,7 +150,7 @@ Runs `20261012-224110-pilot_O0` and `20261012-224341-pilot_O2`. Both builds hide
 - Quake -O0: 93/94 caught. The one survivor is an unused buffer size. Edits inside comments and `#if 0` blocks are now skipped; the first version of the script counted 10 of those as survivors.
 - One real gap was found and fixed: the `BoxOnPlaneSide` driver never hit an exact plane-boundary tie. Exact ties were added; that mutant is now caught, and re-testing both Quake runs changed no result.
 
-### Stateful game functions (whole game module, -O0)
+### Stateful game functions (whole game module, plain build)
 
 Ten functions that read and write entity, level and engine state: `M_ChangeYaw`, `G_FreeEdict`, `M_CheckGround`, `M_SetEffects`, `range`, `visible`, `infront`, `CanDamage`, `trigger_counter_use`, `G_Spawn`. Harness design: `docs/stateful_harness.md`. 3,000 random worlds per function (1,500 dev + 1,500 held-out).
 
@@ -162,7 +167,7 @@ Ten functions that read and write entity, level and engine state: `M_ChangeYaw`,
 - Mutation check on the stateful harness: 45/53 caught. Of the 8 survivors, 4 are equivalent (`M_ChangeYaw` tie branches assign the same value) and 2 are practically unreachable exact float ties. The other 2 are a real but minor gap: `M_CheckGround`'s vertical velocity at exactly 100.
 - Boundary coverage was added to the world generator (grid-snapped angles and origins, exact 80/500/1000 separations) after a first mutation check missed `range` and `M_ChangeYaw` ties. Both runs were re-tested; results did not change.
 
-### Whole files: `g_ai.c`, `g_utils.c`, `m_move.c` (-O0)
+### Whole files: `g_ai.c`, `g_utils.c`, `m_move.c` (plain build)
 
 Run `20261013-004715-files_ai_utils_move_O0`. Every function in the three files whose signature the harness supports (45 of 46; `tv` returns `float*`). Signatures are derived from the source by `scripts/make_file_config.py`.
 
@@ -175,7 +180,7 @@ Run `20261013-004715-files_ai_utils_move_O0`. Every function in the three files 
 - Coverage caveat: for some AI functions the *original* crashes on many random worlds (mostly a NULL `enemy`), and those cases are skipped. The worst is `FoundTarget`: 62% skipped, still 1,138 valid worlds. Every function had at least 1,100 valid worlds.
 - The pipeline's first pass reported `KillBox` as a crash because I killed its slow test by hand. The harness now stops a function's test after 50 mismatches and uses a 1 s per-case timeout. The full re-test passes.
 
-### Whole game module (all of `game/`, -O0)
+### Whole game module, plain build (all of `game/`)
 
 Run `20261013-010856-game_all_O0` (config `game_all_O0.json`, from `make_file_config.py ALL`). 1,022 functions; 3 are not in the binary (one inside `#if 0`, two unused statics the compiler dropped). Of the 1,019 attempted, 85 have a signature the harness cannot call yet (compile-only), so **934 are behaviour-tested**.
 
@@ -198,7 +203,7 @@ Run `20261013-010856-game_all_O0` (config `game_all_O0.json`, from `make_file_co
 - **Memorisation signal:** 154 of 1,017 reconstructions (15%) name at least one real Quake II function that appears nowhere in their prompt, usually as comments on callees. For example, `SP_item_health_mega` came back labelled `SpawnItem`, `FindItem`, `G_FreeEdict` and `/* SP_item_health_mega */` with zero leaks. Some of these could be guesses from strings, but most could not.
 - 12 prompts contained the target's own name through a string in the binary; 8 of those passed. Excluding them, B passes 897 of 928 tested targets.
 
-### Whole game module (-O2)
+### Whole game module, optimized build
 
 Run `20261013-095717-game_all_O2`, prompt v2.1 (states `-O2`). 1,015 functions are in the binary; Ghidra found no function start for 8, leaving 1,007 answered. 84 of those are compile-only.
 
@@ -227,6 +232,28 @@ Run `20261013-095717-game_all_O2`, prompt v2.1 (states `-O2`). 1,015 functions a
   - Before the fix, agent B's first attempts showed 47 failures; after it, 12.
   - Repairs requested before the fix were partly fed these false failures; they are kept as they are.
 
+### Harness v2 re-test (2026-10-14): false failures fixed, more functions testable
+
+Investigating the last failures showed three harness faults, so both whole-game runs were re-tested (no new model calls), then one more repair round went to what still failed.
+- **Pointer to itself.** A function that stores a pointer to itself (`self->think = <this function>`) stores the candidate's address in the test, which never equals the original's. The harness now counts a pointer to the candidate as a pointer to the original. `Think_AccelMove`, `BossExplode` and others were correct on the first attempt.
+- **Heap address.** `game.clients` points to freshly allocated memory; the address was compared as data. It is now left out; the client records themselves are still compared.
+- **Impossible worlds.** `ClientBegin` was called on non-player edicts, so it read past the client array and even the original crashed at random. It now gets player slots only; item use/drop functions likewise.
+- **More functions testable.** New argument kinds (item, touch plane and surface, client record, user command, move info, `short`, `vec_t`) make 57 of the 85 compile-only functions testable. 28 remain untested (file I/O, variadic, matrices, `trace_t` returns, and similar).
+- These changes only remove false mismatches or add tests; a result that passed before cannot fail because of them, except where a test domain changed (re-tested).
+- The repair tool now supports later rounds (`ROUND=2`) and in-game feedback for functions the harness cannot call (`experiments/playable/ingame_feedback.json`, behaviour only).
+- Repairs requested before this fix were fed false failures for these functions; two of them got worse in round 1 and were right again in round 2.
+
+| | Plain build | Optimized build |
+|---|---|---|
+| Testable functions | 991 | 979 (8 more not found by Ghidra) |
+| A: Ghidra pseudocode, pass | 91 | 79 |
+| B: first AI attempt, pass | 959 | 926 (agent A 563, agent B 363) |
+| After repair rounds | **991 (100% of tested)** | **973** |
+| Still failing | 0 | 6 |
+
+- Optimized build, still failing: 5 functions store a pointer to a tiny forwarding function that Ghidra never found (e.g. `gib_die`, which only calls `G_FreeEdict`). The AI stores the target directly. Calling it does the same thing, but the pointer differs. The sixth (`monster_fire_bfg`) returned no code block in its last round.
+- Extra cost: $1.45 (repairs after the fix).
+
 ### Playable demo: Quake II running AI-decompiled game code
 
 `scripts/build_ai_gameso.py` builds a real `game.so` in which **930 of the 1,019 -O0 game functions run AI-reconstructed code**: every function whose reconstruction passed both test splits. The other 89 keep the original code.
@@ -238,12 +265,12 @@ Run `20261013-095717-game_all_O2`, prompt v2.1 (states `-O2`). 1,015 functions a
 **Portable source tree (`scripts/make_ai_source.py`).** The jump-patch build only works on x86 Linux. The source tree is plain C that any compiler can build:
 - `ai/FUN_<addr>.c` holds the AI code unchanged. An assembler alias gives each function its real name, and the replaced original body is renamed `<name>__orig`.
 - The addresses the AI code uses for data become aliases in the original file that defines the object, so file-local and function-local statics work too.
-- With `--include-untested`, the 84 compile-only functions are included as well: **1,014 of 1,019 functions run AI code**. Four keep the original (not in the binary or no code), and one is excluded after failing in game (below).
+- With `--include-untested`, the 28 still-untested functions are included as well: **all 1,019 functions run AI code** (991 tested and passing, 28 untested but working in game).
 - Built and played on Linux: the fight, the save/load test and the soak test all pass.
 
 **Failures found only by playing** (harness tests passed or could not run):
 - **Hardcoded addresses.** `WriteField1`, `ReadLevel` and `Use_Invulnerability` contain raw evaluation-binary addresses as integers (for example `InitGame`'s address, which the save format uses as a base). Loading a save crashed. The generator now rewrites integer literals that equal a symbol address into references to that symbol; these 3 functions are the only hits.
-- **`Use_Weapon`** (compile-only, untested): it assumes a 120-byte item record (the real one is 136 bytes) and segfaults on `use chaingun`. It keeps the original code; the list is in `experiments/playable/ingame_failures.json`.
+- **`Use_Weapon`** (untested at the time): it assumed a 120-byte item record (the real one is 136 bytes) and segfaulted on `use chaingun`. It was excluded until harness v2 could test it; the repaired version passes 3,000 test worlds and switches weapons in game exactly like the original (super shotgun, rocket launcher, railgun, blaster). `experiments/playable/ingame_failures.json` is now empty.
 
 **Save/load and level change (`scripts/saveload_test.py`).** Play, save, load, save again, change level demo1 → demo2 → demo1, save. Original and AI builds both pass.
 - The two saves are not byte-identical, even with the original: loading runs a few server frames and the engine adds the client address to the saved userinfo. Both builds differ in the same places (about 4,400 bytes of the level save, 15 bytes of the game save).
@@ -252,11 +279,12 @@ Run `20261013-095717-game_all_O2`, prompt v2.1 (states `-O2`). 1,015 functions a
 **Soak test (`scripts/soak_test.py`).** All three demo maps back to back, 5 minutes each, in one engine process: running, turning, jumping, firing, cycling all weapons and saving every few seconds.
 - Run once per build, original and AI side by side, 5.5 real minutes per map (16.5 minutes in all).
 - **AI build: passed.** All three maps were played, 360 screenshots and saves were written, and the engine exited normally with no console errors.
+- Re-run on the all-AI build (1,019 of 1,019 functions, harness v2): passed the same way.
 - **Original build: all three maps were played, then the run aborted at shutdown** with glibc "double free or corruption", right after the game module shut down. Shorter runs of the same build exit normally. The cause is not investigated: it could be in id's game code, the engine, or the test setup. One run each is not evidence that the AI build is more stable.
 - The input is scripted with no navigation, so the player often walks into walls. This shows stability over time, not coverage of every monster or weapon.
 
 **macOS (Apple Silicon).** One-command installer that builds a clickable app: `docs/mac.md`. Not run on a Mac yet. Cross-checked here by building the tree for arm64 macOS with the clang inside zig (`docs/mac.md`):
-- It builds and links as an arm64 Mach-O library, and all 1,762 name aliases resolve to the right address.
+- It builds and links as an arm64 Mach-O library, and all 1,767 name aliases resolve to the right address.
 - The only undefined symbols are standard macOS C library functions.
 - Fixed on the way: clang names function-local statics differently from gcc; two glibc-internal functions (`__isoc99_sscanf` in the entity parser, `__assert_fail`) now have a fallback; and 1997-style C that newer compilers reject stays a warning.
 - Apple arm64 passes variadic arguments differently, so a non-variadic declaration of a print function would break there. `scripts/varargs_scan.py` found none in the AI code.

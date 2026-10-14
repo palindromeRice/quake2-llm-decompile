@@ -1,0 +1,3 @@
+{
+ "Use_Weapon": "In the running game the player typed `use chaingun`, so the game called this function with (the player's entity, the chaingun's entry in the item table). It crashed with a segmentation fault (invalid memory read) at this line of your previous answer:\n    if (*(int *)(*(char **)(ent + 0x58) + 8 + ((long)ammo_index + 0xb8) * 4) == 0) {\n`ammo_index` was far out of range there. The harness cannot call this function, so this is the only test result."
+}

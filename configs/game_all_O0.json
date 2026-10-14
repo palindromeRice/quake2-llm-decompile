@@ -5490,7 +5490,7 @@
       "file": "p_client.c"
     },
     "ClientBegin": {
-      "sig": "n:e",
+      "sig": "n:c",
       "file": "p_client.c"
     },
     "ClientUserinfoChanged": {
@@ -5872,46 +5872,242 @@
     "Info_SetValueForKey": {
       "sig": "n:sss",
       "file": "q_shared.c"
+    },
+    "plat_CalcAcceleratedMove": {
+      "sig": "n:m",
+      "file": "g_func.c"
+    },
+    "plat_Accelerate": {
+      "sig": "n:m",
+      "file": "g_func.c"
+    },
+    "Touch_Plat_Center": {
+      "sig": "n:eepu",
+      "file": "g_func.c"
+    },
+    "rotating_touch": {
+      "sig": "n:eepu",
+      "file": "g_func.c"
+    },
+    "button_touch": {
+      "sig": "n:eepu",
+      "file": "g_func.c"
+    },
+    "Touch_DoorTrigger": {
+      "sig": "n:eepu",
+      "file": "g_func.c"
+    },
+    "door_touch": {
+      "sig": "n:eepu",
+      "file": "g_func.c"
+    },
+    "GetItemByIndex": {
+      "sig": "G:i",
+      "file": "g_items.c"
+    },
+    "FindItemByClassname": {
+      "sig": "G:s",
+      "file": "g_items.c"
+    },
+    "FindItem": {
+      "sig": "G:s",
+      "file": "g_items.c"
+    },
+    "Drop_General": {
+      "sig": "n:cg",
+      "file": "g_items.c"
+    },
+    "Use_Quad": {
+      "sig": "n:cg",
+      "file": "g_items.c"
+    },
+    "Use_Breather": {
+      "sig": "n:cg",
+      "file": "g_items.c"
+    },
+    "Use_Envirosuit": {
+      "sig": "n:cg",
+      "file": "g_items.c"
+    },
+    "Use_Invulnerability": {
+      "sig": "n:cg",
+      "file": "g_items.c"
+    },
+    "Use_Silencer": {
+      "sig": "n:cg",
+      "file": "g_items.c"
+    },
+    "Add_Ammo": {
+      "sig": "b:cgi",
+      "file": "g_items.c"
+    },
+    "Drop_Ammo": {
+      "sig": "n:cg",
+      "file": "g_items.c"
+    },
+    "Use_PowerArmor": {
+      "sig": "n:cg",
+      "file": "g_items.c"
+    },
+    "Drop_PowerArmor": {
+      "sig": "n:cg",
+      "file": "g_items.c"
+    },
+    "Touch_Item": {
+      "sig": "n:eepu",
+      "file": "g_items.c"
+    },
+    "drop_temp_touch": {
+      "sig": "n:eepu",
+      "file": "g_items.c"
+    },
+    "Drop_Item": {
+      "sig": "e:cg",
+      "file": "g_items.c"
+    },
+    "PrecacheItem": {
+      "sig": "n:g",
+      "file": "g_items.c"
+    },
+    "SpawnItem": {
+      "sig": "n:eg",
+      "file": "g_items.c"
+    },
+    "gib_touch": {
+      "sig": "n:eepu",
+      "file": "g_misc.c"
+    },
+    "path_corner_touch": {
+      "sig": "n:eepu",
+      "file": "g_misc.c"
+    },
+    "point_combat_touch": {
+      "sig": "n:eepu",
+      "file": "g_misc.c"
+    },
+    "func_object_touch": {
+      "sig": "n:eepu",
+      "file": "g_misc.c"
+    },
+    "barrel_touch": {
+      "sig": "n:eepu",
+      "file": "g_misc.c"
+    },
+    "misc_viper_bomb_touch": {
+      "sig": "n:eepu",
+      "file": "g_misc.c"
+    },
+    "teleporter_touch": {
+      "sig": "n:eepu",
+      "file": "g_misc.c"
+    },
+    "Touch_Multi": {
+      "sig": "n:eepu",
+      "file": "g_trigger.c"
+    },
+    "trigger_push_touch": {
+      "sig": "n:eepu",
+      "file": "g_trigger.c"
+    },
+    "hurt_touch": {
+      "sig": "n:eepu",
+      "file": "g_trigger.c"
+    },
+    "trigger_gravity_touch": {
+      "sig": "n:eepu",
+      "file": "g_trigger.c"
+    },
+    "trigger_monsterjump_touch": {
+      "sig": "n:eepu",
+      "file": "g_trigger.c"
+    },
+    "blaster_touch": {
+      "sig": "n:eepu",
+      "file": "g_weapon.c"
+    },
+    "Grenade_Touch": {
+      "sig": "n:eepu",
+      "file": "g_weapon.c"
+    },
+    "rocket_touch": {
+      "sig": "n:eepu",
+      "file": "g_weapon.c"
+    },
+    "bfg_touch": {
+      "sig": "n:eepu",
+      "file": "g_weapon.c"
+    },
+    "target_actor_touch": {
+      "sig": "n:eepu",
+      "file": "m_actor.c"
+    },
+    "mutant_jump_touch": {
+      "sig": "n:eepu",
+      "file": "m_mutant.c"
+    },
+    "InitClientPersistant": {
+      "sig": "n:l",
+      "file": "p_client.c"
+    },
+    "InitClientResp": {
+      "sig": "n:l",
+      "file": "p_client.c"
+    },
+    "ClientThink": {
+      "sig": "n:eU",
+      "file": "p_client.c"
+    },
+    "SV_AddBlend": {
+      "sig": "n:ffffv",
+      "file": "p_view.c"
+    },
+    "P_ProjectSource": {
+      "sig": "n:lvvvvv",
+      "file": "p_weapon.c"
+    },
+    "Use_Weapon": {
+      "sig": "n:cg",
+      "file": "p_weapon.c"
+    },
+    "Drop_Weapon": {
+      "sig": "n:cg",
+      "file": "p_weapon.c"
+    },
+    "VectorNormalize": {
+      "sig": "f:v",
+      "file": "q_shared.c"
+    },
+    "VectorNormalize2": {
+      "sig": "f:vv",
+      "file": "q_shared.c"
+    },
+    "_DotProduct": {
+      "sig": "f:vv",
+      "file": "q_shared.c"
+    },
+    "VectorLength": {
+      "sig": "f:v",
+      "file": "q_shared.c"
+    },
+    "VectorScale": {
+      "sig": "n:vfv",
+      "file": "q_shared.c"
+    },
+    "ShortSwap": {
+      "sig": "h:h",
+      "file": "q_shared.c"
+    },
+    "ShortNoSwap": {
+      "sig": "h:h",
+      "file": "q_shared.c"
     }
   },
   "agent_a_model": "agent-a-model",
   "compile_only": {
     "PlayerSort": "unsupported signature: int (void const *a, void const *b)",
-    "plat_CalcAcceleratedMove": "unsupported signature: void (moveinfo_t *moveinfo)",
-    "plat_Accelerate": "unsupported signature: void (moveinfo_t *moveinfo)",
-    "Touch_Plat_Center": "unsupported signature: void (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "rotating_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "button_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "Touch_DoorTrigger": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "door_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "GetItemByIndex": "unsupported signature: gitem_t * (int index)",
-    "FindItemByClassname": "unsupported signature: gitem_t * (char *classname)",
-    "FindItem": "unsupported signature: gitem_t * (char *pickup_name)",
-    "Drop_General": "unsupported signature: void (edict_t *ent, gitem_t *item)",
-    "Use_Quad": "unsupported signature: void (edict_t *ent, gitem_t *item)",
-    "Use_Breather": "unsupported signature: void (edict_t *ent, gitem_t *item)",
-    "Use_Envirosuit": "unsupported signature: void (edict_t *ent, gitem_t *item)",
-    "Use_Invulnerability": "unsupported signature: void (edict_t *ent, gitem_t *item)",
-    "Use_Silencer": "unsupported signature: void (edict_t *ent, gitem_t *item)",
-    "Add_Ammo": "unsupported signature: qboolean (edict_t *ent, gitem_t *item, int count)",
-    "Drop_Ammo": "unsupported signature: void (edict_t *ent, gitem_t *item)",
-    "Use_PowerArmor": "unsupported signature: void (edict_t *ent, gitem_t *item)",
-    "Drop_PowerArmor": "unsupported signature: void (edict_t *ent, gitem_t *item)",
-    "Touch_Item": "unsupported signature: void (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "drop_temp_touch": "unsupported signature: void (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "Drop_Item": "unsupported signature: edict_t * (edict_t *ent, gitem_t *item)",
-    "PrecacheItem": "unsupported signature: void (gitem_t *it)",
-    "SpawnItem": "unsupported signature: void (edict_t *ent, gitem_t *item)",
     "GetGameAPI": "unsupported signature: game_export_t * (game_import_t *import)",
     "Sys_Error": "unsupported signature: void (char *error, ...)",
     "Com_Printf": "unsupported signature: void (char *msg, ...)",
-    "gib_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "path_corner_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "point_combat_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "func_object_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "barrel_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "misc_viper_bomb_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "teleporter_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
     "SV_Impact": "unsupported signature: void (edict_t *e1, trace_t *trace)",
     "SV_PushEntity": "unsupported signature: trace_t (edict_t *ent, vec3_t push)",
     "WriteField1": "unsupported signature: void (FILE *f, field_t *field, byte *base)",
@@ -5924,39 +6120,14 @@
     "ReadEdict": "unsupported signature: void (FILE *f, edict_t *ent)",
     "ReadLevelLocals": "unsupported signature: void (FILE *f)",
     "StringToFilter": "unsupported signature: qboolean (char *s, ipfilter_t *f)",
-    "Touch_Multi": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "trigger_push_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "hurt_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "trigger_gravity_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "trigger_monsterjump_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
     "tv": "unsupported signature: float * (float x, float y, float z)",
-    "blaster_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "Grenade_Touch": "unsupported signature: void (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "rocket_touch": "unsupported signature: void (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "bfg_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "target_actor_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "mutant_jump_touch": "unsupported signature: void (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)",
-    "InitClientPersistant": "unsupported signature: void (gclient_t *client)",
-    "InitClientResp": "unsupported signature: void (gclient_t *client)",
     "PM_trace": "unsupported signature: trace_t (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)",
     "CheckBlock": "unsupported signature: unsigned (void *b, int c)",
     "PrintPmove": "unsupported signature: void (pmove_t *pm)",
-    "ClientThink": "unsupported signature: void (edict_t *ent, usercmd_t *ucmd)",
-    "SV_AddBlend": "unsupported signature: void (float r, float g, float b, float a, float *v_blend)",
-    "P_ProjectSource": "unsupported signature: void (gclient_t *client, vec3_t point, vec3_t distance, vec3_t forward, vec3_t right, vec3_t result)",
-    "Use_Weapon": "unsupported signature: void (edict_t *ent, gitem_t *item)",
-    "Drop_Weapon": "unsupported signature: void (edict_t *ent, gitem_t *item)",
     "R_ConcatRotations": "unsupported signature: void (float in1[3][3], float in2[3][3], float out[3][3])",
     "R_ConcatTransforms": "unsupported signature: void (float in1[3][4], float in2[3][4], float out[3][4])",
     "BoxOnPlaneSide2": "unsupported signature: int (vec3_t emins, vec3_t emaxs, struct cplane_s *p)",
     "BoxOnPlaneSide": "unsupported signature: int (vec3_t emins, vec3_t emaxs, struct cplane_s *p)",
-    "VectorNormalize": "unsupported signature: vec_t (vec3_t v)",
-    "VectorNormalize2": "unsupported signature: vec_t (vec3_t v, vec3_t out)",
-    "_DotProduct": "unsupported signature: vec_t (vec3_t v1, vec3_t v2)",
-    "VectorLength": "unsupported signature: vec_t (vec3_t v)",
-    "VectorScale": "unsupported signature: void (vec3_t in, vec_t scale, vec3_t out)",
-    "ShortSwap": "unsupported signature: short (short l)",
-    "ShortNoSwap": "unsupported signature: short (short l)",
     "va": "unsupported signature: char * (char *format, ...)",
     "COM_Parse": "unsupported signature: char * (char **data_p)",
     "Com_PageInMemory": "unsupported signature: void (byte *buffer, int size)",

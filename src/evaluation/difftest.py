@@ -168,13 +168,20 @@ def link_driver(orig, recon_sym, cand_obj, exe, extra=()):
 
 
 SIG_LEGACY = {"self": "n:e", "pair": "i:ee", "use": "n:eee", "spawn": "e:"}
-C_TYPE = {"e": "edict_t *", "f": "float", "i": "int", "b": "qboolean", "v": "float *", "s": "char *", "o": "int", "n": "void"}
-GEN = {"e": "arg_e ({i})", "f": "arg_f ()", "i": "arg_i ()", "b": "arg_b ()", "v": "arg_v ({i})", "s": "arg_s ()", "o": "arg_o ()"}
-RET = {"n": "((F), 0L)", "i": "((long)(F))", "b": "((long)(F))", "f": "fbits_l (F)", "e": "EI (F)", "s": "((long)hash_str (F))"}
+C_TYPE = {"g": "gitem_t *", "p": "cplane_t *", "u": "csurface_t *", "l": "gclient_t *", "U": "usercmd_t *",
+          "m": "moveinfo_t *", "h": "short", "G": "gitem_t *",
+          "c": "edict_t *", "e": "edict_t *", "f": "float", "i": "int", "b": "qboolean", "v": "float *", "s": "char *", "o": "int", "n": "void"}
+GEN = {"g": "arg_g ()", "p": "arg_p ({i})", "u": "arg_u ({i})", "l": "arg_l ()", "U": "arg_U ({i})", "m": "arg_m ()",
+       "h": "(short)arg_i ()",
+       "c": "&g_edicts[ri (1, game.maxclients)]", "e": "arg_e ({i})", "f": "arg_f ()", "i": "arg_i ()", "b": "arg_b ()", "v": "arg_v ({i})", "s": "arg_s ()", "o": "arg_o ()"}
+RET = {"h": "((long)(F))", "G": "({ gitem_t *it_ = (F); it_ ? (long)(it_ - itemlist) : -1L; })", "n": "((F), 0L)", "i": "((long)(F))", "b": "((long)(F))", "f": "fbits_l (F)", "e": "EI (F)", "s": "((long)hash_str (F))"}
 
 
 def target_spec(name):
-    """Config entry -> {"sig": "<ret>:<args>", "file": basename or None}. Codes: e edict_t*, f float,
+    """Config entry -> {"sig": "<ret>:<args>", "file": basename or None}. Codes: e edict_t*,
+    c player edict_t* (slots 1..maxclients, for functions the game only calls on players), f float,
+    harness v2: g gitem_t*, G gitem_t* return (compared as item index), p cplane_t*, u csurface_t*,
+    l gclient_t*, U usercmd_t*, m moveinfo_t*, h short,
     i int, b qboolean, v vec3_t, s char*, o string-field offset, n void."""
     t = STATEFUL[name]
     if isinstance(t, str):

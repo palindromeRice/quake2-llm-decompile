@@ -95,8 +95,9 @@ def main():
     video.parent.mkdir(exist_ok=True)
     subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-framerate", "10", "-i", str(shots / "q2_%04d.tga"),
                     "-c:v", "libx264", "-pix_fmt", "yuv420p", str(video)], check=True)
-    print(f"{name}: engine exit {rc}, {n} frames, log {log}, video {video}")
-    if rc != 0:
+    loaded = "failed to load game DLL" not in log.read_text(errors="replace")   # engine exits 0 even then
+    print(f"{name}: engine exit {rc}, game library loaded {loaded}, {n} frames, log {log}, video {video}")
+    if rc != 0 or not loaded:
         sys.exit(1)
 
 

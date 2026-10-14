@@ -100,15 +100,12 @@ def main():
     chosen, manifest = {}, {}
     for name, addr in truth.items():
         d = RUN / f"FUN_{addr}"
-        pick = None
-        if status(d / "repair1/difftest.json") == "pass":
-            pick = ("repair", d / "repair1/recon.c")
-        elif status(d / "difftest_baseline_b.json") == "pass":
-            pick = ("first_attempt", d / "recon.c")
-        elif INCLUDE_UNTESTED and status(d / "repair1/difftest.json") == "untested":
-            pick = ("untested", d / "repair1/recon.c")
-        elif INCLUDE_UNTESTED and status(d / "difftest_baseline_b.json") == "untested":
-            pick = ("untested", d / "recon.c")
+        # latest version first: later repair rounds, then the first attempt
+        versions = [(d / f"repair{k}", "difftest.json") for k in range(9, 0, -1)] + [(d, "difftest_baseline_b.json")]
+        pick = next((("repair" if v != d else "first_attempt", v / "recon.c") for v, t in versions
+                     if status(v / t) == "pass"), None)
+        if pick is None and INCLUDE_UNTESTED:
+            pick = next((("untested", v / "recon.c") for v, t in versions if status(v / t) == "untested"), None)
         if pick and name in EXCLUDE:
             pick = ("excluded_in_game", None)
         if pick and pick[1]:
@@ -170,7 +167,14 @@ def main():
     consts, relocs = [], 0
     def bind(alias, a):
         hit = next(((f, n, a - v, v) for f, n, v, sz, t in evaltab if v <= a < v + max(sz, 1) and t in ("FUNC", "OBJECT")), None)
-        if hit:
+        if hit and hit[1] in chosen and chosen[hit[1]][1] is not None:
+            # the target function is AI code now: an assembler alias must sit in the file that
+            # defines its symbol, so it goes into the AI file, relative to FUN_<addr>
+            fun = f"FUN_{chosen[hit[1]][0]}"
+            with open(OUT / "ai" / f"{fun}.c", "a") as fh:
+                fh.write(f'\n#if defined(__APPLE__)\n__asm__(".globl _{alias}\\n_{alias} = _{fun} + {hit[2]}\\n");\n'
+                         f'#else\n__asm__(".globl {alias}\\n.set {alias}, {fun} + {hit[2]}\\n");\n#endif\n')
+        elif hit:
             f = hit[0] or file_of.get(hit[1])
             aliases.setdefault(f, []).append((alias, hit[1], hit[2], hit[3]))
         return hit
@@ -279,7 +283,7 @@ done
 if [ "${TARGET_OS:-$(uname)}" = Darwin ]; then
   $CC -dynamiclib -undefined dynamic_lookup -o game.dylib obj/*.o
 else
-  $CC -shared -o game.so obj/*.o -lm
+  $CC -shared -Wl,-z,defs -o game.so obj/*.o -lm   # fail on any unresolved symbol
 fi
 echo built
 '''

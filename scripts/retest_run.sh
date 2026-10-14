@@ -20,7 +20,7 @@ jobs = []
 for name, addr in truth.items():
     d = run / f"FUN_{addr}"
     for cand, out in ((d / "baseline_a/recon.c", "difftest_baseline_a.json"), (d / "recon.c", "difftest_baseline_b.json"),
-                      (d / "repair1/recon.c", "repair1/difftest.json")):
+                      *((d / f"repair{k}/recon.c", f"repair{k}/difftest.json") for k in range(1, 10))):
         if cand.exists():
             jobs.append((str(cand), name, f"FUN_{addr}", str(d / out)))
 with Pool(int(os.environ.get("JOBS", 6))) as p:   # work dirs are per candidate, so parallel-safe

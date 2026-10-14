@@ -68,7 +68,9 @@ def main():
     print(f"{name}: engine exit {rc}; saves {have}; s1/s2 same sizes {sizes_ok}; bytes differing {ndiff}; "
           f"level changes {level_ok}")
     print("  " + " | ".join(levels[-12:])[:600])
-    sys.exit(0 if rc == 0 and all(have.values()) and sizes_ok and level_ok else 1)
+    if "failed to load game DLL" in text:
+        print("  game library failed to load")
+    sys.exit(0 if rc == 0 and all(have.values()) and sizes_ok and level_ok and "failed to load game DLL" not in text else 1)
 
 
 if __name__ == "__main__":

@@ -53,9 +53,11 @@ def main(run_dir):
         variants = [("A_ghidra", fdir / "difftest_baseline_a.json", None, None),
                     (f"B_{b_agent}_single" if b_agent else "B_pending", fdir / "difftest_baseline_b.json",
                      fdir / "response.json", fdir / "recon.c")]
-        if (fdir / "repair1/response.json").exists():
-            variants.append((f"C_{agent_of(fdir / 'repair1/response.json')}_repair", fdir / "repair1/difftest.json",
-                             fdir / "repair1/response.json", fdir / "repair1/recon.c"))
+        for k in range(1, 10):   # C: repair round 1; C2, C3...: later rounds on what was still failing
+            rd = fdir / f"repair{k}"
+            if (rd / "response.json").exists():
+                variants.append((f"{'C' if k == 1 else f'C{k}'}_{agent_of(rd / 'response.json')}_repair",
+                                 rd / "difftest.json", rd / "response.json", rd / "recon.c"))
         for base, f, resp, recon in variants:
             dt = json.loads(f.read_text()) if f.exists() else None
             row = {"function_addr": fdir.name, "original_name": orig, "baseline": base,
