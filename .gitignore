@@ -5,3 +5,6 @@ __pycache__/
 
 # test-run videos: id game graphics (copyrighted) and large; kept local
 media/
+
+# Local article drafts and publishing assets
+/writing/
