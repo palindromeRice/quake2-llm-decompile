@@ -5,7 +5,7 @@ set -e
 TREE="${1:-build/ai_source}"
 OUT="${2:-QuakeII-AI-installer.sh}"
 { cat "$(dirname "$0")/installer_template.sh"
-  tar czf - -C "$(dirname "$TREE")" --exclude=obj --exclude=game.so --exclude=game.dylib "$(basename "$TREE")"
+  tar czf - --no-xattrs -C "$(dirname "$TREE")" --exclude=obj --exclude=game.so --exclude=game.dylib "$(basename "$TREE")"
 } > "$OUT"
 chmod +x "$OUT"
 echo "$OUT ($(du -h "$OUT" | cut -f1))"

@@ -1,1 +1,3 @@
-{}
+{
+ "SV_Physics_Pusher": "passes on Linux; on macOS: checks pushed_p > &pushed_p (assumes pushed_p sits right after pushed[]), which the Mach-O layout breaks, so the first moving door errors; the error call also passes 0 as the format string and crashes"
+}

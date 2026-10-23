@@ -275,13 +275,14 @@ set -e
 cd "$(dirname "$0")"
 CC="${CC:-cc}"
 # 1997 C (implicit int etc.) is an error in newer compilers: keep it a warning
-CFLAGS="-O0 -g -fPIC -fno-strict-aliasing -w -Iorig -Wno-error=implicit-int -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types"
+# -fno-common: Apple clang makes uninitialised globals common symbols, which the DAT_ aliases cannot target
+CFLAGS="-O0 -g -fPIC -fno-common -fno-strict-aliasing -w -Iorig -Wno-error=implicit-int -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types"
 mkdir -p obj
 for f in orig/*.c ai/*.c; do
   $CC $CFLAGS -c "$f" -o "obj/$(basename "$f" .c).o"
 done
 if [ "${TARGET_OS:-$(uname)}" = Darwin ]; then
-  $CC -dynamiclib -undefined dynamic_lookup -o game.dylib obj/*.o
+  $CC -dynamiclib -o game.dylib obj/*.o   # fail on any unresolved symbol
 else
   $CC -shared -Wl,-z,defs -o game.so obj/*.o -lm   # fail on any unresolved symbol
 fi

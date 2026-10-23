@@ -23,6 +23,14 @@ DEMO_URL=https://deponie.yamagi.org/quake2/idstuff/q2-314-demo-x86.exe
 DEMO_SHA=7ace5a43983f10d6bdc9d9b6e17a1032ba6223118d389bd170df89b945a04a1e
 
 OS=$(uname)
+# The AI code was decompiled from x86-64 and keeps its calling convention (a returned struct's
+# address is the first argument), which Apple Silicon passes differently: build x86-64, run under Rosetta.
+ARCH=$(uname -m)
+export CC=cc
+if [ "$OS" = Darwin ] && [ "$ARCH" = arm64 ]; then
+  arch -x86_64 /usr/bin/true 2>/dev/null || { echo "Rosetta is needed. Install it, then re-run: softwareupdate --install-rosetta --agree-to-license" >&2; exit 1; }
+  ARCH=x86_64 CC="cc -arch x86_64"   # the compilers stay native (Apple's tools are arm64-only)
+fi
 if [ "$OS" = Darwin ]; then
   DEST="${Q2AI_DEST:-$HOME/Library/QuakeII-AI}"   # no spaces: the builds break on them
   APP="${Q2AI_APP:-$HOME/Applications/Quake II AI.app}"
@@ -61,25 +69,26 @@ N=$(LC_ALL=C grep -an '^__PAYLOAD_BELOW__$' "$0" | cut -d: -f1)   # binary-safe:
 tail -n +"$((N + 1))" "$0" | tar xz -C "$SRC"
 
 step "3/6 SDL2 (window, input, sound) - about 2 minutes"
-if [ ! -f "$DEST/sdl2/.done" ]; then
+if [ "$(cat "$DEST/sdl2/.done" 2>/dev/null)" != "$ARCH" ]; then
   fetch "$SDL_URL" "$SDL_SHA" "$SRC/SDL2.tar.gz"
   rm -rf "$SRC/SDL2-2.32.10" && tar xzf "$SRC/SDL2.tar.gz" -C "$SRC"
-  (cd "$SRC/SDL2-2.32.10" && ./configure --prefix="$DEST/sdl2" --disable-static >"$SRC/sdl2.log" 2>&1 \
+  (cd "$SRC/SDL2-2.32.10" && ./configure --prefix="$DEST/sdl2" --disable-static --host="$ARCH-$(uname | tr A-Z a-z)" >"$SRC/sdl2.log" 2>&1 \
     && make -j"$JOBS" >>"$SRC/sdl2.log" 2>&1 && make install >>"$SRC/sdl2.log" 2>&1) || die "SDL2 build, see $SRC/sdl2.log"
-  touch "$DEST/sdl2/.done"
+  echo "$ARCH" > "$DEST/sdl2/.done"
 fi
 
 step "4/6 Quake II engine (Yamagi Quake II) - about 1 minute"
-if [ ! -x "$DEST/engine/quake2" ]; then
+if [ "$(cat "$DEST/engine/.done" 2>/dev/null)" != "$ARCH" ]; then
   fetch "$YQ2_URL" "$YQ2_SHA" "$SRC/yquake2.tar.gz"
   rm -rf "$SRC/yquake2-QUAKE2_8_70" && tar xzf "$SRC/yquake2.tar.gz" -C "$SRC"
-  yq2() { (cd "$SRC/yquake2-QUAKE2_8_70" && make -j"$JOBS" WITH_SDL3=no WITH_CURL=no WITH_OPENAL=no \
-    SDLCFLAGS="-I$DEST/sdl2/include -I$DEST/sdl2/include/SDL2 -D_REENTRANT" SDLLDFLAGS="-L$DEST/sdl2/lib -lSDL2 -Wl,-rpath,$DEST/sdl2/lib" \
+  yq2() { (cd "$SRC/yquake2-QUAKE2_8_70" && make -j"$JOBS" CC="$CC" YQ2_ARCH="$ARCH" WITH_SDL3=no WITH_CURL=no WITH_OPENAL=no \
+    SDLCFLAGS="-I$DEST/sdl2/include -I$DEST/sdl2/include/SDL2 -D_REENTRANT" SDLLDFLAGS="$DEST/sdl2/lib/libSDL2.${LIB##*.} -Wl,-rpath,$DEST/sdl2/lib" \
     "$@" >>"$SRC/engine.log" 2>&1); }
   yq2 client ref_soft || die "engine build, see $SRC/engine.log"
   yq2 ref_gl1 ref_gl3 || echo "OpenGL renderers not built (no OpenGL headers); the software renderer is used."
   rm -rf "$DEST/engine" && mkdir -p "$DEST/engine"
   cp "$SRC/yquake2-QUAKE2_8_70/release/quake2" "$SRC"/yquake2-QUAKE2_8_70/release/ref_* "$DEST/engine/"
+  echo "$ARCH" > "$DEST/engine/.done"
 fi
 
 step "5/6 AI game code - about 1 minute"
