@@ -1,330 +1,252 @@
-# quake-decompile
+# quake2-llm-decompile
 
-Research testbed: can an LLM agent reconstruct functionally equivalent C from
-stripped game binaries? Testbed is the GPL Quake II source (id Software, 3.19).
+Code, test harness, saved runs and installer for the study
+[Agent-Assisted Reconstruction of Quake II Gameplay Code](https://palindromerice.github.io/writing/quake2-reconstruction/).
 
-Status: **pilot proof of concept** — one function end to end, two baselines.
-Nothing here is a general result yet.
+Quake II's gameplay module (about a thousand C functions) is compiled, stripped of symbols and
+decompiled with Ghidra. Coding agents then rewrite each function in C without seeing the source,
+and a differential harness compares every rewrite against the original on generated game worlds.
+Raw decompiler output matches the original for fewer than 9% of functions. After agent
+reconstruction and repair, **99.0%** of testable functions match in the unoptimized build
+(981 of 991) and **98.5%** in the optimized build (964 of 979). The reconstructed functions also
+run together as a real game: the installed module uses reconstructed code for 1,018 of its 1,019
+functions and is playable in the open-source Yamagi Quake II engine on Linux and Mac.
 
-**Two builds of the same code.** *Plain build* (`-O0`): the compiler translates the code as written,
-so the machine code follows the source line by line. *Optimized build* (`-O2`): the compiler
-rearranges, merges and removes code to run faster, as shipped games do; much harder to decompile.
-`-O0`/`-O2` stay in file and run names.
+## Why
 
-## Pipeline
+Decompilers recover structure from binaries, but their output rarely compiles or behaves like the
+original without manual repair. Most game decompilation projects aim for *matching* output (C that
+compiles back to the same bytes), which needs the original compiler and a lot of effort per
+function. This project asks a different question: can agents produce code that simply *behaves*
+like the original, which is what porting, modding and preservation need?
 
-```
-Quake II source (unmodified) --gcc--> pilot.unstripped --strip--> pilot.stripped
-                                          |                           |
-                       ground_truth.json (eval only)        Ghidra headless (ExportFunctions.java)
-                                                                      |
-                                                       agent_inputs/FUN_<addr>.json
-                                                         |                      |
-                                     Baseline A: pseudocode + typedefs   Baseline B: 1 agent A call
-                                                         \                      /
-                                     difftest: candidate vs original object code, dev + held-out inputs
-                                                                      |
-                                                       results/<run>.{csv,json}
-```
+A game is a hard test. Functions share global state, call each other and depend on exact data
+layouts, so a function can pass on its own and still break the game. Quake II is a good subject:
+large and stateful enough to be realistic, with id Software's GPL source release available as
+ground truth. The idea is to give agents only what a decompiler recovers, give them a strict
+machine-checkable signal (behavioral tests, not byte matching), and then check the result by
+actually playing the game.
 
-## Reproduce
+## System design
 
-Requirements: Linux x86-64, gcc, Python 3.10+, JDK 21, Ghidra 12.1.4, agent A CLI or agent B CLI (logged in), depending on `AGENT`.
-
-```bash
-# one-time, user-local, no sudo (~1.2 GB)
-mkdir -p ~/tools/dl && cd ~/tools/dl
-curl -LO https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jdk_x64_linux_hotspot_21.0.12.1_1.tar.gz
-curl -LO https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.1.4_build/ghidra_12.1.4_PUBLIC_20260921.zip
-cd ~/tools && tar xzf dl/OpenJDK21U-*.tar.gz && unzip -q dl/ghidra_12.1.4_PUBLIC_20260921.zip
-
-# full pilot (~2 min, one agent A call per target)
-cd quake-decompile
-./scripts/run_pilot.sh configs/pilot_O0.json
-./scripts/run_pilot.sh configs/pilot_O2.json
-
-./scripts/run_pilot.sh configs/control_O0.json    # contamination control set
-./scripts/run_pilot.sh configs/stateful_O0.json   # stateful game functions
-./scripts/run_pilot.sh configs/game_all_O0.json   # whole game module (~1,000 calls, ~$50 list price)
-./scripts/resume_run.sh experiments/pilot/runs/<run>   # finish targets an interrupted run missed
-
-# one repair round over a run's failures (compiler errors / dev mismatches fed back)
-./scripts/repair_run.sh experiments/pilot/runs/<run>
-
-# re-test an existing run (no agent A calls), e.g. after changing drivers
-./scripts/retest_run.sh experiments/pilot/runs/<run>
-
-# harness sanity checks (original must pass, mutant must fail); match the last build's config
-PILOT_CONFIG=configs/pilot_O2.json python3 -m pytest -q
+```mermaid
+flowchart TD
+    S[Quake II 3.19 game source, unmodified] --> B[Build with GCC at -O0 or -O2]
+    B --> U[Unstripped binary + original objects<br/>evaluation side only]
+    B --> X[Stripped binary]
+    X --> G[Ghidra headless export<br/>one JSON per FUN_addr]
+    G --> A[Baseline A: raw Ghidra pseudocode]
+    G --> R[Agent reconstruction<br/>isolated, no tools, no source]
+    A --> D
+    R --> D[Differential harness<br/>original vs candidate, dev + held-out worlds]
+    U --> D
+    D -->|dev failures only| F[Repair loop<br/>compiler errors or dev mismatch offsets]
+    F --> D
+    D --> M[Metrics: results/run.csv, .json]
+    D --> P[Playable module build<br/>passing reconstructions under real names]
+    P --> I[One-file installer<br/>Linux and macOS]
 ```
 
-To continue an interrupted run with agent B, use the existing run directory:
+**1. Build and strip.** `scripts/build_pilot.py` compiles unmodified game sources (from id
+Software's release, cloned at a pinned commit into a git-ignored `third_party/`) with the flags in a
+config. It produces a debug copy and the original object files (evaluation side only), the stripped
+binary (the only thing Ghidra and the agent see), a name-to-address ground truth, and a
+`build_info.json` with compiler version, commands and hashes. Two optimization levels are studied:
+`-O0` keeps machine code close to the source; `-O2` inlines and removes code as shipped games do.
 
-```bash
-python3 scripts/status.py experiments/pilot/runs/20261013-095717-game_all_O2
-AGENT=agent_b JOBS=6 ./scripts/resume_run.sh experiments/pilot/runs/20261013-095717-game_all_O2
-AGENT=agent_b JOBS=6 ./scripts/repair_run.sh experiments/pilot/runs/20261013-095717-game_all_O2
-```
+**2. Ghidra extraction.** `src/extraction/run_ghidra.py` runs Ghidra headless with
+`ghidra_scripts/ExportFunctions.java`. For each target it writes one agent input file holding only
+what Ghidra recovered: pseudocode, disassembly, guessed signature, callers and callees, constants.
+Targets are selected by address through the ground truth, but no original name enters these files.
+Functions Ghidra never finds (8 in the optimized build) count as failures; their known addresses are
+not forced in, which would leak ground truth.
 
-`AGENT=agent_a|agent_b` selects the reconstructor. Resume skips every saved
-`response.json`, regardless of agent; repair skips saved repair responses and
-uses only dev feedback. `status.py` reports answers and repairs by agent plus
-pending targets and `STOP_<agent>.txt`. A usage limit creates that STOP file;
-resume and repair clear only the selected agent's marker. Failed calls append
-`error_<agent>.txt`. The operator may also set a STOP marker to drain workers;
-check its contents to distinguish an operator stop from a usage limit.
-Both scripts rebuild the selected configuration and require the ground truth to
-match the run snapshot. Runs with different configurations must not overlap
-because `build/` is shared. agent B uses the isolated `~/.agent-b-home` home;
-never substitute the operator's normal agent B home.
+**3. Reconstruction.** `src/evaluation/baseline_a.py` produces baseline A: the pseudocode with
+standard headers and typedefs for Ghidra's pseudo-types, no semantic edits.
+`src/reconstruction/single_pass.py` makes one agent call per function (baseline B). The prompt
+text is versioned and recorded with each run; the current version states the optimization level and
+asks for globals to be declared `extern` under their Ghidra names.
 
-Individual stages: `scripts/build_pilot.py`, `src/extraction/run_ghidra.py`,
-`src/evaluation/baseline_a.py`, `src/reconstruction/single_pass.py`,
-`src/evaluation/difftest.py`, `src/metrics/collect.py`.
+The model backend is a plain interface. Every call goes through `AGENT_CMD`, any command that reads
+the prompt on stdin and prints the answer on stdout, either as plain text or as a JSON object with a
+`result` field (optionally also usage, cost and an isolation-violation flag). The command runs from
+an empty temporary directory, and the wrapper behind it must give the model no tools, no web access
+and no user or project settings; an answer that reports an isolation violation is kept for the
+record but never used. `AGENT` is a label (`agent_a`, `agent_b`) stored with each answer. The
+experiments used two coding agent configurations, recorded as agent A and agent B.
 
-## Layout
+**4. Differential testing.** `src/evaluation/difftest.py` compiles a candidate, binds Ghidra names
+(`FUN_`, `DAT_`, `PTR_`, `_UNK_` at evaluation-binary addresses) to the original symbols, and runs it
+against the original object code. Small pure functions from the pilot use per-function drivers in
+`tests/difftest/` that compare return bit patterns and argument buffers with guard words. Game
+functions use the stateful harness `tests/stateful/harness.c`: for each case two forked children
+build the same seeded random world, one calls the original and one the candidate, and the parent
+compares entity, player, game and level state, return values, random-number use and the log of every
+engine call. The engine is a deterministic stand-in, so any behavioral difference shows up. Pointer
+values are compared by meaning: function pointers resolve to the same function in both builds, a
+pointer to the candidate itself counts as a pointer to the original, and heap addresses are left out
+while the records they point to are compared. Signatures (argument kinds the harness can generate)
+come from `scripts/make_file_config.py`; 28 functions per build have signatures the harness cannot
+call (file I/O, variadic, matrices and similar) and are compile-checked only.
 
-| Path | Visible to agent? | Contents |
-|---|---|---|
-| `configs/pilot_O{0,2}.json` | no | compiler flags, sources, pilot function names |
-| `third_party/Quake-2/` | no | original source (git-ignored, cloned at pinned commit) |
-| `experiments/pilot/c/` | no | link stubs + empty `main` |
-| `build/` | no | binaries, objects, Ghidra logs, `eval/ground_truth.json` (git-ignored) |
-| `build/agent_inputs/` (+ copy in each run's `_meta/`) | **yes** | Ghidra output per target, nothing else |
-| `experiments/pilot/runs/<ts>-<config>/` | output | prompt, raw response + usage, `recon.c`, difftest JSON, `_meta/` (config, build info, ground truth) |
-| `tests/difftest/` | no | per-function differential test drivers |
-| `results/` | — | per-run CSV/JSON metrics |
-| `docs/` | — | setup notes, related work, license |
+**5. Repair loop.** `src/reconstruction/repair.py` gives each failing function its original prompt,
+its previous answer and mechanical feedback: compiler errors, or where the first difference occurred
+on dev worlds (state offsets, never original names). Up to two rounds were run. For functions the
+harness cannot call, `experiments/playable/ingame_feedback.json` can supply behavior observed in the
+running game. Held-out results are never shown to repair.
 
-## Build configuration (pilot)
+**6. Playable module.** `scripts/make_ai_source.py` generates a portable C source tree of the game
+module in which each replaced function's original body is renamed `<name>__orig`, and the
+reconstruction (`ai/FUN_<addr>.c`, renamed to the real function name) provides the symbol to every
+caller, including function-pointer tables. Data the reconstructions read by address is bound with
+assembler aliases in the defining file, and integer literals equal to a symbol address are rewritten
+into references to that symbol. A repaired version is used if it passed both splits, else a passing
+first attempt, else (optionally) a compiled first attempt for the untested functions.
+`scripts/build_ai_gameso.py` is an older x86-64 Linux path that patches the original functions with
+jumps instead. The game is checked with scripted headless play (`playable_demo.py`), a
+save/load and level-change test (`saveload_test.py`) and a multi-map soak test (`soak_test.py`), each
+run on the original and reconstructed builds. `varargs_scan.py` and `macho_check.py` check
+portability hazards for Apple arm64.
 
-- Host: Ubuntu 24.04, x86-64 (spec asked for macOS ARM64; this machine is Linux x86-64, so native x86-64 is used).
-- `gcc 13.3.0`, `-O0` or `-O2`, plus `-g -fno-stack-protector -fcf-protection=none -fno-pie -ffile-prefix-map=third_party/Quake-2/game/=`, link `-no-pie -lm`.
-- Sources compiled **unmodified**: `game/q_shared.c`, `game/g_utils.c`. Stubs only satisfy the linker for non-target functions (`experiments/pilot/c/stubs.c`).
-- `strip --strip-all` produces the evaluation binary. Exact commands and SHA-256 land in `build/build_info.json`.
+**7. Installer.** `scripts/make_installer.sh` packs the source tree into `QuakeII-AI-installer.sh`
+(template in `scripts/installer_template.sh`). The installer downloads SDL2, Yamagi Quake II and id
+Software's free demo data (three levels), each pinned by SHA-256, builds everything in one user-owned
+folder and creates a menu entry on Linux or an app on macOS. A purchased game's data unlocks all
+levels. On Apple Silicon it builds x86-64 and runs under Rosetta 2, because some reconstructions
+keep the x86-64 convention for returning structures. The installed build keeps the original version
+of the one function that moves doors and platforms (its reconstruction assumed a memory layout of
+globals that failed on macOS); `make_ai_source.py` takes such exclusions as a list with reasons.
 
-## Evaluation protocol
+## Evaluation design
 
-- Original behaviour = the original object files built with the same flags as the evaluation binary (identical code, pre-strip).
-- Driver calls original and candidate on identical inputs; compares return **bit patterns** and the full argument buffer with guard words on each side (catches out-of-bounds writes and side effects).
-- `dev` split: edge-case grid (±0, denormals, ±inf, NaN, huge) + 45k random. `heldout` split: 45k random from a different seed. Single-pass B uses no test feedback, so held-out is untouched by design.
-- Passing finite tests is not proof of equivalence. Results say "passed N cases", never "equivalent".
+- **Splits.** Each function is tested on up to 1,500 generated worlds in a dev split and 1,500 in a
+  held-out split from a different seed. Repair sees only dev failures, so held-out stays an
+  independent check at the function level.
+- **Usable worlds.** If the original crashes or hangs on a world, that world is skipped. If only the
+  candidate fails, it is a mismatch. The number of usable worlds therefore varies by function.
+- **Pass.** No mismatch **and** at least one usable world in both splits. A pass means agreement on
+  the tested worlds, never proven equivalence.
+- **Zero-case audit.** The harness reports a pass when the original fails on every world and nothing
+  is compared. These false passes are excluded from the reported numbers (10 at `-O0`, 9 at `-O2`).
+  The harness itself was not changed for this, so raw rows in `results/` still contain them.
+- **Bug injection.** `scripts/mutation_check.py` makes single-edit mutants of the original functions
+  (relational and arithmetic operators, constant plus one, `&&` and `||`) and counts how many the
+  harness catches. On 100 sampled game functions it caught 269 of 329 (82%).
+- **Controls.** `tests/test_difftest_controls.py` checks that the original logic passes and a
+  one-constant mutant fails. A contamination control set of ten newly written functions
+  (`experiments/control/`), each shaped like a pilot function, runs through the same pipeline: the
+  first agent response passed 10 of 10 at `-O0` and 9 of 10 at `-O2`.
+- **Stage accounting.** "After repair" counts a function if any saved attempt passed, so it measures
+  how far the process got. Measured against all functions in each binary, the rates are 96.3% and 95.0%.
 
-## Pilot results (10 functions)
+## Results
 
-Runs `20261012-224110-pilot_O0` and `20261012-224341-pilot_O2`. Both builds hide the source path in the binary.
-"Pass" = bit-identical on every dev and held-out input. "NaN-relaxed" also counts NaN-vs-NaN with a different sign or payload as equal.
+| Stage | Unoptimized (991 functions) | Optimized (979 functions) |
+|---|---:|---:|
+| Ghidra baseline | 86 (8.7%) | 76 (7.8%) |
+| First agent response | 949 (95.8%) | 918 (93.8%) |
+| After repair | 981 (99.0%) | 964 (98.5%) |
 
-| Build | Baseline | Compiles | Pass (strict) | Pass (NaN-relaxed) | agent A calls | Cost |
-|---|---|---|---|---|---|---|
-| -O0 | A: Ghidra pseudocode | 5/10 | 3/10 | 4/10 | 0 | 0 |
-| -O0 | B: single-pass agent A | 10/10 | **10/10** | 10/10 | 10 | $0.41 |
-| -O2 | A: Ghidra pseudocode | 4/10 | 4/10 | 4/10 | 0 | 0 |
-| -O2 | B: single-pass agent A | 9/10 | **7/10** | 9/10 | 9 | $0.34 |
+The two builds used different agent configurations and function sets, so the gap between them is not
+purely an optimization effect. In the optimized run agent A and agent B split the work by run order,
+not at random, so per-agent numbers are not a model comparison.
 
-- -O2 `COM_FileExtension`: **Ghidra never found the function.** It starts with a `jmp` and has no callers, so Ghidra saw no function start. It is counted as a failure for both baselines; we did not force it using the known address, which would leak ground truth.
-- -O2 B failures, `LerpAngle` and `VectorNormalize`: NaN sign only (`nan` vs `-nan`), from a different SSE operand order. Both pass NaN-relaxed.
-- A failures: mostly `.rodata` constants that Ghidra prints as undeclared `DAT_xxxx` globals. Also `vectoyaw` at -O0 lost its return value.
-- Earlier run `20261012-223613` (-O0, source path visible): A 3/10, B 10/10.
+Playing the game exposed failures the isolated tests missed: hardcoded test-binary addresses in
+save/load code, a weapon-switching function that assumed a 120-byte item record instead of 136, code
+that depended on the x86-64 structure-passing convention, and the door-movement function's memory
+layout assumption on macOS. The installed module includes 28 reconstructed functions the harness
+never tested, so 1,018 reconstructed does not mean 1,018 verified; original data, declarations and
+glue code also remain.
 
-### Contamination control (fresh, never-public code)
+## Repository map
 
-`experiments/control/c/control.c` holds 10 functions written for this project, each matching the shape of one Quake pilot function (angles, rounding, in-place vectors, struct + switch, strings, static buffer). Same pipeline, same flags.
+| Path | Role |
+|---|---|
+| `configs/` | Evaluation-side build configs: compiler flags, sources, target functions and signature codes. Contain original names; never shown to agents. |
+| `ghidra_scripts/` | Ghidra headless export script. |
+| `src/extraction/` | Runs Ghidra and writes agent-visible inputs. |
+| `src/evaluation/` | Baseline A and the differential test driver. |
+| `src/reconstruction/` | First-pass reconstruction and the repair loop (agent calls). |
+| `src/metrics/` | Aggregates a run into `results/`. |
+| `tests/difftest/` | Per-function drivers for the pure pilot and control functions. |
+| `tests/stateful/` | Stateful world-generating harness for game functions. |
+| `tests/test_difftest_controls.py` | Harness sanity check. |
+| `experiments/pilot/c`, `stateful/c`, `control/c` | Link stubs, empty mains, and the control function set. |
+| `experiments/pilot/runs/` | Every saved run: prompts, answers, reconstructions, test results. |
+| `experiments/playable/` | In-game feedback and observed in-game failures. |
+| `results/` | Per-run metrics (`.csv`, `.json`), repair and mutation-check summaries. |
+| `scripts/` | Run orchestration, playable build, game tests, installer packing. |
+| `QuakeII-AI-installer.sh` | Generated one-file installer with the reconstructed source tree. |
+| `docs/` | Quake II GPL-2.0 license text. |
 
-| Set | Build | A strict | B strict | B NaN-relaxed | B cost |
-|---|---|---|---|---|---|
-| Quake | -O0 | 3/10 | 10/10 | 10/10 | $0.41 |
-| Control | -O0 | 3/10 | 10/10 | 10/10 | $0.42 |
-| Quake | -O2 | 4/10 | 7/10 | 9/10 | $0.34 |
-| Control | -O2 | 1/10 | 9/10 | 9/10 | $0.40 |
+## Orientation for agents
 
-- On this set, scores show no clear advantage for Quake code. n=10 per cell, so small differences mean nothing.
-- Control -O2 failure, `clamp_length`: agent A returned `void`, dropping the returned length. The swapped parameter order is irrelevant: a float and a pointer go in separate ABI registers, so both orders compile to identical code.
-- Threat: the control code was written by agent A (same model family as the reconstructor). Memorisation is impossible, but style familiarity is not ruled out. Human-written private code would be the stronger control.
+**Entry points.** `scripts/run_pilot.sh <config>` is the end-to-end run (build, Ghidra, baselines
+A and B, difftest, metrics). `resume_run.sh` finishes targets an interrupted run missed,
+`repair_run.sh` runs one repair round (`ROUND` selects later rounds), `retest_run.sh` re-runs all
+tests of an existing run without model calls, and `status.py` reports where a run stands per agent.
+The study ran on Linux x86-64 with GCC, Python 3.10+ and Ghidra 12.1.4. `build/` and `third_party/`
+are git-ignored and recreated by the build.
 
-### Test strength (mutation check)
+**Configs.** `pilot_*`, `control_*`, `stateful_O0` and `files_ai_utils_move_O0` are the smaller
+development sets; `game_all_O0` and `game_all_O2` are the full-module runs behind the paper.
+The `difftest.py` config is selected with `PILOT_CONFIG`.
 
-`scripts/mutation_check.py` makes up to 12 single-edit bugs per original function (`<`→`<=`, `+`→`-`, constant +1, `&&`→`||`) and counts how many each driver catches.
+**Run layout.** A run directory is `experiments/pilot/runs/<YYYYMMDD-HHMMSS>-<config>/`. Each target
+is `FUN_<addr>/` (the Ghidra-style address name, never the original name) and holds `prompt.txt`,
+`response.json` (with the `agent` label), `recon.c`, `baseline_a/`, `difftest_baseline_a.json`,
+`difftest_baseline_b.json` and `repair<k>/`. `_meta/` snapshots everything needed to interpret the
+run: config, build info, ground truth, extraction summary, the exact agent inputs, and notes on
+interruptions. `STOP_<agent>.txt` marks a usage limit; `error_<agent>.txt` logs failed calls.
 
-- Control -O0: 95/101 caught. All 6 survivors were judged equivalent by hand (unused buffer size, a shifted counter that cancels out, boundary ties no input reaches).
-- Quake -O0: 93/94 caught. The one survivor is an unused buffer size. Edits inside comments and `#if 0` blocks are now skipped; the first version of the script counted 10 of those as survivors.
-- One real gap was found and fixed: the `BoxOnPlaneSide` driver never hit an exact plane-boundary tie. Exact ties were added; that mutant is now caught, and re-testing both Quake runs changed no result.
+**Result labels.** Rows in `results/<run>.csv` are labelled `A_ghidra`, `B_<agent>_single` (first
+answer, or `B_pending`) and `C_<agent>_repair` (`C2_...` for round two). Failure categories are
+`compile_error`, `link_error`, `crash`, `timeout`, `behavior_mismatch`, `heldout_only_mismatch`,
+`no_code`, `extraction_missed`, `compiled_untested` and `pass`.
 
-### Stateful game functions (whole game module, plain build)
+**Invariants.**
+- Agents see only Ghidra-derived inputs. Configs, ground truth, original objects and the source are
+  evaluation side.
+- Held-out results are never shown to the repair loop. Keep it that way in any new feedback path.
+- A target with a saved `response.json` is never re-asked, whichever agent answered.
+- Resume, repair and retest rebuild the run's config and refuse to continue if the ground truth
+  differs from the run's snapshot. `build/` is shared, so never run two configs at once.
+- Reported pass rates apply the zero-case audit on top of `results/`.
 
-Ten functions that read and write entity, level and engine state: `M_ChangeYaw`, `G_FreeEdict`, `M_CheckGround`, `M_SetEffects`, `range`, `visible`, `infront`, `CanDamage`, `trigger_counter_use`, `G_Spawn`. Harness design: `docs/stateful_harness.md`. 3,000 random worlds per function (1,500 dev + 1,500 held-out).
+**Do not regenerate casually.** The saved runs in `experiments/pilot/runs/` and `results/` are the
+evidence behind the paper; a full-module run costs about a thousand model calls, and a fresh run will
+not reproduce the same answers. Re-testing changes stored test results, so do it in a copy or a new
+run. `QuakeII-AI-installer.sh` is generated from the source tree; rebuild it with
+`make_installer.sh` rather than editing it.
 
-| Run | Prompt | A: Ghidra | B: agent A | B failure | Cost |
-|---|---|---|---|---|---|
-| `20261012-232321-stateful_O0` | v1 | 0/10 compile | 9/10 | `G_FreeEdict`: defined its own copies of globals instead of `extern` (prompt said nothing about globals) | $0.66 |
-| `20261012-233726-stateful_O0` | v2 | 0/10 compile | 9/10 | `G_Spawn`: free-slot test inverted (real bug) | $0.65 |
+## Limitations
 
-- Prompt v2 adds one rule: declare globals `extern` under their Ghidra names. Runs record `prompt_version`.
-- **Single-pass output varies:** v1 got `G_Spawn` right, v2 got it wrong.
-- **Repeat sampling (prompt v2.1, which is the same text as v2 at -O0):** three more runs (`20261013-094805`, `-094932`, `-095054`) give 4 samples per function with prompt v2. 8 of 10 functions passed all 4. `G_FreeEdict` passed 3/4 (one mismatch). `G_Spawn` passed 2/4 (one mismatch, one answer without code).
-- Mean single-sample pass rate 92.5%; every function passed at least once in 4 samples. Cost $1.56 for the 3 extra runs.
-- Ghidra pseudocode never compiles here (undeclared `DAT_` globals, `code` pointer types, unknown struct members).
-- Mutation check on the stateful harness: 45/53 caught. Of the 8 survivors, 4 are equivalent (`M_ChangeYaw` tie branches assign the same value) and 2 are practically unreachable exact float ties. The other 2 are a real but minor gap: `M_CheckGround`'s vertical velocity at exactly 100.
-- Boundary coverage was added to the world generator (grid-snapped angles and origins, exact 80/500/1000 separations) after a first mutation check missed `range` and `M_ChangeYaw` ties. Both runs were re-tested; results did not change.
-
-### Whole files: `g_ai.c`, `g_utils.c`, `m_move.c` (plain build)
-
-Run `20261013-004715-files_ai_utils_move_O0`. Every function in the three files whose signature the harness supports (45 of 46; `tv` returns `float*`). Signatures are derived from the source by `scripts/make_file_config.py`.
-
-| Baseline | Compiles | Pass (3,000 worlds) | agent A calls | Cost |
-|---|---|---|---|---|
-| A: Ghidra pseudocode | 9/45 | 3/45 | 0 | 0 |
-| B: single-pass agent A (prompt v2) | 45/45 | **45/45** | 45 | $2.91 |
-
-- Includes the monster AI core (`ai_run`, `ai_checkattack`, `FindTarget`, `M_CheckAttack`), movement (`SV_movestep`, `SV_NewChaseDir`, `M_walkmove`) and entity management.
-- Coverage caveat: for some AI functions the *original* crashes on many random worlds (mostly a NULL `enemy`), and those cases are skipped. The worst is `FoundTarget`: 62% skipped, still 1,138 valid worlds. Every function had at least 1,100 valid worlds.
-- The pipeline's first pass reported `KillBox` as a crash because I killed its slow test by hand. The harness now stops a function's test after 50 mismatches and uses a 1 s per-case timeout. The full re-test passes.
-
-### Whole game module, plain build (all of `game/`)
-
-Run `20261013-010856-game_all_O0` (config `game_all_O0.json`, from `make_file_config.py ALL`). 1,022 functions; 3 are not in the binary (one inside `#if 0`, two unused statics the compiler dropped). Of the 1,019 attempted, 85 have a signature the harness cannot call yet (compile-only), so **934 are behaviour-tested**.
-
-| Baseline | Compiles | Pass, 934 tested | agent A calls | Cost |
-|---|---|---|---|---|
-| A: Ghidra pseudocode | 116/1,019 | 84 | 0 | 0 |
-| B: single-pass agent A (prompt v2) | 995/1,019 | **905 (96.9%)** | 1,019 | $51.03 |
-| C: B + one repair round on B's 32 failures | 1,019/1,019 | **930 (99.6%)** | +32 | +$2.46 |
-
-- "Pass" means no difference on dev and held-out random worlds; it does not prove equivalence.
-- B failures (32): 22 compile errors, 8 behaviour mismatches, 2 answers with two code blocks instead of one.
-- Compile errors were mostly mechanical. In 14, a function-pointer type was passed to the model's own field-access macro, which C does not parse. In 6, `NULL` was used without `<stddef.h>`. Two contained junk tokens.
-- **Repair round (C):** agent A gets its previous answer plus compiler errors, or, for mismatches, where the first differing byte is in the dev worlds (an edict offset, no names). Held-out results are never shown to it. 25 of 32 now pass on both splits and 3 compile-only targets now compile. 4 still mismatch: `Think_AccelMove`, `InitGame`, `BossExplode`, `ClientBegin`. Script: `src/reconstruction/repair.py`; results: `results/repair_20261013-010856-game_all_O0.json`.
-- **Run interruption:** the agent A account usage limit was hit at about $35. 179 calls failed and were re-run 4 hours later with `scripts/resume_run.sh` on the identical build.
-- 4 first-attempt answers with no code block were overwritten by that resume, so B counts their second attempt. B is therefore slightly optimistic (see `_meta/notes.md` in the run).
-- **Test strength (sampled):** mutation check on 100 random tested functions, up to 6 mutants each. 269 of 329 mutants caught (82%), lower than on the hand-picked sets.
-- 56 functions caught every mutant. 23 had no mutable code (empty bodies, animation stubs). 7 caught none: `Weapon_Machinegun`, `ClientCommand`, `SP_info_player_start`, `soldier_attack6_refire`, `G_SetClientFrame`, `Think_CalcMoveSpeed`, `IsFemale`.
-- Those 7 depend on state the random worlds rarely produce: coop mode, command arguments, userinfo strings, exact weapon or animation frames. A pass on them is weak evidence. Results: `results/mutation_game_all_O0_sample100.{json,log}`.
-- In some functions the original crashes on most random worlds, so few cases remain. For example, `Weapon_Grenade` at -O2 had 70 valid dev worlds out of 1,500.
-- **Memorisation signal:** 154 of 1,017 reconstructions (15%) name at least one real Quake II function that appears nowhere in their prompt, usually as comments on callees. For example, `SP_item_health_mega` came back labelled `SpawnItem`, `FindItem`, `G_FreeEdict` and `/* SP_item_health_mega */` with zero leaks. Some of these could be guesses from strings, but most could not.
-- 12 prompts contained the target's own name through a string in the binary; 8 of those passed. Excluding them, B passes 897 of 928 tested targets.
-
-### Whole game module, optimized build
-
-Run `20261013-095717-game_all_O2`, prompt v2.1 (states `-O2`). 1,015 functions are in the binary; Ghidra found no function start for 8, leaving 1,007 answered. 84 of those are compile-only.
-
-**Two models, one run.** agent A hit its session limit, agent B took over, agent B hit its usage limit, and agent A finished. A function answered by one model was never redone by the other.
-- Each answer records its model, and results are reported per model.
-- The split is by run order, not random, so these two columns are **not a model comparison**.
-
-| | agent A (`agent-a-model`) | agent B (`agent-b-model`) |
-|---|---|---|
-| First attempts answered | 634 (84 compile-only) | 373 (0 compile-only) |
-| B: first-attempt pass, of tested | 509 / 550 (92.5%) | 361 / 373 (96.8%) |
-| C: after one repair round (all repairs by agent A) | 537 / 550 (97.6%) | 371 / 373 (99.5%) |
-| Still failing | 13 | 2 (`BossExplode`, `ClientBegin`) |
-| Cost | $32.12 + $6.97 repair (list price) | not priced (subscription); tokens recorded |
-
-- A (Ghidra pseudocode): 71 pass, 902 of 1,015 do not compile.
-- **Isolation:** 0 agent B answers used a tool (every response records its event types). For agent A, see "Agent context" under validity threats.
-- **Memorisation signal:** agent A's reconstructions named real Quake functions that were absent from the prompt in 114 of 631 (18%); agent B's in 0 of 373.
-  - These are different functions, and agent B may simply write fewer comments, so this does not show that agent B memorised less.
-- **Service interruptions**, all logged in the run's `_meta/notes.md`:
-  - agent A session limit at 10:36.
-  - agent B capacity / HTTP 429 errors at 6 and 4 parallel calls; 2 parallel calls ran cleanly.
-  - agent B usage limit at 13:25.
-- **Harness bug found and fixed in this run.** At -O2, GCC keeps tables of function pointers in read-only data. The harness rebuilt those constants from the original binary's raw bytes, but in the test binary the functions sit at different addresses. Correct reconstructions therefore stored wrong pointers and were marked mismatches. Ghidra's `_UNK_` names were also not mapped, which caused false link errors.
-  - Fixed in `difftest.py`: pointer-valued constants are re-bound to the same function in the test binary. The whole run was then re-tested.
-  - Before the fix, agent B's first attempts showed 47 failures; after it, 12.
-  - Repairs requested before the fix were partly fed these false failures; they are kept as they are.
-
-### Harness v2 re-test (2026-10-14): false failures fixed, more functions testable
-
-Investigating the last failures showed three harness faults, so both whole-game runs were re-tested (no new model calls), then one more repair round went to what still failed.
-- **Pointer to itself.** A function that stores a pointer to itself (`self->think = <this function>`) stores the candidate's address in the test, which never equals the original's. The harness now counts a pointer to the candidate as a pointer to the original. `Think_AccelMove`, `BossExplode` and others were correct on the first attempt.
-- **Heap address.** `game.clients` points to freshly allocated memory; the address was compared as data. It is now left out; the client records themselves are still compared.
-- **Impossible worlds.** `ClientBegin` was called on non-player edicts, so it read past the client array and even the original crashed at random. It now gets player slots only; item use/drop functions likewise.
-- **More functions testable.** New argument kinds (item, touch plane and surface, client record, user command, move info, `short`, `vec_t`) make 57 of the 85 compile-only functions testable. 28 remain untested (file I/O, variadic, matrices, `trace_t` returns, and similar).
-- These changes only remove false mismatches or add tests; a result that passed before cannot fail because of them, except where a test domain changed (re-tested).
-- The repair tool now supports later rounds (`ROUND=2`) and in-game feedback for functions the harness cannot call (`experiments/playable/ingame_feedback.json`, behaviour only).
-- Repairs requested before this fix were fed false failures for these functions; two of them got worse in round 1 and were right again in round 2.
-
-| | Plain build | Optimized build |
-|---|---|---|
-| Testable functions | 991 | 979 (8 more not found by Ghidra) |
-| A: Ghidra pseudocode, pass | 91 | 79 |
-| B: first AI attempt, pass | 959 | 926 (agent A 563, agent B 363) |
-| After repair rounds | **991 (100% of tested)** | **973** |
-| Still failing | 0 | 6 |
-
-- Optimized build, still failing: 5 functions store a pointer to a tiny forwarding function that Ghidra never found (e.g. `gib_die`, which only calls `G_FreeEdict`). The AI stores the target directly. Calling it does the same thing, but the pointer differs. The sixth (`monster_fire_bfg`) returned no code block in its last round.
-- Extra cost: $1.45 (repairs after the fix).
-
-### Playable demo: Quake II running AI-decompiled game code
-
-`scripts/build_ai_gameso.py` builds a real `game.so` in which **930 of the 1,019 -O0 game functions run AI-reconstructed code**: every function whose reconstruction passed both test splits. The other 89 keep the original code.
-- It is loaded by the unmodified open-source engine (Yamagi Quake II) with the official free demo data, run headless.
-- `scripts/playable_demo.py` plays a scripted fight against five soldiers and infantry. Both versions complete it with no crash: the monsters attack, take damage, die and gib.
-- This is a demonstration, not an equivalence test, because frame timing varies between runs. Setup and caveats: `docs/playable_demo.md`.
-- Game data and videos are not in the repo, because they are copyrighted.
-
-**Portable source tree (`scripts/make_ai_source.py`).** The jump-patch build only works on x86 Linux. The source tree is plain C that any compiler can build:
-- `ai/FUN_<addr>.c` holds the AI code unchanged. An assembler alias gives each function its real name, and the replaced original body is renamed `<name>__orig`.
-- The addresses the AI code uses for data become aliases in the original file that defines the object, so file-local and function-local statics work too.
-- With `--include-untested`, the 28 still-untested functions are included as well: **all 1,019 functions run AI code** (991 tested and passing, 28 untested but working in game).
-- Built and played on Linux: the fight, the save/load test and the soak test all pass.
-
-**Failures found only by playing** (harness tests passed or could not run):
-- **Hardcoded addresses.** `WriteField1`, `ReadLevel` and `Use_Invulnerability` contain raw evaluation-binary addresses as integers (for example `InitGame`'s address, which the save format uses as a base). Loading a save crashed. The generator now rewrites integer literals that equal a symbol address into references to that symbol; these 3 functions are the only hits.
-- **`Use_Weapon`** (untested at the time): it assumed a 120-byte item record (the real one is 136 bytes) and segfaulted on `use chaingun`. It was excluded until harness v2 could test it; the repaired version passes 3,000 test worlds and switches weapons in game exactly like the original (super shotgun, rocket launcher, railgun, blaster). `experiments/playable/ingame_failures.json` is now empty.
-
-**Save/load and level change (`scripts/saveload_test.py`).** Play, save, load, save again, change level demo1 → demo2 → demo1, save. Original and AI builds both pass.
-- The two saves are not byte-identical, even with the original: loading runs a few server frames and the engine adds the client address to the saved userinfo. Both builds differ in the same places (about 4,400 bytes of the level save, 15 bytes of the game save).
-- Saves store function pointers relative to `InitGame`, so a save from one build cannot be loaded by another. The check is within one build.
-
-**Soak test (`scripts/soak_test.py`).** All three demo maps back to back, 5 minutes each, in one engine process: running, turning, jumping, firing, cycling all weapons and saving every few seconds.
-- Run once per build, original and AI side by side, 5.5 real minutes per map (16.5 minutes in all).
-- **AI build: passed.** All three maps were played, 360 screenshots and saves were written, and the engine exited normally with no console errors.
-- Re-run on the all-AI build (1,019 of 1,019 functions, harness v2): passed the same way.
-- **Original build: all three maps were played, then the run aborted at shutdown** with glibc "double free or corruption", right after the game module shut down. Shorter runs of the same build exit normally. The cause is not investigated: it could be in id's game code, the engine, or the test setup. One run each is not evidence that the AI build is more stable.
-- The input is scripted with no navigation, so the player often walks into walls. This shows stability over time, not coverage of every monster or weapon.
-
-**macOS (Apple Silicon).** One-command installer that builds a clickable app: `docs/mac.md`. Not run on a Mac yet. Cross-checked here by building the tree for arm64 macOS with the clang inside zig (`docs/mac.md`):
-- It builds and links as an arm64 Mach-O library, and all 1,767 name aliases resolve to the right address.
-- The only undefined symbols are standard macOS C library functions.
-- Fixed on the way: clang names function-local statics differently from gcc; two glibc-internal functions (`__isoc99_sscanf` in the entity parser, `__assert_fail`) now have a fallback; and 1997-style C that newer compilers reject stays a warning.
-- Apple arm64 passes variadic arguments differently, so a non-variadic declaration of a print function would break there. `scripts/varargs_scan.py` found none in the AI code.
-
-### Contamination evidence
-- `BoxOnPlaneSide`: `assert` puts its name in the binary, so it is in the prompt (`prompt_leak` column). The output reuses Quake's `vec3_t`, `cplane_t` and `signbits`. Contaminated.
-- `vectoangles` at -O2: **no leak in the prompt**, but agent A wrote "follows the classic Quake vectoangles routine". The model recognised the code from its structure alone. This is direct evidence of memorisation; a non-public control set is required before any claim.
-- So any number on Quake code is an upper bound, not a clean decompilation result.
-
-### Input domains (documented in each driver)
-- `Q_log2`: val >= 0 only. The original loops forever on negatives.
-- `BoxOnPlaneSide`: only valid planes (signbits consistent with the normal, no NaN). Other inputs can trip the original's assert.
-- `COM_FileExtension`: the returned string content is compared, not the pointer (static buffer).
-
-## Validity threats (tracked)
-
-- **Contamination:** Quake II source is public since 2001 and widely mirrored; the model may have memorised it. Pilot output used neither the original name nor original identifiers (`yaw`, `PITCH`, `M_PI`), but that does not rule it out. Plan: compare against a non-public control codebase.
-- **String leaks:** `assert` in `q_shared.c` keeps `"BoxOnPlaneSide"` and `"q_shared.c"` in the stripped binary (as it would in a real release built without `NDEBUG`). Logged by `build_pilot.py` as `pilot_names_found_in_stripped_binary`.
-- **Agent context (agent A):**
-  - Each call is `agent_a -p --tools "" --setting-sources "" --no-session-persistence --system-prompt <fixed>`, run from an empty temp dir.
-  - Audit of all 1,663 saved agent A responses: 0 web searches, 0 web fetches, 0 permission denials (no tool was even attempted).
-  - 1,659 are single-turn. 4 report 2 turns with no tool activity; the cause is not determined.
-  - A probe call with identical flags (2026-10-13) reports no tools, no project instruction files and no memory. The only injected context is the CLI's environment block (temp working dir, platform, date) and the account e-mail.
-  - Its total input was 674 tokens. The user's global project instruction files alone is about 2.9 kB (roughly 700 tokens), so it was not loaded.
-  - Auto-memory is keyed to the working directory, and the temp dir has none.
-  - `--bare` was not used. Future runs could add it for a stricter guarantee.
-- **Agent context (agent B, from 2026-10-13):**
-  - `agent_b exec` with a read-only sandbox, from an empty temp dir.
-  - Clean `AGENT_B_HOME`: no AGENTS.md, memories or skills; login shared by symlink.
-  - Memories and web search are disabled by flag. A probe confirmed no injected instructions and no web tool.
-  - Each response records its event item types. Any tool or command use marks `isolation_violation`, and that answer is not used.
-- **Cost figures** come from the CLI's `total_cost_usd` (list-price estimate). On a subscription login, no per-call charge occurs.
-- **Wrong optimisation level in early -O2 prompts:** prompts v1/v2 always said "-O0". The pilot -O2 and control -O2 runs were therefore told the wrong level. Fixed in prompt v2.1, which takes the level from the config; the full-game -O2 run uses v2.1.
-- **Harness false failures (found and fixed 2026-10-13):**
-  - -O2 pointer constants were copied as raw bytes; fixed, with all stateful runs re-tested. -O0 first-attempt results did not change.
-  - **An operator mistake corrupted some re-test results:** a re-test believed killed kept running for an hour, while `build/` was switched to a different build. It also shared scratch folders with the other re-tests (work dirs were named per function, not per run). The result was false link errors and crashes, including 3 that briefly looked like "parallel flakiness".
-  - Fixes: each candidate now gets its own work dir, and `retest_run.sh` re-runs every failure alone as a safety net.
-  - Both whole-game runs were then re-tested from scratch with nothing else running. Their numbers in this README come from that clean re-test.
-- **64-bit port:** `g_local.h`'s `FOFS` macro truncates pointers on x86-64 (compiler warning). Affects `G_Find` callers only, not pilot targets.
+- **Possible memorization.** Quake II's source has been public for decades, and some reconstructions
+  use original function names absent from the prompt. Agents never received the source and the
+  newly written controls also passed, but those controls were agent-written. The clean test is a
+  game whose source was never released.
+- **Test coverage.** Passing shows agreement on tested worlds only. Rarely reached paths get little
+  testing (82% of injected bugs caught), and synthetic single-player worlds with a stand-in engine do
+  not cover multiplayer or many real-engine interactions.
+- **Harness changes.** The harness was improved during the study (pointer comparison, input
+  generation). A fully independent check would freeze it and run once on fresh held-out worlds.
 
 ## License
 
-Quake II source: GPL v2 (`docs/QUAKE2_LICENSE_GPLv2.txt`). Binaries built here link GPL code, so this project is GPL-2.0-or-later. No game data files are used or downloaded.
+The code in this repository is licensed under Apache-2.0 (see `LICENSE` and `NOTICE`). The Quake II
+source it builds against is id Software's release under GPL-2.0, see
+`docs/QUAKE2_LICENSE_GPLv2.txt`; it is not included here. No game data is included; the installer
+downloads id Software's free demo data.
+
+## Citation
+
+```bibtex
+@misc{chawla2026quake2reconstruction,
+  author       = {Naman Chawla},
+  title        = {Agent-Assisted Reconstruction of Quake II Gameplay Code},
+  year         = {2026},
+  howpublished = {\url{https://palindromerice.github.io/writing/quake2-reconstruction/}}
+}
+```
+
+Citation metadata is also in `CITATION.cff`.
