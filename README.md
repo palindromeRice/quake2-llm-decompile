@@ -1,6 +1,6 @@
 # quake2-llm-decompile
 
-Code, test harness, saved runs and installer for the study
+Code, test harness and saved results for the study
 [Agent-Assisted Reconstruction of Quake II Gameplay Code](https://palindromerice.github.io/writing/quake2-reconstruction/).
 
 Quake II's gameplay module (about a thousand C functions) is compiled, stripped of symbols and
@@ -108,8 +108,9 @@ save/load and level-change test (`saveload_test.py`) and a multi-map soak test (
 run on the original and reconstructed builds. `varargs_scan.py` and `macho_check.py` check
 portability hazards for Apple arm64.
 
-**7. Installer.** `scripts/make_installer.sh` packs the source tree into `QuakeII-AI-installer.sh`
-(template in `scripts/installer_template.sh`). The installer downloads SDL2, Yamagi Quake II and id
+**7. Installer.** `scripts/make_installer.sh` packs the source tree into a one-file installer
+(template in `scripts/installer_template.sh`), published as a download on the
+[v1.0 release](https://github.com/palindromeRice/quake2-llm-decompile/releases/tag/v1.0). The installer downloads SDL2, Yamagi Quake II and id
 Software's free demo data (three levels), each pinned by SHA-256, builds everything in one user-owned
 folder and creates a menu entry on Linux or an app on macOS. A purchased game's data unlocks all
 levels. On Apple Silicon it builds x86-64 and runs under Rosetta 2, because some reconstructions
@@ -172,11 +173,9 @@ glue code also remain.
 | `tests/stateful/` | Stateful world-generating harness for game functions. |
 | `tests/test_difftest_controls.py` | Harness sanity check. |
 | `experiments/pilot/c`, `stateful/c`, `control/c` | Link stubs, empty mains, and the control function set. |
-| `experiments/pilot/runs/` | Every saved run: prompts, answers, reconstructions, test results. |
 | `experiments/playable/` | In-game feedback and observed in-game failures. |
 | `results/` | Per-run metrics (`.csv`, `.json`), repair and mutation-check summaries. |
 | `scripts/` | Run orchestration, playable build, game tests, installer packing. |
-| `QuakeII-AI-installer.sh` | Generated one-file installer with the reconstructed source tree. |
 | `docs/` | Quake II GPL-2.0 license text. |
 
 ## Orientation for agents
@@ -192,7 +191,8 @@ are git-ignored and recreated by the build.
 development sets; `game_all_O0` and `game_all_O2` are the full-module runs behind the paper.
 The `difftest.py` config is selected with `PILOT_CONFIG`.
 
-**Run layout.** A run directory is `experiments/pilot/runs/<YYYYMMDD-HHMMSS>-<config>/`. Each target
+**Run layout.** Runs are written to `experiments/pilot/runs/<YYYYMMDD-HHMMSS>-<config>/`, which is
+not part of this repository (raw run records are kept by the author). Each target
 is `FUN_<addr>/` (the Ghidra-style address name, never the original name) and holds `prompt.txt`,
 `response.json` (with the `agent` label), `recon.c`, `baseline_a/`, `difftest_baseline_a.json`,
 `difftest_baseline_b.json` and `repair<k>/`. `_meta/` snapshots everything needed to interpret the
@@ -213,11 +213,11 @@ answer, or `B_pending`) and `C_<agent>_repair` (`C2_...` for round two). Failure
   differs from the run's snapshot. `build/` is shared, so never run two configs at once.
 - Reported pass rates apply the zero-case audit on top of `results/`.
 
-**Do not regenerate casually.** The saved runs in `experiments/pilot/runs/` and `results/` are the
-evidence behind the paper; a full-module run costs about a thousand model calls, and a fresh run will
-not reproduce the same answers. Re-testing changes stored test results, so do it in a copy or a new
-run. `QuakeII-AI-installer.sh` is generated from the source tree; rebuild it with
-`make_installer.sh` rather than editing it.
+**Do not regenerate casually.** `results/` holds the per-function outcomes behind the paper,
+including the test-case counts the zero-case audit uses. A full-module run costs about a thousand
+model calls, and a fresh run will not reproduce the same answers. Re-testing changes stored test
+results, so do it in a copy or a new run. The installer is generated from a run's reconstructions by
+`make_installer.sh`; rebuild it rather than editing it.
 
 ## Limitations
 
@@ -235,8 +235,12 @@ run. `QuakeII-AI-installer.sh` is generated from the source tree; rebuild it wit
 
 The code in this repository is licensed under Apache-2.0 (see `LICENSE` and `NOTICE`). The Quake II
 source it builds against is id Software's release under GPL-2.0, see
-`docs/QUAKE2_LICENSE_GPLv2.txt`; it is not included here. No game data is included; the installer
-downloads id Software's free demo data.
+`docs/QUAKE2_LICENSE_GPLv2.txt`; it is not included here.
+
+The installer on the [v1.0 release](https://github.com/palindromeRice/quake2-llm-decompile/releases/tag/v1.0)
+contains reconstructed Quake II game code, which is derived from that GPL-2.0 source and is
+distributed under GPL-2.0, not Apache-2.0. No game data is included; the installer downloads id
+Software's free demo data.
 
 ## Citation
 

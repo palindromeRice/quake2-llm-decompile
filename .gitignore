@@ -8,3 +8,7 @@ media/
 
 # Local article drafts and publishing assets
 /writing/
+
+# Raw run records and the generated installer (installer ships as a release asset)
+experiments/pilot/runs/
+QuakeII-AI-installer.sh
