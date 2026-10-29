@@ -159,6 +159,21 @@ layout assumption on macOS. The installed module includes 28 reconstructed funct
 never tested, so 1,018 reconstructed does not mean 1,018 verified; original data, declarations and
 glue code also remain.
 
+### Evidence in this repository
+
+Raw run records (prompts, answers, reconstructions) are kept by the author and not published. The
+files in `results/` are enough to recompute every number above: each CSV has one row per function and
+attempt with its category, pass flags for the dev and held-out splits, and the test-case counts used
+by the zero-case audit (a pass counts only when both splits compared at least one case).
+
+| File | Backs |
+|---|---|
+| `results/20261013-010856-game_all_O0.csv` | Table, unoptimized build: 86 / 949 / 981 of 991 |
+| `results/20261013-095717-game_all_O2.csv` | Table, optimized build: 76 / 918 / 964 of 979 |
+| `results/mutation_game_all_O0_sample100.json` | Bug injection: 269 of 329 mutants caught (82%) |
+| `results/20261012-225442-control_O0.csv` | Newly written control functions, unoptimized: 10 of 10 pass |
+| `results/20261012-225643-control_O2.csv` | Newly written control functions, optimized: 9 of 10 pass |
+
 ## Repository map
 
 | Path | Role |
@@ -174,7 +189,7 @@ glue code also remain.
 | `tests/test_difftest_controls.py` | Harness sanity check. |
 | `experiments/pilot/c`, `stateful/c`, `control/c` | Link stubs, empty mains, and the control function set. |
 | `experiments/playable/` | In-game feedback and observed in-game failures. |
-| `results/` | Per-run metrics (`.csv`, `.json`), repair and mutation-check summaries. |
+| `results/` | The five result files behind the paper (see Evidence above). |
 | `scripts/` | Run orchestration, playable build, game tests, installer packing. |
 | `docs/` | Quake II GPL-2.0 license text. |
 
@@ -211,10 +226,11 @@ answer, or `B_pending`) and `C_<agent>_repair` (`C2_...` for round two). Failure
 - A target with a saved `response.json` is never re-asked, whichever agent answered.
 - Resume, repair and retest rebuild the run's config and refuse to continue if the ground truth
   differs from the run's snapshot. `build/` is shared, so never run two configs at once.
-- Reported pass rates apply the zero-case audit on top of `results/`.
+- Reported pass rates apply the zero-case audit on top of the raw rows in `results/`.
 
 **Do not regenerate casually.** `results/` holds the per-function outcomes behind the paper,
-including the test-case counts the zero-case audit uses. A full-module run costs about a thousand
+including the test-case counts the zero-case audit uses; new runs write next to them and are not
+tracked. A full-module run costs about a thousand
 model calls, and a fresh run will not reproduce the same answers. Re-testing changes stored test
 results, so do it in a copy or a new run. The installer is generated from a run's reconstructions by
 `make_installer.sh`; rebuild it rather than editing it.
