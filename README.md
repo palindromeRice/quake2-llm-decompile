@@ -1,12 +1,13 @@
 # quake2-llm-decompile
 
-Code, harness and results for the article [Agent-Assisted Reconstruction of Quake II Gameplay Code](https://palindromerice.github.io/writing/quake2-reconstruction/) on palindromerice.github.io.
 Quake II's gameplay module (about a thousand C functions) is compiled, stripped and decompiled with
 Ghidra. Coding agents rewrite each function in C without seeing the source, and a differential
 harness compares every rewrite against the original on generated game worlds. Raw decompiler output
 matches for fewer than 9% of functions; after agent reconstruction and repair, **99.0%** match in the
 unoptimized build (981 of 991) and **98.5%** in the optimized build (964 of 979). The installed module
 (1,018 of 1,019 functions reconstructed) is playable in Yamagi Quake II on Linux and Mac.
+
+Research article: [Agent-Assisted Reconstruction of Quake II Gameplay Code](https://palindromerice.github.io/writing/quake2-reconstruction/)
 
 ## Why
 
