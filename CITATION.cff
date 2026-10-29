@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it as below."
+title: "quake2-llm-decompile"
+authors:
+  - family-names: Chawla
+    given-names: Naman
+repository-code: "https://github.com/palindromeRice/quake2-llm-decompile"
+license: Apache-2.0
+preferred-citation:
+  type: article
+  title: "Agent-Assisted Reconstruction of Quake II Gameplay Code"
+  authors:
+    - family-names: Chawla
+      given-names: Naman
+  year: 2026
+  url: "https://palindromerice.github.io/writing/quake2-reconstruction/"

@@ -1,0 +1,13 @@
+quake2-llm-decompile
+Copyright 2026 Naman Chawla
+
+This product includes software developed by Naman Chawla
+(https://github.com/palindromeRice/quake2-llm-decompile).
+
+If you use this code, its results, or derived work in a publication,
+please cite:
+
+  Naman Chawla. 2026. Agent-Assisted Reconstruction of Quake II Gameplay Code.
+  https://palindromerice.github.io/writing/quake2-reconstruction/
+
+Citation metadata is in CITATION.cff.
