@@ -42,5 +42,5 @@
     "token_match",
     "split_key"
   ],
-  "agent_a_model": "agent-a-model"
+  "agent_model": "agent-a-model"
 }

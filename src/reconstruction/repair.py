@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """Baseline C: one feedback round on top of baseline B.
 
-For each failed B target, agent A gets the original prompt, its previous answer, and
+For each failed B target, the agent gets the original prompt, its previous answer, and
 mechanical feedback: compiler errors, or the dev-split mismatch locations from the
 differential harness (state offsets only, no original names). Held-out results are
 never shown, so held-out pass rate stays an independent check.
 
-Agent: AGENT=agent_a|agent_b, same isolation as single_pass.py. Skips targets that
+Agent: AGENT_CMD and AGENT as in single_pass.py, same isolation. Skips targets that
 already have repair1/response.json (from any agent) and stops on a usage limit.
 Later rounds (ROUND=2, ...) build on the previous round's answer and its test result.
 In-game feedback: experiments/playable/ingame_feedback.json maps a function name to what was
 observed when the game ran it (e.g. where it crashed). It is used for functions the harness
 cannot call, and only describes behaviour, never the original source.
-Usage: [AGENT=agent_b] [ROUND=1] repair.py <run_dir> <original_name> FUN_<addr>
+Usage: AGENT_CMD=<cmd> [AGENT=agent_b] [ROUND=1] repair.py <run_dir> <original_name> FUN_<addr>
 Writes <run_dir>/<FUN>/repair<ROUND>/{prompt.txt, response.json, recon.c, difftest.json}.
 """
 import json, os, re, subprocess, sys, time

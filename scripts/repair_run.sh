@@ -2,7 +2,7 @@
 # One repair round over a whole run: every target whose first attempt failed gets one
 # feedback call (repair.py decides; passes and already-repaired targets are skipped).
 # Safe to re-run after a usage limit or an agent switch: nothing done is redone.
-# Usage: [AGENT=agent_a|agent_b] [JOBS=6] repair_run.sh <run_dir>
+# Usage: AGENT_CMD=<cmd> [AGENT=agent_a|agent_b] [JOBS=6] repair_run.sh <run_dir>
 set -euo pipefail
 cd "$(dirname "$0")/.."
 RUN="$1"

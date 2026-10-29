@@ -352,7 +352,7 @@
       "file": "m_move.c"
     }
   },
-  "agent_a_model": "agent-a-model",
+  "agent_model": "agent-a-model",
   "skipped": {
     "tv": "unsupported signature: float * (float x, float y, float z)"
   }

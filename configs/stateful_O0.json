@@ -112,5 +112,5 @@
     "trigger_counter_use": "use",
     "G_Spawn": "spawn"
   },
-  "agent_a_model": "agent-a-model"
+  "agent_model": "agent-a-model"
 }

@@ -6102,7 +6102,7 @@
       "file": "q_shared.c"
     }
   },
-  "agent_a_model": "agent-a-model",
+  "agent_model": "agent-a-model",
   "compile_only": {
     "PlayerSort": "unsupported signature: int (void const *a, void const *b)",
     "GetGameAPI": "unsupported signature: game_export_t * (game_import_t *import)",

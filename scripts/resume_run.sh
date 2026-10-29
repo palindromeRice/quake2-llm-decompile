@@ -2,7 +2,7 @@
 # Finish an interrupted run: reconstruct + test only targets with no response.json yet
 # (failed calls / usage limit). Targets answered by any agent are never redone.
 # Needs build/ to hold the same config's build (rebuilt and checked here).
-# Usage: [AGENT=agent_a|agent_b] [JOBS=6] resume_run.sh <run_dir>
+# Usage: AGENT_CMD=<cmd> [AGENT=agent_a|agent_b] [JOBS=6] resume_run.sh <run_dir>
 set -euo pipefail
 cd "$(dirname "$0")/.."
 RUN="$1"

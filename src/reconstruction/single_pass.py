@@ -1,30 +1,31 @@
 #!/usr/bin/env python3
 """Baseline B: one model call per function, Ghidra-derived inputs only.
 
-AGENT=agent_a (default): `agent_a -p` from an empty temp dir, all tools disabled,
-user/project settings (hooks, project instruction files) not loaded, fixed system prompt.
-AGENT=agent_b: `agent_b exec` from an empty temp dir, read-only sandbox, clean
-AGENT_B_HOME (no AGENTS.md, memories or skills; login shared by symlink),
-web search off. Any command execution is an isolation violation: the answer
-is kept for the record but not used.
+The model is reached through AGENT_CMD, any command that reads the prompt on
+stdin and prints the answer on stdout, either as plain text or as a JSON object
+with a "result" field (optional: "usage", "total_cost_usd", "isolation_violation").
+It runs from an empty temp dir with AGENT_MODEL in its environment. The wrapper
+must give the model no tools, no web access and no user or project settings;
+a reported isolation violation keeps the answer for the record but not for use.
+AGENT is the label stored with each answer (agent_a, agent_b, ...).
 
 A target counts as done once it has response.json (whichever agent wrote it);
 failed calls leave error_<agent>.txt and are retried by resume_run.sh.
 A usage/session limit writes <run_dir>/STOP_<agent>.txt; later calls of that
 agent in the run are skipped until resume_run.sh clears it.
 
-Usage: [AGENT=agent_b] single_pass.py <run_dir> FUN_<addr> [FUN_<addr> ...]
+Usage: AGENT_CMD=<cmd> [AGENT=agent_b] single_pass.py <run_dir> FUN_<addr> [FUN_<addr> ...]
 Writes <run_dir>/<FUN>/{prompt.txt, response.json, recon.c}.
 """
-import json, os, re, subprocess, sys, tempfile, time
+import json, os, re, shlex, subprocess, sys, tempfile, time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 INPUTS = ROOT / "build/agent_inputs"
 CFG = json.loads((ROOT / os.environ.get("PILOT_CONFIG", "configs/pilot_O0.json")).read_text())
 AGENT = os.environ.get("AGENT", "agent_a")
-MODEL = CFG["agent_a_model"] if AGENT == "agent_a" else os.environ.get("AGENT_B_MODEL", "agent-b-model")
-AGENT_B_HOME = Path(os.environ.get("AGENT_B_HOME", Path.home() / ".agent-b-home"))
+MODEL = os.environ.get("AGENT_MODEL", CFG["agent_model"])
+AGENT_CMD = shlex.split(os.environ.get("AGENT_CMD", ""))
 LIMIT_RE = re.compile(r"session limit|usage limit|rate limit|quota|limit reached|too many requests", re.I)
 OPT = next(f for f in CFG["cflags"] if f.startswith("-O"))
 
@@ -81,45 +82,20 @@ def build_prompt(rec):
         disassembly="\n".join(rec["disassembly"]))
 
 
-def call_agent_a(prompt):
+def call_agent(prompt):
+    if not AGENT_CMD:
+        raise RuntimeError("AGENT_CMD is not set")
     with tempfile.TemporaryDirectory() as empty:
-        p = subprocess.run(
-            ["agent_a", "-p", "--model", MODEL, "--output-format", "json",
-             "--tools", "", "--setting-sources", "", "--no-session-persistence",
-             "--system-prompt", SYSTEM],
-            input=prompt, capture_output=True, text=True, cwd=empty, timeout=600)
+        p = subprocess.run(AGENT_CMD, input=SYSTEM + "\n\n" + prompt, capture_output=True, text=True,
+                           cwd=empty, timeout=900, env={**os.environ, "AGENT_MODEL": MODEL})
     if p.returncode:
         raise RuntimeError(f"rc={p.returncode} stdout={p.stdout[-1500:]} stderr={p.stderr[-1500:]}")
-    return json.loads(p.stdout)
-
-
-def call_agent_b(prompt):
-    AGENT_B_HOME.mkdir(exist_ok=True)
-    auth = AGENT_B_HOME / "auth.json"
-    if not auth.exists():
-        auth.symlink_to(Path.home() / ".agent_b/auth.json")
-    with tempfile.TemporaryDirectory() as empty:
-        out = Path(empty) / ".last_message"
-        p = subprocess.run(
-            ["agent_b", "exec", "--ephemeral", "--ignore-user-config", "--ignore-rules", "--skip-git-repo-check",
-             "-s", "read-only", "-C", empty, "-m", MODEL, "-c", "features.memories=false",
-             "-c", "web_search=disabled", "--json", "-o", str(out), "-"],
-            input=SYSTEM + "\n\n" + prompt, capture_output=True, text=True, timeout=900,
-            env={**os.environ, "AGENT_B_HOME": str(AGENT_B_HOME)})
-        events = [json.loads(l) for l in p.stdout.splitlines() if l.startswith("{")]
-        if p.returncode or not out.exists():
-            raise RuntimeError(f"rc={p.returncode} events={json.dumps(events[-3:])[-1500:]} stderr={p.stderr[-1500:]}")
-        result = out.read_text()
-    items = [e.get("item", {}).get("type") for e in events if e.get("type") == "item.completed"]
-    usage = next((e.get("usage", {}) for e in events if e.get("type") == "turn.completed"), {})
-    version = subprocess.run(["agent_b", "--version"], capture_output=True, text=True).stdout.strip()
-    return {"result": result, "usage": usage, "total_cost_usd": None, "cli_version": version,
-            "item_types": items,
-            "isolation_violation": any(t not in ("agent_message", "reasoning") for t in items)}
-
-
-def call_agent(prompt):
-    resp = call_agent_a(prompt) if AGENT == "agent_a" else call_agent_b(prompt)
+    try:
+        resp = json.loads(p.stdout)
+    except json.JSONDecodeError:
+        resp = None
+    if not isinstance(resp, dict) or "result" not in resp:
+        resp = {"result": p.stdout}
     resp.update(agent=AGENT, model=MODEL)
     return resp
 

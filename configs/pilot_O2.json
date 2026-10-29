@@ -46,5 +46,5 @@
     "Q_strncasecmp",
     "COM_FileExtension"
   ],
-  "agent_a_model": "agent-a-model"
+  "agent_model": "agent-a-model"
 }
